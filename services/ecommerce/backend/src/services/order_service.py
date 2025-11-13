@@ -10,12 +10,12 @@ from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 import httpx
 
-from src.models.order import Order, OrderItem, OrderStatus
-from src.models.cart import Cart, CartItem
-from src.models.product import Product
-from src.models.payment import Payment, PaymentMethod, PaymentStatus
-from src.utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
-from src.config import get_settings
+from models.order import Order, OrderItem, OrderStatus
+from models.cart import Cart, CartItem
+from models.product import Product
+from models.payment import Payment, PaymentMethod, PaymentStatus
+from utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
+from config import get_settings
 
 
 class OrderService:

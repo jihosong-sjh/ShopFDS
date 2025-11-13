@@ -108,15 +108,15 @@
 
 ### 프론트엔드 (User Story 1)
 
-- [ ] T038 [P] [US1] 회원가입 페이지 구현 (services/ecommerce/frontend/src/pages/Register.tsx)
-- [ ] T039 [P] [US1] 로그인 페이지 구현 (services/ecommerce/frontend/src/pages/Login.tsx)
-- [ ] T040 [P] [US1] 상품 목록 페이지 및 검색 기능 구현 (services/ecommerce/frontend/src/pages/ProductList.tsx)
-- [ ] T041 [P] [US1] 상품 상세 페이지 구현 (services/ecommerce/frontend/src/pages/ProductDetail.tsx)
-- [ ] T042 [US1] 장바구니 페이지 구현 (services/ecommerce/frontend/src/pages/Cart.tsx)
-- [ ] T043 [US1] 주문/결제 페이지 구현 (services/ecommerce/frontend/src/pages/Checkout.tsx)
-- [ ] T044 [US1] 주문 추적 페이지 구현 (services/ecommerce/frontend/src/pages/OrderTracking.tsx)
-- [ ] T045 [US1] Zustand 전역 상태 관리 설정 (장바구니, 인증 상태)
-- [ ] T046 [US1] React Query API 통신 레이어 구현 (services/ecommerce/frontend/src/services/api.ts)
+- [X] T038 [P] [US1] 회원가입 페이지 구현 (services/ecommerce/frontend/src/pages/Register.tsx)
+- [X] T039 [P] [US1] 로그인 페이지 구현 (services/ecommerce/frontend/src/pages/Login.tsx)
+- [X] T040 [P] [US1] 상품 목록 페이지 및 검색 기능 구현 (services/ecommerce/frontend/src/pages/ProductList.tsx)
+- [X] T041 [P] [US1] 상품 상세 페이지 구현 (services/ecommerce/frontend/src/pages/ProductDetail.tsx)
+- [X] T042 [US1] 장바구니 페이지 구현 (services/ecommerce/frontend/src/pages/Cart.tsx)
+- [X] T043 [US1] 주문/결제 페이지 구현 (services/ecommerce/frontend/src/pages/Checkout.tsx)
+- [X] T044 [US1] 주문 추적 페이지 구현 (services/ecommerce/frontend/src/pages/OrderTracking.tsx)
+- [X] T045 [US1] Zustand 전역 상태 관리 설정 (장바구니, 인증 상태)
+- [X] T046 [US1] React Query API 통신 레이어 구현 (services/ecommerce/frontend/src/services/api.ts)
 
 ### 기본 FDS 통합 (User Story 1)
 

@@ -8,9 +8,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.base import get_db
-from src.services.cart_service import CartService
-from src.utils.exceptions import ResourceNotFoundError, ValidationError
+from models.base import get_db
+from services.cart_service import CartService
+from utils.exceptions import ResourceNotFoundError, ValidationError
 
 
 router = APIRouter(prefix="/v1/cart", tags=["장바구니"])

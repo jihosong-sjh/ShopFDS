@@ -8,10 +8,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.base import get_db
-from src.models.product import ProductStatus
-from src.services.product_service import ProductService
-from src.utils.exceptions import ResourceNotFoundError
+from models.base import get_db
+from models.product import ProductStatus
+from services.product_service import ProductService
+from utils.exceptions import ResourceNotFoundError
 
 
 router = APIRouter(prefix="/v1/products", tags=["상품"])

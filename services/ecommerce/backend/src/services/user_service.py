@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
-from src.models.user import User, UserRole, UserStatus
-from src.models.cart import Cart
-from src.utils.security import hash_password, verify_password, create_access_token, create_refresh_token
-from src.utils.exceptions import AuthenticationError, ResourceNotFoundError, ValidationError
+from models.user import User, UserRole, UserStatus
+from models.cart import Cart
+from utils.security import hash_password, verify_password, create_access_token, create_refresh_token
+from utils.exceptions import AuthenticationError, ResourceNotFoundError, ValidationError
 
 
 class UserService:

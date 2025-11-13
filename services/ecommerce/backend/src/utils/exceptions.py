@@ -277,3 +277,10 @@ class FDSBlockedException(BusinessRuleException):
             rule="fds_risk_threshold",
             details={"risk_score": risk_score, "reason": reason},
         )
+
+
+# Alias for backward compatibility
+AuthenticationError = UnauthorizedException
+ResourceNotFoundError = NotFoundException
+ValidationError = ValidationException
+BusinessLogicError = BusinessRuleException

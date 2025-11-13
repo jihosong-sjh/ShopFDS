@@ -5,12 +5,12 @@
 새로운 모델을 추가할 때는 이 파일에서 import하여 Alembic이 자동으로 감지할 수 있도록 합니다.
 """
 
-from src.models.base import Base, TimestampMixin, get_db, init_db, drop_db, close_db
-from src.models.user import User, UserRole, UserStatus
-from src.models.product import Product, ProductStatus
-from src.models.cart import Cart, CartItem
-from src.models.order import Order, OrderItem, OrderStatus
-from src.models.payment import Payment, PaymentMethod, PaymentStatus
+from models.base import Base, TimestampMixin, get_db, init_db, drop_db, close_db
+from models.user import User, UserRole, UserStatus
+from models.product import Product, ProductStatus
+from models.cart import Cart, CartItem
+from models.order import Order, OrderItem, OrderStatus
+from models.payment import Payment, PaymentMethod, PaymentStatus
 
 __all__ = [
     "Base",

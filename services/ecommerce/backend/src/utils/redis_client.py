@@ -9,8 +9,8 @@ from typing import Optional, Any
 import json
 from redis import asyncio as aioredis
 from redis.asyncio import ConnectionPool
-from src.config import get_settings
-from src.utils.logging import get_logger
+from config import get_settings
+from utils.logging import get_logger
 
 settings = get_settings()
 logger = get_logger(__name__)

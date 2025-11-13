@@ -277,3 +277,24 @@ class SecurityUtils:
             return False, "비밀번호에 특수문자가 1개 이상 포함되어야 합니다."
 
         return True, ""
+
+
+# 편의를 위한 래퍼 함수들
+def hash_password(password: str) -> str:
+    """비밀번호 해싱 (PasswordHasher의 래퍼 함수)"""
+    return PasswordHasher.hash_password(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """비밀번호 검증 (PasswordHasher의 래퍼 함수)"""
+    return PasswordHasher.verify_password(plain_password, hashed_password)
+
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Access Token 생성 (JWTManager의 래퍼 함수)"""
+    return JWTManager.create_access_token(data, expires_delta)
+
+
+def create_refresh_token(data: dict) -> str:
+    """Refresh Token 생성 (JWTManager의 래퍼 함수)"""
+    return JWTManager.create_refresh_token(data)
