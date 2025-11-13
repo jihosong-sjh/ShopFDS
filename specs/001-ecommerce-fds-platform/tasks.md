@@ -175,10 +175,10 @@
 
 ### CTI 연동 (User Story 3)
 
-- [ ] T067 [P] [US3] ThreatIntelligence 모델 생성 (services/fds/src/models/threat_intelligence.py)
-- [ ] T068 [US3] CTI 커넥터 구현: AbuseIPDB API 연동 (services/fds/src/engines/cti_connector.py)
-- [ ] T069 [US3] 악성 IP 검증 로직 구현 (타임아웃 50ms, Redis 캐싱)
-- [ ] T070 [US3] 자체 블랙리스트 관리 API 구현: POST /internal/fds/blacklist (services/fds/src/api/threat.py)
+- [X] T067 [P] [US3] ThreatIntelligence 모델 생성 (services/fds/src/models/threat_intelligence.py)
+- [X] T068 [US3] CTI 커넥터 구현: AbuseIPDB API 연동 (services/fds/src/engines/cti_connector.py)
+- [X] T069 [US3] 악성 IP 검증 로직 구현 (타임아웃 50ms, Redis 캐싱)
+- [X] T070 [US3] 자체 블랙리스트 관리 API 구현: POST /internal/fds/blacklist (services/fds/src/api/threat.py)
 
 ### 자동 차단 로직 (User Story 3)
 

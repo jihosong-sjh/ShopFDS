@@ -17,6 +17,7 @@ load_dotenv(dotenv_path=env_path)
 
 from .models import init_db, close_db
 from .api.evaluation import router as evaluation_router
+from .api.threat import router as threat_router
 
 # 로깅 설정
 logging.basicConfig(
@@ -82,6 +83,7 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(evaluation_router)
+app.include_router(threat_router)
 
 
 @app.get("/", tags=["Root"])

@@ -6,8 +6,11 @@ FDS 평가 엔진
 
 import time
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from uuid import UUID
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from redis import asyncio as aioredis
 
 from ..models.schemas import (
     FDSEvaluationRequest,
@@ -19,6 +22,7 @@ from ..models.schemas import (
     DecisionEnum,
     SeverityEnum,
 )
+from ..engines.cti_connector import CTIConnector, ThreatLevel
 
 
 class EvaluationEngine:
@@ -27,12 +31,28 @@ class EvaluationEngine:
 
     거래를 평가하고 위험 점수를 산정하여 적절한 조치를 결정합니다.
     Phase 3에서는 기본적인 룰 기반 평가만 수행하며,
-    이후 Phase에서 ML 모델과 CTI 통합이 추가됩니다.
+    Phase 5에서 CTI 통합이 추가되었습니다.
     """
 
-    def __init__(self):
-        """평가 엔진 초기화"""
-        pass
+    def __init__(
+        self,
+        db: Optional[AsyncSession] = None,
+        redis: Optional[aioredis.Redis] = None,
+    ):
+        """
+        평가 엔진 초기화
+
+        Args:
+            db: 데이터베이스 세션 (CTI 사용 시 필수)
+            redis: Redis 클라이언트 (CTI 사용 시 필수)
+        """
+        self.db = db
+        self.redis = redis
+        self.cti_connector = None
+
+        # CTI 커넥터 초기화 (db와 redis가 모두 제공된 경우)
+        if db and redis:
+            self.cti_connector = CTIConnector(db, redis)
 
     async def evaluate(self, request: FDSEvaluationRequest) -> FDSEvaluationResponse:
         """
@@ -45,6 +65,9 @@ class EvaluationEngine:
             FDSEvaluationResponse: 평가 결과
         """
         start_time = time.time()
+
+        # CTI 체크 시간 추적
+        self._cti_check_time_ms = 0
 
         # 1. 위험 요인 평가
         risk_factors = await self._evaluate_risk_factors(request)
@@ -69,9 +92,9 @@ class EvaluationEngine:
         # 평가 메타데이터
         metadata = EvaluationMetadata(
             evaluation_time_ms=evaluation_time_ms,
-            rule_engine_time_ms=evaluation_time_ms,  # 현재는 룰 엔진만 사용
+            rule_engine_time_ms=evaluation_time_ms - self._cti_check_time_ms,
             ml_engine_time_ms=None,  # Phase 6에서 추가 예정
-            cti_check_time_ms=None,  # Phase 5에서 추가 예정
+            cti_check_time_ms=self._cti_check_time_ms if self._cti_check_time_ms > 0 else None,
             timestamp=datetime.utcnow(),
         )
 
@@ -173,7 +196,9 @@ class EvaluationEngine:
 
     async def _check_ip_risk(self, ip_address: str) -> RiskFactor | None:
         """
-        IP 주소 위험도 확인 (해외 IP 탐지)
+        IP 주소 위험도 확인 (CTI 통합)
+
+        Phase 5: CTI 커넥터를 사용하여 악성 IP 탐지 (타임아웃 50ms, Redis 캐싱)
 
         Args:
             ip_address: IP 주소
@@ -181,8 +206,43 @@ class EvaluationEngine:
         Returns:
             RiskFactor | None: 위험 요인 (위험이 없으면 None)
         """
+        # CTI 커넥터가 초기화되어 있으면 사용
+        if self.cti_connector:
+            cti_start_time = time.time()
+
+            try:
+                # CTI 체크 (타임아웃 50ms, Redis 캐싱)
+                cti_result = await self.cti_connector.check_ip_threat(ip_address)
+
+                # CTI 체크 시간 기록
+                self._cti_check_time_ms += int((time.time() - cti_start_time) * 1000)
+
+                # 위협이 탐지되었으면 RiskFactor 반환
+                if cti_result.is_threat:
+                    # 위협 수준에 따른 점수 및 심각도 매핑
+                    if cti_result.threat_level == ThreatLevel.HIGH:
+                        factor_score = 90  # 고위험: 자동 차단 수준
+                        severity = SeverityEnum.CRITICAL
+                    elif cti_result.threat_level == ThreatLevel.MEDIUM:
+                        factor_score = 60  # 중간 위험: 추가 인증 필요
+                        severity = SeverityEnum.HIGH
+                    else:
+                        factor_score = 30  # 낮은 위험: 모니터링
+                        severity = SeverityEnum.MEDIUM
+
+                    return RiskFactor(
+                        factor_type="suspicious_ip",
+                        factor_score=factor_score,
+                        description=cti_result.description
+                        or f"악성 IP 탐지 ({cti_result.source.value if cti_result.source else 'unknown'})",
+                        severity=severity,
+                    )
+            except Exception as e:
+                # CTI 체크 실패 시 fallback (기존 로직 사용)
+                pass
+
+        # Fallback: 기존 간단한 IP 범위 체크 (CTI가 없거나 실패한 경우)
         # 해외 IP 주소 목록 (간단한 예시)
-        # 실제로는 GeoIP 데이터베이스나 CTI API를 사용해야 함
         suspicious_ip_ranges = [
             "185.",  # 유럽 지역 일부
             "103.",  # 아시아 일부

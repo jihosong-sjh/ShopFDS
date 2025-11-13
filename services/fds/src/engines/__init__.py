@@ -10,6 +10,7 @@ FDS 평가 엔진
 
 from .rule_engine import RuleEngine, TransactionContext, RuleEvaluationResult
 from .risk_scorer import RiskScorer, RiskScoreConfig
+from .cti_connector import CTIConnector, CTICheckResult, CTIConfig
 
 __all__ = [
     "RuleEngine",
@@ -17,4 +18,7 @@ __all__ = [
     "RuleEvaluationResult",
     "RiskScorer",
     "RiskScoreConfig",
+    "CTIConnector",
+    "CTICheckResult",
+    "CTIConfig",
 ]

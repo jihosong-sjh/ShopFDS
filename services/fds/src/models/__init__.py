@@ -21,6 +21,12 @@ from .detection_rule import (
     RuleType,
     RulePriority,
 )
+from .threat_intelligence import (
+    ThreatIntelligence,
+    ThreatType,
+    ThreatLevel,
+    ThreatSource,
+)
 
 __all__ = [
     # Base
@@ -43,4 +49,9 @@ __all__ = [
     "DetectionRule",
     "RuleType",
     "RulePriority",
+    # ThreatIntelligence
+    "ThreatIntelligence",
+    "ThreatType",
+    "ThreatLevel",
+    "ThreatSource",
 ]
