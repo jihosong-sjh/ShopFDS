@@ -196,10 +196,10 @@
 
 ### 보안팀 대시보드 프론트엔드 (User Story 3)
 
-- [ ] T079 [P] [US3] 대시보드 메인 페이지 구현 (실시간 지표 표시, services/admin-dashboard/frontend/src/pages/Dashboard.tsx)
-- [ ] T080 [P] [US3] 검토 큐 페이지 구현 (차단된 거래 목록, services/admin-dashboard/frontend/src/pages/ReviewQueue.tsx)
-- [ ] T081 [US3] 거래 상세 페이지 구현 (위험 요인 시각화, services/admin-dashboard/frontend/src/pages/TransactionDetail.tsx)
-- [ ] T082 [US3] 실시간 알림 컴포넌트 구현 (WebSocket 기반, services/admin-dashboard/frontend/src/components/NotificationBell.tsx)
+- [X] T079 [P] [US3] 대시보드 메인 페이지 구현 (실시간 지표 표시, services/admin-dashboard/frontend/src/pages/Dashboard.tsx)
+- [X] T080 [P] [US3] 검토 큐 페이지 구현 (차단된 거래 목록, services/admin-dashboard/frontend/src/pages/ReviewQueue.tsx)
+- [X] T081 [US3] 거래 상세 페이지 구현 (위험 요인 시각화, services/admin-dashboard/frontend/src/pages/TransactionDetail.tsx)
+- [X] T082 [US3] 실시간 알림 컴포넌트 구현 (WebSocket 기반, services/admin-dashboard/frontend/src/components/NotificationBell.tsx)
 
 ### 통합 및 검증 (User Story 3)
 
