@@ -1,0 +1,224 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 15+ with TimescaleDB extension
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: shopfds-postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopfds-network
+
+  # Redis 7+
+  redis:
+    image: redis:7-alpine
+    container_name: shopfds-redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - shopfds-network
+
+  # 이커머스 백엔드 (FastAPI)
+  ecommerce-backend:
+    build:
+      context: ../../services/ecommerce/backend
+      dockerfile: ../../../infrastructure/docker/Dockerfile.ecommerce
+    container_name: shopfds-ecommerce-backend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ENVIRONMENT: ${ENVIRONMENT}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../services/ecommerce/backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - shopfds-network
+
+  # FDS 서비스
+  fds-service:
+    build:
+      context: ../../services/fds
+      dockerfile: ../../infrastructure/docker/Dockerfile.fds
+    container_name: shopfds-fds
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/1
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY}
+      ENVIRONMENT: ${ENVIRONMENT}
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../../services/fds:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
+    networks:
+      - shopfds-network
+
+  # ML 서비스
+  ml-service:
+    build:
+      context: ../../services/ml-service
+      dockerfile: ../../infrastructure/docker/Dockerfile.ml
+    container_name: shopfds-ml
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+      ENVIRONMENT: ${ENVIRONMENT}
+    ports:
+      - "8002:8002"
+    volumes:
+      - ../../services/ml-service:/app
+      - ml_models:/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8002 --reload
+    networks:
+      - shopfds-network
+
+  # 관리자 대시보드 백엔드
+  admin-backend:
+    build:
+      context: ../../services/admin-dashboard/backend
+      dockerfile: ../../../infrastructure/docker/Dockerfile.admin
+    container_name: shopfds-admin-backend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/2
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ENVIRONMENT: ${ENVIRONMENT}
+    ports:
+      - "8003:8003"
+    volumes:
+      - ../../services/admin-dashboard/backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8003 --reload
+    networks:
+      - shopfds-network
+
+  # 이커머스 프론트엔드 (React + Vite)
+  ecommerce-frontend:
+    build:
+      context: ../../services/ecommerce/frontend
+      dockerfile: ../../../infrastructure/docker/Dockerfile.frontend
+    container_name: shopfds-ecommerce-frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+      VITE_FDS_API_URL: http://localhost:8001
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../services/ecommerce/frontend:/app
+      - /app/node_modules
+    depends_on:
+      - ecommerce-backend
+    command: npm run dev -- --host 0.0.0.0 --port 3000
+    networks:
+      - shopfds-network
+
+  # 관리자 대시보드 프론트엔드
+  admin-frontend:
+    build:
+      context: ../../services/admin-dashboard/frontend
+      dockerfile: ../../../infrastructure/docker/Dockerfile.admin-frontend
+    container_name: shopfds-admin-frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8003
+      VITE_FDS_API_URL: http://localhost:8001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../../services/admin-dashboard/frontend:/app
+      - /app/node_modules
+    depends_on:
+      - admin-backend
+    command: npm run dev -- --host 0.0.0.0 --port 3001
+    networks:
+      - shopfds-network
+
+  # MLflow (모델 버전 관리)
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.2
+    container_name: shopfds-mlflow
+    env_file:
+      - .env
+    environment:
+      BACKEND_STORE_URI: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      ARTIFACT_ROOT: /mlflow/artifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+      --port 5000
+    networks:
+      - shopfds-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  ml_models:
+    driver: local
+  mlflow_artifacts:
+    driver: local
+
+networks:
+  shopfds-network:
+    driver: bridge

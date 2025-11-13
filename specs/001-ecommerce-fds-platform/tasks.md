@@ -29,16 +29,16 @@
 
 **목적**: 프로젝트 구조 생성 및 기본 환경 구축
 
-- [ ] T001 프로젝트 디렉토리 구조 생성 (plan.md 구조에 따라)
-- [ ] T002 Git 저장소 초기화 및 .gitignore 설정
-- [ ] T003 [P] Docker Compose 개발 환경 구성 파일 작성 (infrastructure/docker/docker-compose.dev.yml)
-- [ ] T004 [P] PostgreSQL 15+ 데이터베이스 컨테이너 설정 및 TimescaleDB 확장 설치
-- [ ] T005 [P] Redis 7+ 캐시 서버 컨테이너 설정
-- [ ] T006 [P] 이커머스 백엔드 Python 가상환경 생성 및 FastAPI 의존성 설치 (services/ecommerce/backend/requirements.txt)
-- [ ] T007 [P] FDS 서비스 Python 가상환경 생성 및 의존성 설치 (services/fds/requirements.txt)
-- [ ] T008 [P] ML 서비스 Python 가상환경 생성 및 scikit-learn, LightGBM 설치 (services/ml-service/requirements.txt)
-- [ ] T009 [P] 이커머스 프론트엔드 React + TypeScript + Vite 프로젝트 초기화 (services/ecommerce/frontend)
-- [ ] T010 [P] 관리자 대시보드 프론트엔드 React + TypeScript 프로젝트 초기화 (services/admin-dashboard/frontend)
+- [X] T001 프로젝트 디렉토리 구조 생성 (plan.md 구조에 따라)
+- [X] T002 Git 저장소 초기화 및 .gitignore 설정
+- [X] T003 [P] Docker Compose 개발 환경 구성 파일 작성 (infrastructure/docker/docker-compose.dev.yml)
+- [X] T004 [P] PostgreSQL 15+ 데이터베이스 컨테이너 설정 및 TimescaleDB 확장 설치
+- [X] T005 [P] Redis 7+ 캐시 서버 컨테이너 설정
+- [X] T006 [P] 이커머스 백엔드 Python 가상환경 생성 및 FastAPI 의존성 설치 (services/ecommerce/backend/requirements.txt)
+- [X] T007 [P] FDS 서비스 Python 가상환경 생성 및 의존성 설치 (services/fds/requirements.txt)
+- [X] T008 [P] ML 서비스 Python 가상환경 생성 및 scikit-learn, LightGBM 설치 (services/ml-service/requirements.txt)
+- [X] T009 [P] 이커머스 프론트엔드 React + TypeScript + Vite 프로젝트 초기화 (services/ecommerce/frontend)
+- [X] T010 [P] 관리자 대시보드 프론트엔드 React + TypeScript 프로젝트 초기화 (services/admin-dashboard/frontend)
 
 ---
 
