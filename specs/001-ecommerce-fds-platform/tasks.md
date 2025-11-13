@@ -84,27 +84,27 @@
 
 ### 데이터 모델 (User Story 1)
 
-- [ ] T023 [P] [US1] User 모델 생성 (services/ecommerce/backend/src/models/user.py)
-- [ ] T024 [P] [US1] Product 모델 생성 (services/ecommerce/backend/src/models/product.py)
-- [ ] T025 [P] [US1] Cart 및 CartItem 모델 생성 (services/ecommerce/backend/src/models/cart.py)
-- [ ] T026 [P] [US1] Order 및 OrderItem 모델 생성 (services/ecommerce/backend/src/models/order.py)
-- [ ] T027 [P] [US1] Payment 모델 생성 (services/ecommerce/backend/src/models/payment.py)
-- [ ] T028 [US1] 초기 마이그레이션 생성 및 적용 (alembic revision --autogenerate -m "Create ecommerce tables")
+- [X] T023 [P] [US1] User 모델 생성 (services/ecommerce/backend/src/models/user.py)
+- [X] T024 [P] [US1] Product 모델 생성 (services/ecommerce/backend/src/models/product.py)
+- [X] T025 [P] [US1] Cart 및 CartItem 모델 생성 (services/ecommerce/backend/src/models/cart.py)
+- [X] T026 [P] [US1] Order 및 OrderItem 모델 생성 (services/ecommerce/backend/src/models/order.py)
+- [X] T027 [P] [US1] Payment 모델 생성 (services/ecommerce/backend/src/models/payment.py)
+- [X] T028 [US1] 초기 마이그레이션 생성 및 적용 (alembic revision --autogenerate -m "Create ecommerce tables")
 
 ### 백엔드 서비스 (User Story 1)
 
-- [ ] T029 [P] [US1] UserService 구현: 회원가입, 로그인, 프로필 조회 (services/ecommerce/backend/src/services/user_service.py)
-- [ ] T030 [P] [US1] ProductService 구현: 상품 목록 조회, 검색, 상세 조회 (services/ecommerce/backend/src/services/product_service.py)
-- [ ] T031 [US1] CartService 구현: 장바구니 추가/수정/삭제 (services/ecommerce/backend/src/services/cart_service.py)
-- [ ] T032 [US1] OrderService 구현: 주문 생성, 주문 상태 관리 (services/ecommerce/backend/src/services/order_service.py)
-- [ ] T033 [US1] PaymentService 구현: 결제 처리 및 토큰화 (services/ecommerce/backend/src/services/payment_service.py)
+- [X] T029 [P] [US1] UserService 구현: 회원가입, 로그인, 프로필 조회 (services/ecommerce/backend/src/services/user_service.py)
+- [X] T030 [P] [US1] ProductService 구현: 상품 목록 조회, 검색, 상세 조회 (services/ecommerce/backend/src/services/product_service.py)
+- [X] T031 [US1] CartService 구현: 장바구니 추가/수정/삭제 (services/ecommerce/backend/src/services/cart_service.py)
+- [X] T032 [US1] OrderService 구현: 주문 생성, 주문 상태 관리 (services/ecommerce/backend/src/services/order_service.py)
+- [X] T033 [US1] PaymentService 구현: 결제 처리 및 토큰화 (services/ecommerce/backend/src/services/payment_service.py)
 
 ### REST API 엔드포인트 (User Story 1)
 
-- [ ] T034 [P] [US1] 인증 API 구현: POST /v1/auth/register, POST /v1/auth/login (services/ecommerce/backend/src/api/auth.py)
-- [ ] T035 [P] [US1] 상품 API 구현: GET /v1/products, GET /v1/products/{id} (services/ecommerce/backend/src/api/products.py)
-- [ ] T036 [US1] 장바구니 API 구현: GET /v1/cart, POST /v1/cart/items, PUT /v1/cart/items/{id}, DELETE /v1/cart/items/{id} (services/ecommerce/backend/src/api/cart.py)
-- [ ] T037 [US1] 주문 API 구현: POST /v1/orders, GET /v1/orders, GET /v1/orders/{id} (services/ecommerce/backend/src/api/orders.py)
+- [X] T034 [P] [US1] 인증 API 구현: POST /v1/auth/register, POST /v1/auth/login (services/ecommerce/backend/src/api/auth.py)
+- [X] T035 [P] [US1] 상품 API 구현: GET /v1/products, GET /v1/products/{id} (services/ecommerce/backend/src/api/products.py)
+- [X] T036 [US1] 장바구니 API 구현: GET /v1/cart, POST /v1/cart/items, PUT /v1/cart/items/{id}, DELETE /v1/cart/items/{id} (services/ecommerce/backend/src/api/cart.py)
+- [X] T037 [US1] 주문 API 구현: POST /v1/orders, GET /v1/orders, GET /v1/orders/{id} (services/ecommerce/backend/src/api/orders.py)
 
 ### 프론트엔드 (User Story 1)
 

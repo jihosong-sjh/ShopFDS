@@ -6,13 +6,11 @@
 """
 
 from src.models.base import Base, TimestampMixin, get_db, init_db, drop_db, close_db
-
-# 향후 추가될 모델들을 여기서 import합니다
-# from src.models.user import User
-# from src.models.product import Product
-# from src.models.cart import Cart, CartItem
-# from src.models.order import Order, OrderItem
-# from src.models.payment import Payment
+from src.models.user import User, UserRole, UserStatus
+from src.models.product import Product, ProductStatus
+from src.models.cart import Cart, CartItem
+from src.models.order import Order, OrderItem, OrderStatus
+from src.models.payment import Payment, PaymentMethod, PaymentStatus
 
 __all__ = [
     "Base",
@@ -21,11 +19,17 @@ __all__ = [
     "init_db",
     "drop_db",
     "close_db",
-    # "User",
-    # "Product",
-    # "Cart",
-    # "CartItem",
-    # "Order",
-    # "OrderItem",
-    # "Payment",
+    "User",
+    "UserRole",
+    "UserStatus",
+    "Product",
+    "ProductStatus",
+    "Cart",
+    "CartItem",
+    "Order",
+    "OrderItem",
+    "OrderStatus",
+    "Payment",
+    "PaymentMethod",
+    "PaymentStatus",
 ]

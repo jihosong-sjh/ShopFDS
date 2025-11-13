@@ -150,16 +150,16 @@ async def health_check():
     }
 
 
-# API 라우터 등록 (추후 추가될 라우터들)
-# from src.api.auth import router as auth_router
-# from src.api.products import router as products_router
-# from src.api.cart import router as cart_router
-# from src.api.orders import router as orders_router
-#
-# app.include_router(auth_router, prefix="/v1/auth", tags=["Authentication"])
-# app.include_router(products_router, prefix="/v1/products", tags=["Products"])
-# app.include_router(cart_router, prefix="/v1/cart", tags=["Cart"])
-# app.include_router(orders_router, prefix="/v1/orders", tags=["Orders"])
+# API 라우터 등록
+from src.api.auth import router as auth_router
+from src.api.products import router as products_router
+from src.api.cart import router as cart_router
+from src.api.orders import router as orders_router
+
+app.include_router(auth_router)
+app.include_router(products_router)
+app.include_router(cart_router)
+app.include_router(orders_router)
 
 
 if __name__ == "__main__":
