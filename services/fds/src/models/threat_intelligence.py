@@ -16,7 +16,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -119,7 +119,8 @@ class ThreatIntelligence(Base, TimestampMixin):
     )
 
     # CTI 추가 메타데이터 (JSON)
-    metadata: Mapped[Optional[dict]] = mapped_column(
+    threat_metadata: Mapped[Optional[dict]] = mapped_column(
+        JSONB,
         nullable=True,
         comment="추가 메타데이터 (신뢰도 점수, 카테고리 등)",
     )
@@ -219,7 +220,7 @@ class ThreatIntelligence(Base, TimestampMixin):
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
             "is_active": self.is_active,
             "is_expired": self.is_expired,
-            "metadata": self.metadata,
+            "metadata": self.threat_metadata,
             "times_blocked": self.times_blocked,
             "last_blocked_at": self.last_blocked_at.isoformat() if self.last_blocked_at else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
@@ -250,7 +251,7 @@ class ThreatIntelligence(Base, TimestampMixin):
         source: ThreatSource,
         description: Optional[str] = None,
         expires_at: Optional[datetime] = None,
-        metadata: Optional[dict] = None,
+        threat_metadata: Optional[dict] = None,
     ) -> "ThreatIntelligence":
         """
         IP 위협 정보 생성 헬퍼 메서드
@@ -261,7 +262,7 @@ class ThreatIntelligence(Base, TimestampMixin):
             source: 출처
             description: 위협 설명
             expires_at: 만료 일시
-            metadata: 추가 메타데이터
+            threat_metadata: 추가 메타데이터
 
         Returns:
             ThreatIntelligence: 생성된 위협 정보 인스턴스
@@ -273,7 +274,7 @@ class ThreatIntelligence(Base, TimestampMixin):
             source=source,
             description=description,
             expires_at=expires_at,
-            metadata=metadata,
+            threat_metadata=threat_metadata,
         )
 
     @classmethod
@@ -284,7 +285,7 @@ class ThreatIntelligence(Base, TimestampMixin):
         source: ThreatSource,
         description: Optional[str] = None,
         expires_at: Optional[datetime] = None,
-        metadata: Optional[dict] = None,
+        threat_metadata: Optional[dict] = None,
     ) -> "ThreatIntelligence":
         """
         이메일 도메인 위협 정보 생성 헬퍼 메서드
@@ -295,7 +296,7 @@ class ThreatIntelligence(Base, TimestampMixin):
             source: 출처
             description: 위협 설명
             expires_at: 만료 일시
-            metadata: 추가 메타데이터
+            threat_metadata: 추가 메타데이터
 
         Returns:
             ThreatIntelligence: 생성된 위협 정보 인스턴스
@@ -307,7 +308,7 @@ class ThreatIntelligence(Base, TimestampMixin):
             source=source,
             description=description,
             expires_at=expires_at,
-            metadata=metadata,
+            threat_metadata=threat_metadata,
         )
 
     @classmethod
@@ -318,7 +319,7 @@ class ThreatIntelligence(Base, TimestampMixin):
         source: ThreatSource,
         description: Optional[str] = None,
         expires_at: Optional[datetime] = None,
-        metadata: Optional[dict] = None,
+        threat_metadata: Optional[dict] = None,
     ) -> "ThreatIntelligence":
         """
         카드 BIN 위협 정보 생성 헬퍼 메서드
@@ -329,7 +330,7 @@ class ThreatIntelligence(Base, TimestampMixin):
             source: 출처
             description: 위협 설명
             expires_at: 만료 일시
-            metadata: 추가 메타데이터
+            threat_metadata: 추가 메타데이터
 
         Returns:
             ThreatIntelligence: 생성된 위협 정보 인스턴스
@@ -341,5 +342,5 @@ class ThreatIntelligence(Base, TimestampMixin):
             source=source,
             description=description,
             expires_at=expires_at,
-            metadata=metadata,
+            threat_metadata=threat_metadata,
         )

@@ -27,6 +27,11 @@ from .threat_intelligence import (
     ThreatLevel,
     ThreatSource,
 )
+from .review_queue import (
+    ReviewQueue,
+    ReviewStatus,
+    ReviewDecision,
+)
 
 __all__ = [
     # Base
@@ -49,6 +54,10 @@ __all__ = [
     "DetectionRule",
     "RuleType",
     "RulePriority",
+    # ReviewQueue
+    "ReviewQueue",
+    "ReviewStatus",
+    "ReviewDecision",
     # ThreatIntelligence
     "ThreatIntelligence",
     "ThreatType",
