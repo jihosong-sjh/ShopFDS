@@ -166,6 +166,11 @@ class FDSEvaluationResponse(BaseModel):
     evaluation_metadata: EvaluationMetadata = Field(..., description="평가 메타데이터")
     recommended_action: RecommendedAction = Field(..., description="권장 조치")
 
+    @property
+    def requires_verification(self) -> bool:
+        """추가 인증 필요 여부 (recommended_action.additional_auth_required의 별칭)"""
+        return self.recommended_action.additional_auth_required
+
 
 class FDSErrorResponse(BaseModel):
     """FDS 에러 응답"""

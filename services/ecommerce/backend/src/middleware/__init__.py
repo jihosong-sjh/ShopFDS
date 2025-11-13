@@ -4,7 +4,7 @@
 인증, 권한, CORS, 로깅 등의 미들웨어를 제공합니다.
 """
 
-from middleware.auth import (
+from src.middleware.auth import (
     get_current_user,
     get_current_user_id,
     get_current_active_user,
@@ -15,7 +15,7 @@ from middleware.auth import (
     AuthorizationError,
 )
 
-from middleware.authorization import (
+from src.middleware.authorization import (
     UserRole,
     Permission,
     RBACManager,

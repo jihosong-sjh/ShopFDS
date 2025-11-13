@@ -101,7 +101,7 @@ class RiskFactor(Base):
     )
 
     # 추가 메타데이터 (룰 ID, ML 모델 feature importance 등)
-    metadata: Mapped[Optional[dict]] = mapped_column(
+    risk_metadata: Mapped[Optional[dict]] = mapped_column(
         JSONB,
         nullable=True,
         comment="추가 메타데이터 (JSON 형식)",
@@ -187,6 +187,6 @@ class RiskFactor(Base):
             "factor_score": self.factor_score,
             "severity": self.severity.value,
             "description": self.description,
-            "metadata": self.metadata,
+            "metadata": self.risk_metadata,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

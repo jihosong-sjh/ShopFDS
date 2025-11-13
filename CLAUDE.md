@@ -158,7 +158,147 @@ npm run format
 4. **비동기 처리**: FastAPI async/await 활용, Redis 캐싱
 5. **마이크로서비스**: 서비스별 독립 배포, API Gateway 통합
 
+## Testing Guidelines
+
+### Python 통합 테스트 작성 필수 가이드
+
+#### 1. Import 패턴
+```python
+# CORRECT: src. prefix 사용
+from src.models import User, Product, Order
+from src.services.order_service import OrderService
+
+# WRONG: src. prefix 없이 사용
+from models import User  # ModuleNotFoundError 발생
+```
+
+#### 2. Service 메서드 호출
+```python
+# CORRECT: create_order_from_cart() 사용
+order, fds_result = await order_service.create_order_from_cart(
+    user_id=test_user.id,  # UUID 객체 직접 사용
+    shipping_name="홍길동",
+    shipping_address="서울특별시 강남구",
+    shipping_phone="010-1234-5678",
+    payment_info={  # dict 형식
+        "card_number": "1234567890125678",
+        "card_expiry": "12/25",
+        "card_cvv": "123",
+    },
+)
+
+# WRONG: 존재하지 않는 메서드 사용
+order = await order_service.create_order(...)  # AttributeError
+card_token="tok_test",  # 잘못된 파라미터
+```
+
+#### 3. UUID 처리
+```python
+# CORRECT: UUID 객체 직접 사용
+user_id=test_user.id,
+order_id=order.id
+
+# WRONG: str() 변환 사용
+user_id=str(test_user.id),  # AttributeError: 'str' object has no attribute 'hex'
+```
+
+#### 4. 외부 서비스 모킹 (필수)
+```python
+# Redis 모킹 (필수)
+mock_redis = AsyncMock()
+
+# FDS, Redis, OTP 모킹 패턴
+with patch("src.services.order_service.get_redis", return_value=mock_redis), \
+     patch.object(OrderService, "_evaluate_transaction") as mock_fds, \
+     patch("src.services.order_service.get_otp_service") as mock_get_otp:
+
+    # FDS 응답 설정
+    mock_fds.return_value = {
+        "risk_score": 55,
+        "risk_level": "medium",
+        "decision": "additional_auth_required",
+        "requires_verification": True,
+        "risk_factors": [],
+    }
+
+    # OTP 서비스 설정
+    mock_otp_service = AsyncMock()
+    mock_otp_service.verify_otp.return_value = {
+        "valid": True,
+        "message": "OTP 검증 성공",
+        "attempts_remaining": 2,
+        "metadata": {
+            "order_id": str(order.id),  # metadata는 JSON이므로 str 변환
+            "user_id": str(test_user.id),
+        },
+    }
+    mock_get_otp.return_value = mock_otp_service
+```
+
+#### 5. SQLAlchemy Relationship 로딩
+```python
+# CORRECT: 명시적 relationship 로딩
+await db_session.refresh(order, ["payment"])  # payment relationship 로드
+assert order.payment.status == PaymentStatus.COMPLETED
+
+# WRONG: 명시적 로딩 없이 접근
+assert order.payment.status  # MissingGreenlet error (async context 문제)
+```
+
+#### 6. Windows 콘솔 호환성
+```python
+# CORRECT: ASCII 문자만 사용
+print("테스트 통과 (남은 시도: 2회)")
+print("Step 1: 주문 생성 완료")
+
+# WRONG: 특수 Unicode 문자 사용
+print("✓ 테스트 통과")  # UnicodeEncodeError (Windows cp949)
+print("❌ 실패")
+```
+
+#### 7. pytest.ini 설정 확인
+```ini
+[pytest]
+pythonpath = .  # 중요: 프로젝트 루트를 Python path에 추가
+testpaths = tests
+asyncio_mode = auto
+addopts = -v --tb=short --strict-markers --disable-warnings
+```
+
+#### 8. Fixture 패턴
+```python
+# conftest.py의 db_session fixture 활용
+@pytest.fixture
+async def test_user(self, db_session: AsyncSession):
+    user = User(id=uuid.uuid4(), email="test@example.com", ...)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)  # 중요: DB에서 다시 로드
+    return user
+```
+
+#### 9. 주의사항
+- **lazy="dynamic"** 관계는 eager loading 불가 → 제거 필요
+- **metadata에 UUID 저장 시**: 반드시 `str(uuid)` 변환 (JSON serialization)
+- **메서드 호출 전**: 항상 실제 메서드 시그니처 확인
+- **모든 외부 의존성**: Redis, FDS API, OTP 서비스는 반드시 mock 처리
+
+#### 10. 통합 테스트 체크리스트
+- [ ] Import 경로에 `src.` prefix 사용
+- [ ] UUID를 str() 변환 없이 직접 전달
+- [ ] Redis 모킹 추가
+- [ ] FDS API `_evaluate_transaction` 모킹
+- [ ] OTP 서비스 모킹 (필요시)
+- [ ] SQLAlchemy relationship 명시적 로딩
+- [ ] Windows 호환 문자만 사용
+- [ ] pytest.ini 설정 확인
+
 ## Recent Changes
+
+- 2025-11-14: Testing Guidelines 추가
+  - Python 통합 테스트 작성 필수 가이드 추가
+  - Import 패턴, UUID 처리, 모킹 패턴 등 10가지 가이드라인
+  - OTP 성공/실패 시나리오 통합 테스트 완료 (10개 테스트 통과)
 
 - 2025-11-13: 프로젝트 초기 설정 완료
   - Phase 0: 기술 스택 리서치 (research.md)

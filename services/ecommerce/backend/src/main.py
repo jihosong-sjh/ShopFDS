@@ -11,9 +11,9 @@ from fastapi.responses import JSONResponse
 import uvicorn
 import os
 
-from models.base import init_db, close_db
-from utils.logging import setup_logging, get_logger
-from utils.exceptions import (
+from src.models.base import init_db, close_db
+from src.utils.logging import setup_logging, get_logger
+from src.utils.exceptions import (
     AppException,
     ValidationException,
     NotFoundException,
@@ -151,10 +151,10 @@ async def health_check():
 
 
 # API 라우터 등록
-from api.auth import router as auth_router
-from api.products import router as products_router
-from api.cart import router as cart_router
-from api.orders import router as orders_router
+from src.api.auth import router as auth_router
+from src.api.products import router as products_router
+from src.api.cart import router as cart_router
+from src.api.orders import router as orders_router
 
 app.include_router(auth_router)
 app.include_router(products_router)

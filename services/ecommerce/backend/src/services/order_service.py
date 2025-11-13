@@ -10,14 +10,14 @@ from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 import httpx
 
-from models.order import Order, OrderItem, OrderStatus
-from models.cart import Cart, CartItem
-from models.product import Product
-from models.payment import Payment, PaymentMethod, PaymentStatus
-from utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
-from utils.otp import get_otp_service
-from utils.redis_client import get_redis
-from config import get_settings
+from src.models.order import Order, OrderItem, OrderStatus
+from src.models.cart import Cart, CartItem
+from src.models.product import Product
+from src.models.payment import Payment, PaymentMethod, PaymentStatus
+from src.utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
+from src.utils.otp import get_otp_service
+from src.utils.redis_client import get_redis
+from src.config import get_settings
 
 
 class OrderService:
@@ -150,12 +150,12 @@ class OrderService:
                 otp_service = await get_otp_service(redis_client)
 
                 otp_result = await otp_service.generate_otp(
-                    user_id=user_id,
+                    user_id=str(user_id),
                     purpose="transaction",
                     metadata={
                         "order_id": str(order.id),
                         "order_number": order.order_number,
-                        "amount": total_amount,
+                        "amount": str(total_amount),
                         "risk_score": fds_result.get("risk_score"),
                         "risk_factors": fds_result.get("risk_factors", [])
                     }

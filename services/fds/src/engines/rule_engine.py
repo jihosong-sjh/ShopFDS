@@ -21,7 +21,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from redis import asyncio as aioredis
 
-from models import (
+from ..models import (
     DetectionRule,
     RiskFactor,
     FactorType,
@@ -565,7 +565,7 @@ class RuleEngine:
                 factor_score=result.risk_score,
                 severity=result.severity,
                 description=result.description,
-                metadata={
+                risk_metadata={
                     "rule_id": str(result.rule_id),
                     "rule_name": result.rule_name,
                     **result.metadata,

@@ -107,6 +107,18 @@ class EvaluationEngine:
         if amount_risk:
             risk_factors.append(amount_risk)
 
+        # 기본 위험 요인: IP 주소 확인
+        ip_risk = await self._check_ip_risk(request.ip_address)
+        if ip_risk:
+            risk_factors.append(ip_risk)
+
+        # 기본 위험 요인: Velocity check (사용자 ID 기반)
+        velocity_risk = await self._check_velocity_risk(
+            request.user_id, request.ip_address
+        )
+        if velocity_risk:
+            risk_factors.append(velocity_risk)
+
         # 기본 위험 요인: 디바이스 유형 확인
         device_risk = await self._check_device_risk(request.device_fingerprint.device_type)
         if device_risk:
@@ -135,14 +147,121 @@ class EvaluationEngine:
         Returns:
             RiskFactor | None: 위험 요인 (위험이 없으면 None)
         """
-        # Phase 3: 기본 임계값만 확인 (100만원 이상이면 약간의 위험 점수)
-        if amount >= 1_000_000:
+        # 고액 거래 단계별 위험 점수
+        if amount >= 5_000_000:  # 500만원 이상 → 중간 위험도
+            return RiskFactor(
+                factor_type="amount_threshold",
+                factor_score=50,
+                description=f"고액 거래 (금액: {amount:,.0f}원)",
+                severity=SeverityEnum.MEDIUM,
+            )
+        elif amount >= 3_000_000:  # 300만원 이상 → 중간 위험도
+            return RiskFactor(
+                factor_type="amount_threshold",
+                factor_score=45,
+                description=f"고액 거래 (금액: {amount:,.0f}원)",
+                severity=SeverityEnum.MEDIUM,
+            )
+        elif amount >= 1_000_000:  # 100만원 이상 → 낮은 위험도
             return RiskFactor(
                 factor_type="amount_threshold",
                 factor_score=15,
                 description=f"고액 거래 (금액: {amount:,.0f}원)",
                 severity=SeverityEnum.LOW,
             )
+        return None
+
+    async def _check_ip_risk(self, ip_address: str) -> RiskFactor | None:
+        """
+        IP 주소 위험도 확인 (해외 IP 탐지)
+
+        Args:
+            ip_address: IP 주소
+
+        Returns:
+            RiskFactor | None: 위험 요인 (위험이 없으면 None)
+        """
+        # 해외 IP 주소 목록 (간단한 예시)
+        # 실제로는 GeoIP 데이터베이스나 CTI API를 사용해야 함
+        suspicious_ip_ranges = [
+            "185.",  # 유럽 지역 일부
+            "103.",  # 아시아 일부
+        ]
+
+        # Tor Exit Node 및 VPN 서비스 IP (예시)
+        known_suspicious_ips = [
+            "185.220.100.",  # Tor Exit Node 범위
+            "185.220.101.",
+        ]
+
+        # IP 주소가 의심스러운 범위에 속하는지 확인
+        for suspicious_range in known_suspicious_ips:
+            if ip_address.startswith(suspicious_range):
+                return RiskFactor(
+                    factor_type="location_mismatch",
+                    factor_score=45,
+                    description=f"비정상적인 지역에서 접속 (해외 IP): {ip_address}",
+                    severity=SeverityEnum.MEDIUM,
+                )
+
+        # 일반 해외 IP 확인
+        for suspicious_range in suspicious_ip_ranges:
+            if ip_address.startswith(suspicious_range):
+                return RiskFactor(
+                    factor_type="location_mismatch",
+                    factor_score=40,
+                    description=f"비정상적인 지역에서 접속: {ip_address}",
+                    severity=SeverityEnum.MEDIUM,
+                )
+
+        return None
+
+    async def _check_velocity_risk(
+        self, user_id: UUID, ip_address: str
+    ) -> RiskFactor | None:
+        """
+        Velocity Check (단시간 내 반복 거래)
+
+        Args:
+            user_id: 사용자 ID
+            ip_address: IP 주소
+
+        Returns:
+            RiskFactor | None: 위험 요인 (위험이 없으면 None)
+        """
+        # Phase 3: 간단한 인메모리 캐시 사용 (실제로는 Redis 사용)
+        if not hasattr(self, "_transaction_cache"):
+            self._transaction_cache = {}
+
+        # 사용자별 거래 기록 확인
+        cache_key = f"user:{user_id}"
+        current_time = time.time()
+
+        if cache_key not in self._transaction_cache:
+            # 첫 번째 거래
+            self._transaction_cache[cache_key] = [current_time]
+            return None
+
+        # 최근 5분 내 거래 횟수 확인
+        recent_transactions = [
+            t for t in self._transaction_cache[cache_key]
+            if current_time - t < 300  # 5분 = 300초
+        ]
+
+        # 5분 내 1회 이상 이전 거래가 있으면 → 중간 위험도 (총 2회 이상)
+        if len(recent_transactions) >= 1:
+            # 거래 기록 업데이트
+            self._transaction_cache[cache_key] = recent_transactions + [current_time]
+
+            return RiskFactor(
+                factor_type="velocity_check",
+                factor_score=40,
+                description=f"단시간 내 반복 거래 ({len(recent_transactions) + 1}회)",
+                severity=SeverityEnum.MEDIUM,
+            )
+
+        # 거래 기록 업데이트 (위험 요인 없음)
+        self._transaction_cache[cache_key] = recent_transactions + [current_time]
         return None
 
     async def _check_device_risk(self, device_type: str) -> RiskFactor | None:

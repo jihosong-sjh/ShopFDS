@@ -7,8 +7,8 @@
 from typing import List, Dict, Any, Optional
 from decimal import Decimal
 
-from models import RiskFactor, FactorType, FactorSeverity, RiskLevel
-from engines.rule_engine import RuleEvaluationResult
+from ..models import RiskFactor, FactorType, FactorSeverity, RiskLevel
+from .rule_engine import RuleEvaluationResult
 
 
 class RiskScoreConfig:

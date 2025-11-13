@@ -7,12 +7,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.base import get_db
-from models.user import UserRole
-from services.user_service import UserService
-from utils.exceptions import AuthenticationError, ValidationError
-from utils.otp import get_otp_service
-from utils.redis_client import get_redis
+from src.models.base import get_db
+from src.models.user import UserRole
+from src.services.user_service import UserService
+from src.utils.exceptions import AuthenticationError, ValidationError
+from src.utils.otp import get_otp_service
+from src.utils.redis_client import get_redis
 
 
 router = APIRouter(prefix="/v1/auth", tags=["인증"])

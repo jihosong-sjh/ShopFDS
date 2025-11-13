@@ -8,10 +8,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.base import get_db
-from models.order import OrderStatus
-from services.order_service import OrderService
-from utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
+from src.models.base import get_db
+from src.models.order import OrderStatus
+from src.services.order_service import OrderService
+from src.utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
 
 
 router = APIRouter(prefix="/v1/orders", tags=["주문"])

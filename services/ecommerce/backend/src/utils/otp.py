@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict
 import redis.asyncio as aioredis
 
-from config import get_settings
+from src.config import get_settings
 
 
 class OTPService:
