@@ -147,10 +147,10 @@
 
 ### 추가 인증 메커니즘 (User Story 2)
 
-- [ ] T058 [US2] OTP 생성 및 검증 유틸리티 구현 (services/ecommerce/backend/src/utils/otp.py)
-- [ ] T059 [US2] 추가 인증 요청 API 구현: POST /v1/auth/request-otp (services/ecommerce/backend/src/api/auth.py)
-- [ ] T060 [US2] OTP 검증 API 구현: POST /v1/auth/verify-otp (services/ecommerce/backend/src/api/auth.py)
-- [ ] T061 [US2] OrderService에 추가 인증 플로우 통합 (중간 위험도 시 OTP 요구)
+- [X] T058 [US2] OTP 생성 및 검증 유틸리티 구현 (services/ecommerce/backend/src/utils/otp.py)
+- [X] T059 [US2] 추가 인증 요청 API 구현: POST /v1/auth/request-otp (services/ecommerce/backend/src/api/auth.py)
+- [X] T060 [US2] OTP 검증 API 구현: POST /v1/auth/verify-otp (services/ecommerce/backend/src/api/auth.py)
+- [X] T061 [US2] OrderService에 추가 인증 플로우 통합 (중간 위험도 시 OTP 요구)
 
 ### 프론트엔드 (User Story 2)
 

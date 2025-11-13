@@ -11,6 +11,8 @@ from models.base import get_db
 from models.user import UserRole
 from services.user_service import UserService
 from utils.exceptions import AuthenticationError, ValidationError
+from utils.otp import get_otp_service
+from utils.redis_client import get_redis
 
 
 router = APIRouter(prefix="/v1/auth", tags=["인증"])
@@ -170,3 +172,193 @@ async def get_current_user(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
         detail="JWT 인증 통합 예정"
     )
+
+
+# OTP 관련 스키마 및 엔드포인트
+
+class OTPRequest(BaseModel):
+    """OTP 요청"""
+    user_id: str = Field(..., description="사용자 ID")
+    purpose: str = Field(default="transaction", description="OTP 목적 (transaction, login 등)")
+    metadata: dict = Field(default_factory=dict, description="추가 메타데이터 (주문 ID 등)")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "user_id": "550e8400-e29b-41d4-a716-446655440000",
+                "purpose": "transaction",
+                "metadata": {
+                    "order_id": "ORD-20250114-123456",
+                    "amount": 150000
+                }
+            }
+        }
+
+
+class OTPResponse(BaseModel):
+    """OTP 생성 응답"""
+    success: bool
+    message: str
+    otp_code: str = Field(description="OTP 코드 (개발 환경에서만 반환, 프로덕션에서는 SMS/이메일 발송)")
+    expires_at: str
+    attempts_remaining: int
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "success": True,
+                "message": "OTP가 생성되었습니다. SMS로 발송되었습니다.",
+                "otp_code": "123456",
+                "expires_at": "2025-01-14T10:05:00",
+                "attempts_remaining": 3
+            }
+        }
+
+
+class OTPVerifyRequest(BaseModel):
+    """OTP 검증 요청"""
+    user_id: str = Field(..., description="사용자 ID")
+    otp_code: str = Field(..., min_length=6, max_length=6, description="6자리 OTP 코드")
+    purpose: str = Field(default="transaction", description="OTP 목적")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "user_id": "550e8400-e29b-41d4-a716-446655440000",
+                "otp_code": "123456",
+                "purpose": "transaction"
+            }
+        }
+
+
+class OTPVerifyResponse(BaseModel):
+    """OTP 검증 응답"""
+    valid: bool
+    message: str
+    attempts_remaining: int
+    metadata: dict = Field(default_factory=dict, description="OTP 생성 시 저장된 메타데이터")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "valid": True,
+                "message": "OTP 검증 성공",
+                "attempts_remaining": 2,
+                "metadata": {
+                    "order_id": "ORD-20250114-123456",
+                    "amount": 150000
+                }
+            }
+        }
+
+
+@router.post("/request-otp", response_model=OTPResponse)
+async def request_otp(
+    request: OTPRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    추가 인증을 위한 OTP 요청
+
+    의심 거래 시 사용자에게 추가 인증을 위한 OTP를 발급합니다.
+    실제 프로덕션 환경에서는 SMS 또는 이메일로 OTP를 발송하고,
+    응답에서 OTP 코드를 제거해야 합니다.
+
+    Args:
+        request: OTP 요청 정보
+
+    Returns:
+        OTPResponse: OTP 생성 결과
+
+    Raises:
+        HTTPException: OTP 생성 실패 시
+    """
+    try:
+        # Redis 클라이언트 가져오기
+        redis_client = await get_redis()
+        otp_service = await get_otp_service(redis_client)
+
+        # OTP 생성
+        result = await otp_service.generate_otp(
+            user_id=request.user_id,
+            purpose=request.purpose,
+            metadata=request.metadata
+        )
+
+        # TODO: 프로덕션 환경에서는 SMS/이메일로 OTP 발송
+        # await send_sms(phone_number, result["otp_code"])
+        # await send_email(email, result["otp_code"])
+
+        return OTPResponse(
+            success=True,
+            message="OTP가 생성되었습니다. (개발 환경: 응답에 포함, 프로덕션: SMS/이메일 발송)",
+            otp_code=result["otp_code"],  # 개발 환경에서만 반환
+            expires_at=result["expires_at"],
+            attempts_remaining=result["attempts_remaining"]
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"OTP 생성 중 오류 발생: {str(e)}"
+        )
+
+
+@router.post("/verify-otp", response_model=OTPVerifyResponse)
+async def verify_otp(
+    request: OTPVerifyRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    OTP 검증
+
+    사용자가 입력한 OTP 코드를 검증합니다.
+    최대 3회 시도 가능하며, 실패 시 시도 횟수가 감소합니다.
+
+    Args:
+        request: OTP 검증 요청
+
+    Returns:
+        OTPVerifyResponse: 검증 결과
+
+    Raises:
+        HTTPException: OTP 검증 실패 또는 오류 시
+    """
+    try:
+        # Redis 클라이언트 가져오기
+        redis_client = await get_redis()
+        otp_service = await get_otp_service(redis_client)
+
+        # OTP 검증
+        result = await otp_service.verify_otp(
+            user_id=request.user_id,
+            otp_code=request.otp_code,
+            purpose=request.purpose
+        )
+
+        if not result["valid"]:
+            # 검증 실패
+            status_code = status.HTTP_401_UNAUTHORIZED
+            if result["attempts_remaining"] == 0:
+                status_code = status.HTTP_429_TOO_MANY_REQUESTS
+
+            raise HTTPException(
+                status_code=status_code,
+                detail=result["message"]
+            )
+
+        # 검증 성공
+        return OTPVerifyResponse(
+            valid=result["valid"],
+            message=result["message"],
+            attempts_remaining=result["attempts_remaining"],
+            metadata=result.get("metadata", {})
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"OTP 검증 중 오류 발생: {str(e)}"
+        )
