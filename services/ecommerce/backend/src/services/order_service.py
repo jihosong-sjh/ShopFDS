@@ -31,7 +31,8 @@ class OrderService:
         shipping_name: str,
         shipping_address: str,
         shipping_phone: str,
-        payment_info: Dict[str, str]
+        payment_info: Dict[str, str],
+        request_context: Optional[Dict[str, str]] = None
     ) -> tuple[Order, dict]:
         """
         장바구니로부터 주문 생성
@@ -42,6 +43,7 @@ class OrderService:
             shipping_address: 배송 주소
             shipping_phone: 연락처
             payment_info: 결제 정보 {"card_number", "card_expiry", "card_cvv"}
+            request_context: 요청 컨텍스트 {"ip_address", "user_agent"} (선택적)
 
         Returns:
             (Order, fds_result): 생성된 주문 및 FDS 평가 결과
@@ -115,11 +117,23 @@ class OrderService:
         payment = await self._create_payment(order.id, total_amount, payment_info)
 
         # 6. FDS 평가 요청 (비동기)
+        # 요청 컨텍스트 준비
+        if not request_context:
+            request_context = {
+                "ip_address": "127.0.0.1",
+                "user_agent": "Unknown"
+            }
+
         fds_result = await self._evaluate_transaction(
             user_id=user_id,
             order_id=str(order.id),
             amount=total_amount,
-            ip_address="127.0.0.1"  # 실제로는 request에서 가져와야 함
+            ip_address=request_context.get("ip_address", "127.0.0.1"),
+            user_agent=request_context.get("user_agent", "Unknown"),
+            shipping_name=shipping_name,
+            shipping_address=shipping_address,
+            shipping_phone=shipping_phone,
+            payment_info=payment_info
         )
 
         # 7. FDS 결과에 따른 처리
@@ -366,44 +380,152 @@ class OrderService:
         user_id: str,
         order_id: str,
         amount: float,
-        ip_address: str
+        ip_address: str,
+        user_agent: str,
+        shipping_name: str,
+        shipping_address: str,
+        shipping_phone: str,
+        payment_info: Dict[str, str]
     ) -> dict:
         """
         FDS 서비스에 거래 평가 요청 (내부 메서드)
+
+        FDS 계약(fds-contract.md)에 따라 거래 정보를 전송하고 위험도를 평가받습니다.
 
         Args:
             user_id: 사용자 ID
             order_id: 주문 ID
             amount: 거래 금액
             ip_address: IP 주소
+            user_agent: User-Agent 헤더
+            shipping_name: 수령인 이름
+            shipping_address: 배송 주소
+            shipping_phone: 수령인 연락처
+            payment_info: 결제 정보
 
         Returns:
             dict: FDS 평가 결과
         """
+        import uuid
+        from datetime import timezone
+
         fds_url = f"{self.settings.FDS_SERVICE_URL}/internal/fds/evaluate"
 
+        # 디바이스 타입 추출 (User-Agent 기반)
+        device_type = "desktop"
+        ua_lower = user_agent.lower()
+        if "mobile" in ua_lower or "android" in ua_lower or "iphone" in ua_lower:
+            device_type = "mobile"
+        elif "tablet" in ua_lower or "ipad" in ua_lower:
+            device_type = "tablet"
+
+        # 카드 정보 (BIN과 마지막 4자리만 전송, PCI-DSS 준수)
+        card_number = payment_info.get("card_number", "")
+        card_bin = card_number[:6] if len(card_number) >= 6 else None
+        card_last_four = card_number[-4:] if len(card_number) >= 4 else "0000"
+
+        # FDS 계약에 맞는 요청 데이터 구성
         request_data = {
             "transaction_id": order_id,
             "user_id": user_id,
+            "order_id": order_id,
             "amount": amount,
+            "currency": "KRW",
             "ip_address": ip_address,
-            "timestamp": datetime.utcnow().isoformat()
+            "user_agent": user_agent,
+            "device_fingerprint": {
+                "device_type": device_type,
+                "os": None,  # Phase 3에서는 추출하지 않음
+                "browser": None  # Phase 3에서는 추출하지 않음
+            },
+            "shipping_info": {
+                "name": shipping_name,
+                "address": shipping_address,
+                "phone": shipping_phone
+            },
+            "payment_info": {
+                "method": "credit_card",
+                "card_bin": card_bin,
+                "card_last_four": card_last_four
+            },
+            "session_context": None,  # Phase 3에서는 수집하지 않음
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+
+        # 서비스 간 인증 헤더
+        headers = {
+            "X-Service-Token": self.settings.FDS_SERVICE_TOKEN,
+            "Content-Type": "application/json"
         }
 
         try:
-            async with httpx.AsyncClient(timeout=2.0) as client:
-                response = await client.post(fds_url, json=request_data)
+            timeout = self.settings.FDS_TIMEOUT_MS / 1000.0  # ms to seconds
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                response = await client.post(
+                    fds_url,
+                    json=request_data,
+                    headers=headers
+                )
                 response.raise_for_status()
-                return response.json()
-        except httpx.RequestError as e:
-            # FDS 서비스 연결 실패 시 기본 승인 (개발 환경)
+                fds_response = response.json()
+
+                # 응답 로깅
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.info(
+                    f"FDS 평가 완료: order_id={order_id}, "
+                    f"risk_score={fds_response.get('risk_score')}, "
+                    f"decision={fds_response.get('decision')}"
+                )
+
+                return fds_response
+
+        except httpx.TimeoutException as e:
+            # FDS 타임아웃 시 Fail-Open 정책 (거래 승인 + 사후 검토)
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                f"FDS 타임아웃: order_id={order_id}, error={str(e)}"
+            )
             return {
                 "transaction_id": order_id,
                 "risk_score": 15,
                 "risk_level": "low",
                 "decision": "approve",
+                "risk_factors": [],
+                "evaluation_metadata": {
+                    "evaluation_time_ms": int(self.settings.FDS_TIMEOUT_MS),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "error": "FDS timeout - fail open"
+                },
+                "recommended_action": {
+                    "action": "approve",
+                    "reason": "FDS 타임아웃으로 자동 승인 (사후 검토 필요)",
+                    "additional_auth_required": False
+                }
+            }
+
+        except httpx.RequestError as e:
+            # FDS 서비스 연결 실패 시 Fail-Open 정책
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(
+                f"FDS 서비스 연결 실패: order_id={order_id}, error={str(e)}"
+            )
+            return {
+                "transaction_id": order_id,
+                "risk_score": 15,
+                "risk_level": "low",
+                "decision": "approve",
+                "risk_factors": [],
                 "evaluation_metadata": {
                     "evaluation_time_ms": 0,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "error": f"FDS service unavailable: {str(e)}"
+                },
+                "recommended_action": {
+                    "action": "approve",
+                    "reason": "FDS 서비스 장애로 자동 승인 (사후 검토 필요)",
+                    "additional_auth_required": False
                 }
             }

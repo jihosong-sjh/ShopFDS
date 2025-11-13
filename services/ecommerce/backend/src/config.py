@@ -57,6 +57,7 @@ class Settings(BaseSettings):
     # FDS 서비스 연동
     FDS_SERVICE_URL: str = "http://localhost:8001"
     FDS_TIMEOUT_MS: int = 150  # FDS 호출 타임아웃 (목표: 100ms, 여유: 150ms)
+    FDS_SERVICE_TOKEN: str = "dev-service-token-12345"  # TODO: 프로덕션에서 변경 필요
 
     # Rate Limiting
     RATE_LIMIT_ENABLED: bool = True
