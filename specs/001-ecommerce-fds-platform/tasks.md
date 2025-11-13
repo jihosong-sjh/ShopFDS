@@ -29,16 +29,16 @@
 
 **목적**: 프로젝트 구조 생성 및 기본 환경 구축
 
-- [ ] T001 프로젝트 디렉토리 구조 생성 (plan.md 구조에 따라)
-- [ ] T002 Git 저장소 초기화 및 .gitignore 설정
-- [ ] T003 [P] Docker Compose 개발 환경 구성 파일 작성 (infrastructure/docker/docker-compose.dev.yml)
-- [ ] T004 [P] PostgreSQL 15+ 데이터베이스 컨테이너 설정 및 TimescaleDB 확장 설치
-- [ ] T005 [P] Redis 7+ 캐시 서버 컨테이너 설정
-- [ ] T006 [P] 이커머스 백엔드 Python 가상환경 생성 및 FastAPI 의존성 설치 (services/ecommerce/backend/requirements.txt)
-- [ ] T007 [P] FDS 서비스 Python 가상환경 생성 및 의존성 설치 (services/fds/requirements.txt)
-- [ ] T008 [P] ML 서비스 Python 가상환경 생성 및 scikit-learn, LightGBM 설치 (services/ml-service/requirements.txt)
-- [ ] T009 [P] 이커머스 프론트엔드 React + TypeScript + Vite 프로젝트 초기화 (services/ecommerce/frontend)
-- [ ] T010 [P] 관리자 대시보드 프론트엔드 React + TypeScript 프로젝트 초기화 (services/admin-dashboard/frontend)
+- [X] T001 프로젝트 디렉토리 구조 생성 (plan.md 구조에 따라)
+- [X] T002 Git 저장소 초기화 및 .gitignore 설정
+- [X] T003 [P] Docker Compose 개발 환경 구성 파일 작성 (infrastructure/docker/docker-compose.dev.yml)
+- [X] T004 [P] PostgreSQL 15+ 데이터베이스 컨테이너 설정 및 TimescaleDB 확장 설치
+- [X] T005 [P] Redis 7+ 캐시 서버 컨테이너 설정
+- [X] T006 [P] 이커머스 백엔드 Python 가상환경 생성 및 FastAPI 의존성 설치 (services/ecommerce/backend/requirements.txt)
+- [X] T007 [P] FDS 서비스 Python 가상환경 생성 및 의존성 설치 (services/fds/requirements.txt)
+- [X] T008 [P] ML 서비스 Python 가상환경 생성 및 scikit-learn, LightGBM 설치 (services/ml-service/requirements.txt)
+- [X] T009 [P] 이커머스 프론트엔드 React + TypeScript + Vite 프로젝트 초기화 (services/ecommerce/frontend)
+- [X] T010 [P] 관리자 대시보드 프론트엔드 React + TypeScript 프로젝트 초기화 (services/admin-dashboard/frontend)
 
 ---
 
@@ -50,27 +50,27 @@
 
 ### 데이터베이스 및 마이그레이션
 
-- [ ] T011 Alembic 마이그레이션 도구 초기화 (services/ecommerce/backend/alembic)
-- [ ] T012 SQLAlchemy Base 모델 및 데이터베이스 연결 설정 (services/ecommerce/backend/src/models/base.py)
-- [ ] T013 데이터베이스 인덱스 전략 구현 (data-model.md 인덱스 섹션 참조)
+- [X] T011 Alembic 마이그레이션 도구 초기화 (services/ecommerce/backend/alembic)
+- [X] T012 SQLAlchemy Base 모델 및 데이터베이스 연결 설정 (services/ecommerce/backend/src/models/base.py)
+- [X] T013 데이터베이스 인덱스 전략 구현 (data-model.md 인덱스 섹션 참조)
 
 ### 인증 및 보안
 
-- [ ] T014 JWT 인증 미들웨어 구현 (services/ecommerce/backend/src/middleware/auth.py)
-- [ ] T015 [P] 비밀번호 해싱 유틸리티 구현 (bcrypt, services/ecommerce/backend/src/utils/security.py)
-- [ ] T016 [P] 역할 기반 접근 제어 (RBAC) 데코레이터 구현 (services/ecommerce/backend/src/middleware/authorization.py)
+- [X] T014 JWT 인증 미들웨어 구현 (services/ecommerce/backend/src/middleware/auth.py)
+- [X] T015 [P] 비밀번호 해싱 유틸리티 구현 (bcrypt, services/ecommerce/backend/src/utils/security.py)
+- [X] T016 [P] 역할 기반 접근 제어 (RBAC) 데코레이터 구현 (services/ecommerce/backend/src/middleware/authorization.py)
 
 ### API 및 에러 처리
 
-- [ ] T017 FastAPI 애플리케이션 기본 구조 및 라우터 설정 (services/ecommerce/backend/src/main.py)
-- [ ] T018 [P] 전역 에러 핸들러 및 커스텀 예외 클래스 구현 (services/ecommerce/backend/src/utils/exceptions.py)
-- [ ] T019 [P] 로깅 설정 및 민감 데이터 자동 마스킹 (services/ecommerce/backend/src/utils/logging.py)
-- [ ] T020 [P] CORS 미들웨어 설정 (프론트엔드 연동용)
+- [X] T017 FastAPI 애플리케이션 기본 구조 및 라우터 설정 (services/ecommerce/backend/src/main.py)
+- [X] T018 [P] 전역 에러 핸들러 및 커스텀 예외 클래스 구현 (services/ecommerce/backend/src/utils/exceptions.py)
+- [X] T019 [P] 로깅 설정 및 민감 데이터 자동 마스킹 (services/ecommerce/backend/src/utils/logging.py)
+- [X] T020 [P] CORS 미들웨어 설정 (프론트엔드 연동용)
 
 ### 환경 설정
 
-- [ ] T021 환경 변수 관리 (Pydantic Settings, services/ecommerce/backend/src/config.py)
-- [ ] T022 [P] Redis 연결 풀 설정 (services/ecommerce/backend/src/utils/redis_client.py)
+- [X] T021 환경 변수 관리 (Pydantic Settings, services/ecommerce/backend/src/config.py)
+- [X] T022 [P] Redis 연결 풀 설정 (services/ecommerce/backend/src/utils/redis_client.py)
 
 **체크포인트**: 기반 인프라 완료 - 사용자 스토리 구현을 병렬로 시작할 수 있습니다
 
@@ -84,39 +84,39 @@
 
 ### 데이터 모델 (User Story 1)
 
-- [ ] T023 [P] [US1] User 모델 생성 (services/ecommerce/backend/src/models/user.py)
-- [ ] T024 [P] [US1] Product 모델 생성 (services/ecommerce/backend/src/models/product.py)
-- [ ] T025 [P] [US1] Cart 및 CartItem 모델 생성 (services/ecommerce/backend/src/models/cart.py)
-- [ ] T026 [P] [US1] Order 및 OrderItem 모델 생성 (services/ecommerce/backend/src/models/order.py)
-- [ ] T027 [P] [US1] Payment 모델 생성 (services/ecommerce/backend/src/models/payment.py)
-- [ ] T028 [US1] 초기 마이그레이션 생성 및 적용 (alembic revision --autogenerate -m "Create ecommerce tables")
+- [X] T023 [P] [US1] User 모델 생성 (services/ecommerce/backend/src/models/user.py)
+- [X] T024 [P] [US1] Product 모델 생성 (services/ecommerce/backend/src/models/product.py)
+- [X] T025 [P] [US1] Cart 및 CartItem 모델 생성 (services/ecommerce/backend/src/models/cart.py)
+- [X] T026 [P] [US1] Order 및 OrderItem 모델 생성 (services/ecommerce/backend/src/models/order.py)
+- [X] T027 [P] [US1] Payment 모델 생성 (services/ecommerce/backend/src/models/payment.py)
+- [X] T028 [US1] 초기 마이그레이션 생성 및 적용 (alembic revision --autogenerate -m "Create ecommerce tables")
 
 ### 백엔드 서비스 (User Story 1)
 
-- [ ] T029 [P] [US1] UserService 구현: 회원가입, 로그인, 프로필 조회 (services/ecommerce/backend/src/services/user_service.py)
-- [ ] T030 [P] [US1] ProductService 구현: 상품 목록 조회, 검색, 상세 조회 (services/ecommerce/backend/src/services/product_service.py)
-- [ ] T031 [US1] CartService 구현: 장바구니 추가/수정/삭제 (services/ecommerce/backend/src/services/cart_service.py)
-- [ ] T032 [US1] OrderService 구현: 주문 생성, 주문 상태 관리 (services/ecommerce/backend/src/services/order_service.py)
-- [ ] T033 [US1] PaymentService 구현: 결제 처리 및 토큰화 (services/ecommerce/backend/src/services/payment_service.py)
+- [X] T029 [P] [US1] UserService 구현: 회원가입, 로그인, 프로필 조회 (services/ecommerce/backend/src/services/user_service.py)
+- [X] T030 [P] [US1] ProductService 구현: 상품 목록 조회, 검색, 상세 조회 (services/ecommerce/backend/src/services/product_service.py)
+- [X] T031 [US1] CartService 구현: 장바구니 추가/수정/삭제 (services/ecommerce/backend/src/services/cart_service.py)
+- [X] T032 [US1] OrderService 구현: 주문 생성, 주문 상태 관리 (services/ecommerce/backend/src/services/order_service.py)
+- [X] T033 [US1] PaymentService 구현: 결제 처리 및 토큰화 (services/ecommerce/backend/src/services/payment_service.py)
 
 ### REST API 엔드포인트 (User Story 1)
 
-- [ ] T034 [P] [US1] 인증 API 구현: POST /v1/auth/register, POST /v1/auth/login (services/ecommerce/backend/src/api/auth.py)
-- [ ] T035 [P] [US1] 상품 API 구현: GET /v1/products, GET /v1/products/{id} (services/ecommerce/backend/src/api/products.py)
-- [ ] T036 [US1] 장바구니 API 구현: GET /v1/cart, POST /v1/cart/items, PUT /v1/cart/items/{id}, DELETE /v1/cart/items/{id} (services/ecommerce/backend/src/api/cart.py)
-- [ ] T037 [US1] 주문 API 구현: POST /v1/orders, GET /v1/orders, GET /v1/orders/{id} (services/ecommerce/backend/src/api/orders.py)
+- [X] T034 [P] [US1] 인증 API 구현: POST /v1/auth/register, POST /v1/auth/login (services/ecommerce/backend/src/api/auth.py)
+- [X] T035 [P] [US1] 상품 API 구현: GET /v1/products, GET /v1/products/{id} (services/ecommerce/backend/src/api/products.py)
+- [X] T036 [US1] 장바구니 API 구현: GET /v1/cart, POST /v1/cart/items, PUT /v1/cart/items/{id}, DELETE /v1/cart/items/{id} (services/ecommerce/backend/src/api/cart.py)
+- [X] T037 [US1] 주문 API 구현: POST /v1/orders, GET /v1/orders, GET /v1/orders/{id} (services/ecommerce/backend/src/api/orders.py)
 
 ### 프론트엔드 (User Story 1)
 
-- [ ] T038 [P] [US1] 회원가입 페이지 구현 (services/ecommerce/frontend/src/pages/Register.tsx)
-- [ ] T039 [P] [US1] 로그인 페이지 구현 (services/ecommerce/frontend/src/pages/Login.tsx)
-- [ ] T040 [P] [US1] 상품 목록 페이지 및 검색 기능 구현 (services/ecommerce/frontend/src/pages/ProductList.tsx)
-- [ ] T041 [P] [US1] 상품 상세 페이지 구현 (services/ecommerce/frontend/src/pages/ProductDetail.tsx)
-- [ ] T042 [US1] 장바구니 페이지 구현 (services/ecommerce/frontend/src/pages/Cart.tsx)
-- [ ] T043 [US1] 주문/결제 페이지 구현 (services/ecommerce/frontend/src/pages/Checkout.tsx)
-- [ ] T044 [US1] 주문 추적 페이지 구현 (services/ecommerce/frontend/src/pages/OrderTracking.tsx)
-- [ ] T045 [US1] Zustand 전역 상태 관리 설정 (장바구니, 인증 상태)
-- [ ] T046 [US1] React Query API 통신 레이어 구현 (services/ecommerce/frontend/src/services/api.ts)
+- [X] T038 [P] [US1] 회원가입 페이지 구현 (services/ecommerce/frontend/src/pages/Register.tsx)
+- [X] T039 [P] [US1] 로그인 페이지 구현 (services/ecommerce/frontend/src/pages/Login.tsx)
+- [X] T040 [P] [US1] 상품 목록 페이지 및 검색 기능 구현 (services/ecommerce/frontend/src/pages/ProductList.tsx)
+- [X] T041 [P] [US1] 상품 상세 페이지 구현 (services/ecommerce/frontend/src/pages/ProductDetail.tsx)
+- [X] T042 [US1] 장바구니 페이지 구현 (services/ecommerce/frontend/src/pages/Cart.tsx)
+- [X] T043 [US1] 주문/결제 페이지 구현 (services/ecommerce/frontend/src/pages/Checkout.tsx)
+- [X] T044 [US1] 주문 추적 페이지 구현 (services/ecommerce/frontend/src/pages/OrderTracking.tsx)
+- [X] T045 [US1] Zustand 전역 상태 관리 설정 (장바구니, 인증 상태)
+- [X] T046 [US1] React Query API 통신 레이어 구현 (services/ecommerce/frontend/src/services/api.ts)
 
 ### 기본 FDS 통합 (User Story 1)
 
