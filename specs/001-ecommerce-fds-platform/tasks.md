@@ -219,11 +219,11 @@
 
 ### 관리자 백엔드 API (User Story 4)
 
-- [ ] T086 [P] [US4] 상품 관리 API 구현: POST /v1/admin/products, PUT /v1/admin/products/{id}, DELETE /v1/admin/products/{id} (services/ecommerce/backend/src/api/admin/products.py)
-- [ ] T087 [P] [US4] 재고 관리 API 구현: PATCH /v1/admin/products/{id}/stock (services/ecommerce/backend/src/api/admin/products.py)
-- [ ] T088 [P] [US4] 주문 관리 API 구현: GET /v1/admin/orders, PATCH /v1/admin/orders/{id}/status (services/ecommerce/backend/src/api/admin/orders.py)
-- [ ] T089 [US4] 회원 관리 API 구현: GET /v1/admin/users, PATCH /v1/admin/users/{id}/status (services/ecommerce/backend/src/api/admin/users.py)
-- [ ] T090 [US4] 매출 대시보드 API 구현: GET /v1/admin/dashboard/sales (services/ecommerce/backend/src/api/admin/dashboard.py)
+- [X] T086 [P] [US4] 상품 관리 API 구현: POST /v1/admin/products, PUT /v1/admin/products/{id}, DELETE /v1/admin/products/{id} (services/ecommerce/backend/src/api/admin/products.py)
+- [X] T087 [P] [US4] 재고 관리 API 구현: PATCH /v1/admin/products/{id}/stock (services/ecommerce/backend/src/api/admin/products.py)
+- [X] T088 [P] [US4] 주문 관리 API 구현: GET /v1/admin/orders, PATCH /v1/admin/orders/{id}/status (services/ecommerce/backend/src/api/admin/orders.py)
+- [X] T089 [US4] 회원 관리 API 구현: GET /v1/admin/users, PATCH /v1/admin/users/{id}/status (services/ecommerce/backend/src/api/admin/users.py)
+- [X] T090 [US4] 매출 대시보드 API 구현: GET /v1/admin/dashboard/sales (services/ecommerce/backend/src/api/admin/dashboard.py)
 
 ### 관리자 프론트엔드 (User Story 4)
 

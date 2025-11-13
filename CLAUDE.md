@@ -295,7 +295,16 @@ async def test_user(self, db_session: AsyncSession):
 
 ## Recent Changes
 
-- 2025-11-14: Testing Guidelines 추가
+- 2025-11-14 (2): Phase 6: 관리자 백엔드 API 구현 완료 (T086-T090)
+  - 상품 관리 API: POST, PUT, DELETE /v1/admin/products
+  - 재고 관리 API: PATCH /v1/admin/products/{id}/stock
+  - 주문 관리 API: GET /v1/admin/orders, GET /v1/admin/orders/{id}, PATCH /v1/admin/orders/{id}/status
+  - 회원 관리 API: GET /v1/admin/users, GET /v1/admin/users/{id}, PATCH /v1/admin/users/{id}/status
+  - 매출 대시보드 API: GET /v1/admin/dashboard/sales (일별 집계 지원)
+  - 모든 Admin API에 RBAC 권한 체크 적용 (Permission.PRODUCT_CREATE, ORDER_READ_ALL 등)
+  - FastAPI main.py에 Admin 라우터 등록 완료
+
+- 2025-11-14 (1): Testing Guidelines 추가
   - Python 통합 테스트 작성 필수 가이드 추가
   - Import 패턴, UUID 처리, 모킹 패턴 등 10가지 가이드라인
   - OTP 성공/실패 시나리오 통합 테스트 완료 (10개 테스트 통과)
