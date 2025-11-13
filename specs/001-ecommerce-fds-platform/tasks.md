@@ -227,11 +227,11 @@
 
 ### 관리자 프론트엔드 (User Story 4)
 
-- [ ] T091 [P] [US4] 상품 등록/수정 페이지 구현 (services/ecommerce/frontend/src/pages/admin/ProductEditor.tsx)
-- [ ] T092 [P] [US4] 재고 관리 페이지 구현 (services/ecommerce/frontend/src/pages/admin/StockManagement.tsx)
-- [ ] T093 [P] [US4] 주문 관리 페이지 구현 (주문 목록, 상태 변경, services/ecommerce/frontend/src/pages/admin/OrderManagement.tsx)
-- [ ] T094 [US4] 회원 관리 페이지 구현 (services/ecommerce/frontend/src/pages/admin/UserManagement.tsx)
-- [ ] T095 [US4] 매출 대시보드 페이지 구현 (일/주/월별 통계, services/ecommerce/frontend/src/pages/admin/SalesDashboard.tsx)
+- [X] T091 [P] [US4] 상품 등록/수정 페이지 구현 (services/ecommerce/frontend/src/pages/admin/ProductEditor.tsx)
+- [X] T092 [P] [US4] 재고 관리 페이지 구현 (services/ecommerce/frontend/src/pages/admin/StockManagement.tsx)
+- [X] T093 [P] [US4] 주문 관리 페이지 구현 (주문 목록, 상태 변경, services/ecommerce/frontend/src/pages/admin/OrderManagement.tsx)
+- [X] T094 [US4] 회원 관리 페이지 구현 (services/ecommerce/frontend/src/pages/admin/UserManagement.tsx)
+- [X] T095 [US4] 매출 대시보드 페이지 구현 (일/주/월별 통계, services/ecommerce/frontend/src/pages/admin/SalesDashboard.tsx)
 
 ### 통합 및 검증 (User Story 4)
 
