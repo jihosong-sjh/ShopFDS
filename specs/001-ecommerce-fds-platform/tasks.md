@@ -50,27 +50,27 @@
 
 ### 데이터베이스 및 마이그레이션
 
-- [ ] T011 Alembic 마이그레이션 도구 초기화 (services/ecommerce/backend/alembic)
-- [ ] T012 SQLAlchemy Base 모델 및 데이터베이스 연결 설정 (services/ecommerce/backend/src/models/base.py)
-- [ ] T013 데이터베이스 인덱스 전략 구현 (data-model.md 인덱스 섹션 참조)
+- [X] T011 Alembic 마이그레이션 도구 초기화 (services/ecommerce/backend/alembic)
+- [X] T012 SQLAlchemy Base 모델 및 데이터베이스 연결 설정 (services/ecommerce/backend/src/models/base.py)
+- [X] T013 데이터베이스 인덱스 전략 구현 (data-model.md 인덱스 섹션 참조)
 
 ### 인증 및 보안
 
-- [ ] T014 JWT 인증 미들웨어 구현 (services/ecommerce/backend/src/middleware/auth.py)
-- [ ] T015 [P] 비밀번호 해싱 유틸리티 구현 (bcrypt, services/ecommerce/backend/src/utils/security.py)
-- [ ] T016 [P] 역할 기반 접근 제어 (RBAC) 데코레이터 구현 (services/ecommerce/backend/src/middleware/authorization.py)
+- [X] T014 JWT 인증 미들웨어 구현 (services/ecommerce/backend/src/middleware/auth.py)
+- [X] T015 [P] 비밀번호 해싱 유틸리티 구현 (bcrypt, services/ecommerce/backend/src/utils/security.py)
+- [X] T016 [P] 역할 기반 접근 제어 (RBAC) 데코레이터 구현 (services/ecommerce/backend/src/middleware/authorization.py)
 
 ### API 및 에러 처리
 
-- [ ] T017 FastAPI 애플리케이션 기본 구조 및 라우터 설정 (services/ecommerce/backend/src/main.py)
-- [ ] T018 [P] 전역 에러 핸들러 및 커스텀 예외 클래스 구현 (services/ecommerce/backend/src/utils/exceptions.py)
-- [ ] T019 [P] 로깅 설정 및 민감 데이터 자동 마스킹 (services/ecommerce/backend/src/utils/logging.py)
-- [ ] T020 [P] CORS 미들웨어 설정 (프론트엔드 연동용)
+- [X] T017 FastAPI 애플리케이션 기본 구조 및 라우터 설정 (services/ecommerce/backend/src/main.py)
+- [X] T018 [P] 전역 에러 핸들러 및 커스텀 예외 클래스 구현 (services/ecommerce/backend/src/utils/exceptions.py)
+- [X] T019 [P] 로깅 설정 및 민감 데이터 자동 마스킹 (services/ecommerce/backend/src/utils/logging.py)
+- [X] T020 [P] CORS 미들웨어 설정 (프론트엔드 연동용)
 
 ### 환경 설정
 
-- [ ] T021 환경 변수 관리 (Pydantic Settings, services/ecommerce/backend/src/config.py)
-- [ ] T022 [P] Redis 연결 풀 설정 (services/ecommerce/backend/src/utils/redis_client.py)
+- [X] T021 환경 변수 관리 (Pydantic Settings, services/ecommerce/backend/src/config.py)
+- [X] T022 [P] Redis 연결 풀 설정 (services/ecommerce/backend/src/utils/redis_client.py)
 
 **체크포인트**: 기반 인프라 완료 - 사용자 스토리 구현을 병렬로 시작할 수 있습니다
 
