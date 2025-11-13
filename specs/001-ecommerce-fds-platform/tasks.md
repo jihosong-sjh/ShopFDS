@@ -154,8 +154,8 @@
 
 ### 프론트엔드 (User Story 2)
 
-- [ ] T062 [P] [US2] 추가 인증 모달 컴포넌트 구현 (OTP 입력 화면, services/ecommerce/frontend/src/components/OTPModal.tsx)
-- [ ] T063 [US2] 결제 페이지에 추가 인증 플로우 통합
+- [X] T062 [P] [US2] 추가 인증 모달 컴포넌트 구현 (OTP 입력 화면, services/ecommerce/frontend/src/components/OTPModal.tsx)
+- [X] T063 [US2] 결제 페이지에 추가 인증 플로우 통합
 
 ### 통합 및 검증 (User Story 2)
 

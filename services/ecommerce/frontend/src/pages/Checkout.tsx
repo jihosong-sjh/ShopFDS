@@ -2,13 +2,15 @@
  * 주문/결제 페이지
  *
  * T043: 주문/결제 페이지 구현
+ * T063: 결제 페이지에 추가 인증 플로우 통합
  */
 
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { cartApi, ordersApi, queryKeys } from '../services/api';
+import { cartApi, ordersApi, authApi, queryKeys } from '../services/api';
 import { useCartStore } from '../stores/cartStore';
+import { OTPModal } from '../components/OTPModal';
 
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -25,22 +27,67 @@ export const Checkout: React.FC = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // OTP 모달 상태 (T063)
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpToken, setOtpToken] = useState('');
+  const [otpAttempts, setOtpAttempts] = useState(3);
+  const [pendingOrderData, setPendingOrderData] = useState<any>(null);
+
   // 장바구니 조회
   const { data: cart, isLoading: cartLoading } = useQuery({
     queryKey: queryKeys.cart.current,
     queryFn: cartApi.getCart,
   });
 
-  // 주문 생성
+  // 주문 생성 (T063: OTP 플로우 통합)
   const createOrderMutation = useMutation({
     mutationFn: ordersApi.createOrder,
     onSuccess: (data) => {
-      resetCartCount();
-      navigate(`/orders/${data.order.id}`);
+      // FDS 위험도에 따른 처리
+      if (data.fds_result.requires_verification) {
+        // 중간 위험도: 추가 인증 필요
+        setPendingOrderData({
+          shipping_name: formData.shipping_name,
+          shipping_address: formData.shipping_address,
+          shipping_phone: formData.shipping_phone,
+          payment_info: {
+            card_number: formData.card_number,
+            card_expiry: formData.card_expiry,
+            card_cvv: formData.card_cvv,
+          },
+        });
+
+        // OTP 요청
+        requestOtpMutation.mutate({ phone_number: formData.shipping_phone });
+      } else if (data.order) {
+        // 낮은 위험도: 주문 완료
+        resetCartCount();
+        navigate(`/orders/${data.order.id}`);
+      } else {
+        // 고위험: 차단됨
+        setErrors({
+          submit: data.message || '거래가 차단되었습니다. 고객센터로 문의해주세요.',
+        });
+      }
     },
     onError: (error: any) => {
       setErrors({
         submit: error.response?.data?.detail || '주문 처리 중 오류가 발생했습니다.',
+      });
+    },
+  });
+
+  // OTP 요청 (T063)
+  const requestOtpMutation = useMutation({
+    mutationFn: authApi.requestOtp,
+    onSuccess: (data) => {
+      setOtpToken(data.otp_token);
+      setOtpAttempts(3);
+      setShowOtpModal(true);
+    },
+    onError: (error: any) => {
+      setErrors({
+        submit: error.response?.data?.detail || 'OTP 전송에 실패했습니다.',
       });
     },
   });
@@ -106,6 +153,60 @@ export const Checkout: React.FC = () => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
+  };
+
+  // OTP 검증 핸들러 (T063)
+  const handleOtpVerify = async (otpCode: string) => {
+    try {
+      const result = await authApi.verifyOtp({
+        otp_token: otpToken,
+        otp_code: otpCode,
+      });
+
+      if (result.verified) {
+        // OTP 검증 성공: otp_token을 포함하여 주문 재시도
+        const orderData = {
+          ...pendingOrderData,
+          otp_token: otpToken,
+        };
+
+        const response = await ordersApi.createOrder(orderData);
+
+        if (response.order) {
+          setShowOtpModal(false);
+          resetCartCount();
+          navigate(`/orders/${response.order.id}`);
+        } else {
+          throw new Error(response.message || '주문 처리에 실패했습니다.');
+        }
+      } else {
+        setOtpAttempts((prev) => prev - 1);
+        if (otpAttempts <= 1) {
+          setShowOtpModal(false);
+          setErrors({
+            submit: '인증 실패 횟수를 초과했습니다. 거래가 차단되었습니다.',
+          });
+        }
+        throw new Error('인증번호가 올바르지 않습니다.');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  // OTP 재전송 핸들러 (T063)
+  const handleOtpResend = async () => {
+    await requestOtpMutation.mutateAsync({ phone_number: formData.shipping_phone });
+  };
+
+  // OTP 모달 닫기 핸들러 (T063)
+  const handleOtpModalClose = () => {
+    setShowOtpModal(false);
+    setPendingOrderData(null);
+    setOtpToken('');
+    setErrors({
+      submit: '추가 인증을 취소했습니다.',
+    });
   };
 
   if (cartLoading) {
@@ -326,6 +427,16 @@ export const Checkout: React.FC = () => {
           </div>
         </div>
       </form>
+
+      {/* OTP 모달 (T063) */}
+      <OTPModal
+        isOpen={showOtpModal}
+        onClose={handleOtpModalClose}
+        onVerify={handleOtpVerify}
+        onResend={handleOtpResend}
+        phoneNumber={formData.shipping_phone}
+        remainingAttempts={otpAttempts}
+      />
     </div>
   );
 };
