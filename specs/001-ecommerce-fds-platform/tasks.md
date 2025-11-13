@@ -188,11 +188,11 @@
 
 ### 보안팀 대시보드 백엔드 (User Story 3)
 
-- [ ] T074 [P] [US3] 관리자 대시보드 백엔드 FastAPI 기본 구조 생성 (services/admin-dashboard/backend/src/main.py)
-- [ ] T075 [P] [US3] 실시간 거래 통계 API 구현: GET /v1/dashboard/stats (services/admin-dashboard/backend/src/api/dashboard.py)
-- [ ] T076 [P] [US3] 검토 큐 목록 조회 API 구현: GET /v1/review-queue (services/admin-dashboard/backend/src/api/review.py)
-- [ ] T077 [US3] 거래 상세 정보 조회 API 구현: GET /v1/transactions/{id} (services/admin-dashboard/backend/src/api/transactions.py)
-- [ ] T078 [US3] 차단 해제/승인 API 구현: POST /v1/review-queue/{id}/approve (services/admin-dashboard/backend/src/api/review.py)
+- [X] T074 [P] [US3] 관리자 대시보드 백엔드 FastAPI 기본 구조 생성 (services/admin-dashboard/backend/src/main.py)
+- [X] T075 [P] [US3] 실시간 거래 통계 API 구현: GET /v1/dashboard/stats (services/admin-dashboard/backend/src/api/dashboard.py)
+- [X] T076 [P] [US3] 검토 큐 목록 조회 API 구현: GET /v1/review-queue (services/admin-dashboard/backend/src/api/review.py)
+- [X] T077 [US3] 거래 상세 정보 조회 API 구현: GET /v1/transactions/{id} (services/admin-dashboard/backend/src/api/transactions.py)
+- [X] T078 [US3] 차단 해제/승인 API 구현: POST /v1/review-queue/{id}/approve (services/admin-dashboard/backend/src/api/review.py)
 
 ### 보안팀 대시보드 프론트엔드 (User Story 3)
 
