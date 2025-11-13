@@ -15,7 +15,7 @@ import os
 import sys
 
 # 프로젝트 루트를 sys.path에 추가하여 모델 import 가능하게 함
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src'))
 
 # Alembic Config 객체 - alembic.ini 파일의 값에 접근
 config = context.config
@@ -27,15 +27,13 @@ if config.config_file_name is not None:
 # SQLAlchemy 모델의 MetaData 객체 (자동 마이그레이션 감지용)
 # 여기서 모든 모델을 import하여 Alembic이 스키마 변경을 감지할 수 있도록 합니다
 try:
-    from src.models.base import Base
-    # 향후 모델이 추가되면 여기서 import하여 자동 감지되도록 합니다
-    # from src.models.user import User
-    # from src.models.product import Product
-    # from src.models.order import Order
-    # ...
+    from models.base import Base
+    from models import user, product, cart, order, payment
+    # 모든 모델을 명시적으로 import하여 Alembic이 감지할 수 있도록 합니다
     target_metadata = Base.metadata
-except ImportError:
+except ImportError as e:
     # 모델이 아직 생성되지 않은 경우
+    print(f"Warning: Could not import models: {e}")
     target_metadata = None
 
 

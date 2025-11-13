@@ -17,20 +17,21 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # 열거형 타입 생성
-    user_role_enum = postgresql.ENUM('customer', 'admin', 'security_team', name='user_role_enum', create_type=True)
-    user_status_enum = postgresql.ENUM('active', 'suspended', 'deleted', name='user_status_enum', create_type=True)
-    product_status_enum = postgresql.ENUM('available', 'out_of_stock', 'discontinued', name='product_status_enum', create_type=True)
-    order_status_enum = postgresql.ENUM('pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled', 'refunded', name='order_status_enum', create_type=True)
-    payment_method_enum = postgresql.ENUM('credit_card', name='payment_method_enum', create_type=True)
-    payment_status_enum = postgresql.ENUM('pending', 'completed', 'failed', 'refunded', name='payment_status_enum', create_type=True)
+    # 열거형 타입 생성 (먼저 생성 후 create_type=False로 참조)
+    user_role_enum = postgresql.ENUM('customer', 'admin', 'security_team', name='user_role_enum', create_type=False)
+    user_status_enum = postgresql.ENUM('active', 'suspended', 'deleted', name='user_status_enum', create_type=False)
+    product_status_enum = postgresql.ENUM('available', 'out_of_stock', 'discontinued', name='product_status_enum', create_type=False)
+    order_status_enum = postgresql.ENUM('pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled', 'refunded', name='order_status_enum', create_type=False)
+    payment_method_enum = postgresql.ENUM('credit_card', name='payment_method_enum', create_type=False)
+    payment_status_enum = postgresql.ENUM('pending', 'completed', 'failed', 'refunded', name='payment_status_enum', create_type=False)
 
-    user_role_enum.create(op.get_bind(), checkfirst=True)
-    user_status_enum.create(op.get_bind(), checkfirst=True)
-    product_status_enum.create(op.get_bind(), checkfirst=True)
-    order_status_enum.create(op.get_bind(), checkfirst=True)
-    payment_method_enum.create(op.get_bind(), checkfirst=True)
-    payment_status_enum.create(op.get_bind(), checkfirst=True)
+    # ENUM 타입을 먼저 생성
+    op.execute("CREATE TYPE user_role_enum AS ENUM ('customer', 'admin', 'security_team')")
+    op.execute("CREATE TYPE user_status_enum AS ENUM ('active', 'suspended', 'deleted')")
+    op.execute("CREATE TYPE product_status_enum AS ENUM ('available', 'out_of_stock', 'discontinued')")
+    op.execute("CREATE TYPE order_status_enum AS ENUM ('pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled', 'refunded')")
+    op.execute("CREATE TYPE payment_method_enum AS ENUM ('credit_card')")
+    op.execute("CREATE TYPE payment_status_enum AS ENUM ('pending', 'completed', 'failed', 'refunded')")
 
     # Users 테이블
     op.create_table(
