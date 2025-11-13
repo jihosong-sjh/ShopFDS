@@ -137,13 +137,13 @@
 
 ### FDS 룰 엔진 (User Story 2)
 
-- [ ] T051 [P] [US2] RiskFactor 모델 생성 (services/fds/src/models/risk_factor.py)
-- [ ] T052 [P] [US2] DetectionRule 모델 생성 (services/fds/src/models/detection_rule.py)
-- [ ] T053 [US2] 룰 엔진 기본 구조 구현 (services/fds/src/engines/rule_engine.py)
-- [ ] T054 [P] [US2] Velocity Check 룰 구현 (단시간 내 반복 거래 탐지, Redis 활용)
-- [ ] T055 [P] [US2] 거래 금액 임계값 룰 구현 (평소 패턴 대비 고액 거래 탐지)
-- [ ] T056 [P] [US2] 지역 불일치 룰 구현 (등록 주소 vs IP 위치 비교)
-- [ ] T057 [US2] 위험 점수 산정 로직 구현 (여러 요인의 가중치 합산)
+- [X] T051 [P] [US2] RiskFactor 모델 생성 (services/fds/src/models/risk_factor.py)
+- [X] T052 [P] [US2] DetectionRule 모델 생성 (services/fds/src/models/detection_rule.py)
+- [X] T053 [US2] 룰 엔진 기본 구조 구현 (services/fds/src/engines/rule_engine.py)
+- [X] T054 [P] [US2] Velocity Check 룰 구현 (단시간 내 반복 거래 탐지, Redis 활용)
+- [X] T055 [P] [US2] 거래 금액 임계값 룰 구현 (평소 패턴 대비 고액 거래 탐지)
+- [X] T056 [P] [US2] 지역 불일치 룰 구현 (등록 주소 vs IP 위치 비교)
+- [X] T057 [US2] 위험 점수 산정 로직 구현 (여러 요인의 가중치 합산)
 
 ### 추가 인증 메커니즘 (User Story 2)
 

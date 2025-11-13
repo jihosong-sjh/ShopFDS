@@ -11,6 +11,16 @@ from .transaction import (
     RiskLevel,
     EvaluationStatus,
 )
+from .risk_factor import (
+    RiskFactor,
+    FactorType,
+    FactorSeverity,
+)
+from .detection_rule import (
+    DetectionRule,
+    RuleType,
+    RulePriority,
+)
 
 __all__ = [
     # Base
@@ -25,4 +35,12 @@ __all__ = [
     "DeviceType",
     "RiskLevel",
     "EvaluationStatus",
+    # RiskFactor
+    "RiskFactor",
+    "FactorType",
+    "FactorSeverity",
+    # DetectionRule
+    "DetectionRule",
+    "RuleType",
+    "RulePriority",
 ]
