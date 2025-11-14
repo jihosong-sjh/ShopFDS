@@ -278,4 +278,181 @@ export const abTestsApi = {
   },
 };
 
+/**
+ * ML 모델 API
+ */
+export const mlModelsApi = {
+  /**
+   * 모델 목록 조회
+   */
+  getList: async (params?: {
+    deployment_status?: string;
+    model_type?: string;
+    limit?: number;
+  }) => {
+    // ML 서비스는 8003 포트 사용 (기본값)
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.get(`${mlServiceUrl}/v1/ml/models`, { params });
+    return response.data;
+  },
+
+  /**
+   * 모델 상세 조회
+   */
+  getDetail: async (modelId: string) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.get(`${mlServiceUrl}/v1/ml/models/${modelId}`);
+    return response.data;
+  },
+
+  /**
+   * 모델 비교
+   */
+  compare: async (modelId1: string, modelId2: string) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.get(`${mlServiceUrl}/v1/ml/models/compare`, {
+      params: { model_id_1: modelId1, model_id_2: modelId2 },
+    });
+    return response.data;
+  },
+
+  /**
+   * 현재 프로덕션 모델 조회
+   */
+  getCurrentProduction: async (modelType?: string) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.get(`${mlServiceUrl}/v1/ml/models/production/current`, {
+      params: modelType ? { model_type: modelType } : undefined,
+    });
+    return response.data;
+  },
+
+  /**
+   * 모델 학습 트리거
+   */
+  train: async (data: {
+    model_type: string;
+    training_period_days?: number;
+    hyperparameters?: any;
+    auto_deploy_to_staging?: boolean;
+  }) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.post(`${mlServiceUrl}/v1/ml/train`, data);
+    return response.data;
+  },
+
+  /**
+   * 학습 상태 조회
+   */
+  getTrainingStatus: async (modelId: string) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.get(`${mlServiceUrl}/v1/ml/train/status`, {
+      params: { model_id: modelId },
+    });
+    return response.data;
+  },
+
+  /**
+   * 학습 히스토리 조회
+   */
+  getTrainingHistory: async (limit?: number) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.get(`${mlServiceUrl}/v1/ml/train/history`, {
+      params: { limit },
+    });
+    return response.data;
+  },
+
+  /**
+   * 모델 배포
+   */
+  deploy: async (data: {
+    model_id: string;
+    target_environment: 'staging' | 'production';
+  }) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.post(`${mlServiceUrl}/v1/ml/deploy`, data);
+    return response.data;
+  },
+
+  /**
+   * 카나리 배포 시작
+   */
+  startCanary: async (data: {
+    model_id: string;
+    initial_traffic_percentage?: number;
+    success_threshold?: number;
+    monitoring_window_minutes?: number;
+  }) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.post(`${mlServiceUrl}/v1/ml/deploy/canary`, data);
+    return response.data;
+  },
+
+  /**
+   * 카나리 배포 상태 조회
+   */
+  getCanaryStatus: async () => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.get(`${mlServiceUrl}/v1/ml/deploy/canary/status`);
+    return response.data;
+  },
+
+  /**
+   * 카나리 배포 트래픽 조정
+   */
+  adjustCanaryTraffic: async (newPercentage: number) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.patch(`${mlServiceUrl}/v1/ml/deploy/canary/traffic`, {
+      new_percentage: newPercentage,
+    });
+    return response.data;
+  },
+
+  /**
+   * 카나리 배포 완료
+   */
+  completeCanary: async () => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.post(`${mlServiceUrl}/v1/ml/deploy/canary/complete`);
+    return response.data;
+  },
+
+  /**
+   * 카나리 배포 중단
+   */
+  abortCanary: async (reason: string) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.post(`${mlServiceUrl}/v1/ml/deploy/canary/abort`, {
+      reason,
+    });
+    return response.data;
+  },
+
+  /**
+   * 모델 롤백
+   */
+  rollback: async (data: {
+    reason: string;
+    target_model_id?: string;
+    model_type?: string;
+  }) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.post(`${mlServiceUrl}/v1/ml/deploy/rollback`, data);
+    return response.data;
+  },
+
+  /**
+   * 긴급 롤백
+   */
+  emergencyRollback: async (data: {
+    reason: string;
+    model_type?: string;
+  }) => {
+    const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";
+    const response = await axios.post(`${mlServiceUrl}/v1/ml/deploy/rollback/emergency`, data);
+    return response.data;
+  },
+};
+
 export default apiClient;

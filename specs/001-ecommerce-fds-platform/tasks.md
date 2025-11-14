@@ -307,8 +307,8 @@
 
 ### 관리자 대시보드 통합 (User Story 6)
 
-- [ ] T124 [US6] ML 모델 관리 페이지 구현 (모델 목록, 학습 트리거, services/admin-dashboard/frontend/src/pages/MLModelManagement.tsx)
-- [ ] T125 [US6] 모델 성능 비교 대시보드 구현 (services/admin-dashboard/frontend/src/pages/ModelComparison.tsx)
+- [X] T124 [US6] ML 모델 관리 페이지 구현 (모델 목록, 학습 트리거, services/admin-dashboard/frontend/src/pages/MLModelManagement.tsx)
+- [X] T125 [US6] 모델 성능 비교 대시보드 구현 (services/admin-dashboard/frontend/src/pages/ModelComparison.tsx)
 
 ### 통합 및 검증 (User Story 6)
 
