@@ -250,9 +250,9 @@
 
 ### 룰 관리 백엔드 (User Story 5)
 
-- [ ] T098 [P] [US5] 룰 관리 API 구현: GET /v1/rules, POST /v1/rules, PUT /v1/rules/{id}, DELETE /v1/rules/{id} (services/admin-dashboard/backend/src/api/rules.py)
-- [ ] T099 [US5] 룰 활성화/비활성화 API 구현: PATCH /v1/rules/{id}/toggle (services/admin-dashboard/backend/src/api/rules.py)
-- [ ] T100 [US5] 룰 엔진에서 동적 룰 로드 로직 구현 (데이터베이스에서 활성 룰 로드 및 적용)
+- [X] T098 [P] [US5] 룰 관리 API 구현: GET /v1/rules, POST /v1/rules, PUT /v1/rules/{id}, DELETE /v1/rules/{id} (services/admin-dashboard/backend/src/api/rules.py)
+- [X] T099 [US5] 룰 활성화/비활성화 API 구현: PATCH /v1/rules/{id}/toggle (services/admin-dashboard/backend/src/api/rules.py)
+- [X] T100 [US5] 룰 엔진에서 동적 룰 로드 로직 구현 (데이터베이스에서 활성 룰 로드 및 적용)
 
 ### A/B 테스트 기능 (User Story 5)
 

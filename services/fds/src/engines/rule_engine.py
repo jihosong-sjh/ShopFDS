@@ -118,6 +118,11 @@ class RuleEngine:
 
         Returns:
             List[DetectionRule]: 활성화된 룰 목록 (우선순위 순으로 정렬)
+
+        Note:
+            - 캐시 TTL은 5분입니다.
+            - 룰 관리 API를 통해 룰이 추가/수정/삭제되면 자동으로 최대 5분 내에 반영됩니다.
+            - 즉시 반영이 필요한 경우 force_reload=True를 사용하세요.
         """
         # 캐시 유효성 검사
         if not force_reload and self._rule_cache:
@@ -141,6 +146,20 @@ class RuleEngine:
         self._cache_timestamp = datetime.utcnow()
 
         return self._rule_cache
+
+    def invalidate_cache(self) -> None:
+        """
+        룰 캐시를 무효화합니다.
+
+        보안팀이 룰 관리 API를 통해 룰을 추가/수정/삭제한 경우,
+        다음 evaluate_transaction 호출 시 최신 룰을 로드하도록 합니다.
+
+        Note:
+            - 이 메서드는 관리자 대시보드 API에서 호출될 수 있습니다.
+            - 캐시를 무효화하면 다음 평가 시 자동으로 데이터베이스에서 재로드됩니다.
+        """
+        self._rule_cache = []
+        self._cache_timestamp = None
 
     async def evaluate_transaction(
         self, context: TransactionContext

@@ -112,10 +112,12 @@ async def health_check():
 from src.api.dashboard import router as dashboard_router
 from src.api.review import router as review_router
 from src.api.transactions import router as transactions_router
+from src.api.rules import router as rules_router
 
 app.include_router(dashboard_router)
 app.include_router(review_router)
 app.include_router(transactions_router)
+app.include_router(rules_router)
 
 
 if __name__ == "__main__":
