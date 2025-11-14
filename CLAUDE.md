@@ -295,6 +295,14 @@ async def test_user(self, db_session: AsyncSession):
 
 ## Recent Changes
 
+- 2025-11-14 (3): Phase 7: A/B 테스트 기능 구현 완료 (T101-T104)
+  - ABTest 모델 생성: 그룹 A/B 설정, 트래픽 분할, 성과 지표 집계 (services/fds/src/models/ab_test.py)
+  - A/B 테스트 관리 API: POST /v1/ab-tests, GET /v1/ab-tests, PUT /v1/ab-tests/{id}, PATCH /v1/ab-tests/{id}/status (services/admin-dashboard/backend/src/api/ab_tests.py)
+  - A/B 테스트 결과 집계 API: GET /v1/ab-tests/{id}/results (정탐률, 오탐률, F1 스코어, 평가 시간 비교)
+  - FDS 평가 시 A/B 테스트 그룹 분할 로직: transaction_id 해시 기반 일관된 그룹 할당 (services/fds/src/services/ab_test_service.py)
+  - FDS EvaluationEngine에 A/B 테스트 통합: 진행 중인 테스트 자동 탐지 및 결과 기록
+  - Admin Dashboard main.py에 A/B 테스트 라우터 등록 완료
+
 - 2025-11-14 (2): Phase 6: 관리자 백엔드 API 구현 완료 (T086-T090)
   - 상품 관리 API: POST, PUT, DELETE /v1/admin/products
   - 재고 관리 API: PATCH /v1/admin/products/{id}/stock

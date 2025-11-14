@@ -4,6 +4,7 @@ FDS 평가 엔진
 거래의 위험도를 평가하고 적절한 조치를 결정하는 핵심 엔진
 """
 
+import logging
 import time
 from datetime import datetime
 from typing import List, Tuple, Optional
@@ -23,6 +24,8 @@ from ..models.schemas import (
     SeverityEnum,
 )
 from ..engines.cti_connector import CTIConnector, ThreatLevel
+
+logger = logging.getLogger(__name__)
 
 
 class EvaluationEngine:
@@ -58,6 +61,8 @@ class EvaluationEngine:
         """
         거래를 평가하고 위험 점수를 산정합니다.
 
+        Phase 7: A/B 테스트가 진행 중이면 거래를 A/B 그룹으로 분할하고 결과를 집계합니다.
+
         Args:
             request: FDS 평가 요청
 
@@ -68,6 +73,35 @@ class EvaluationEngine:
 
         # CTI 체크 시간 추적
         self._cti_check_time_ms = 0
+
+        # A/B 테스트 정보 (메타데이터에 포함)
+        ab_test_group = None
+        ab_test_name = None
+
+        # Phase 7: A/B 테스트 확인 및 그룹 분할
+        if self.db:
+            try:
+                from ..services.ab_test_service import ABTestService
+
+                ab_test_service = ABTestService(self.db)
+                active_test = await ab_test_service.get_active_test(test_type="rule")
+
+                if active_test:
+                    # 거래를 A/B 그룹에 할당
+                    ab_test_group = ab_test_service.assign_group(
+                        active_test, request.transaction_id
+                    )
+                    ab_test_name = active_test.name
+
+                    logger.debug(
+                        f"A/B 테스트 그룹 할당: test={active_test.name}, "
+                        f"transaction={request.transaction_id}, group={ab_test_group}"
+                    )
+
+                    # TODO: 그룹별 설정을 적용하여 평가 수행
+                    # 현재는 기본 평가만 수행하고, 결과만 그룹별로 기록
+            except Exception as e:
+                logger.warning(f"A/B 테스트 처리 중 에러 (무시하고 계속): {e}")
 
         # 1. 위험 요인 평가
         risk_factors = await self._evaluate_risk_factors(request)
@@ -88,6 +122,36 @@ class EvaluationEngine:
 
         # 평가 시간 계산
         evaluation_time_ms = int((time.time() - start_time) * 1000)
+
+        # Phase 7: A/B 테스트 결과 기록
+        if self.db and ab_test_group and active_test:
+            try:
+                # TP/FP/FN 판단
+                is_tp, is_fp, is_fn = await ab_test_service.determine_fraud_label(
+                    request.transaction_id, risk_score, decision.value
+                )
+
+                # 결과 기록
+                await ab_test_service.record_test_result(
+                    test=active_test,
+                    group=ab_test_group,
+                    is_true_positive=is_tp,
+                    is_false_positive=is_fp,
+                    is_false_negative=is_fn,
+                    evaluation_time_ms=evaluation_time_ms,
+                )
+
+                # 데이터베이스 커밋 (결과 저장)
+                await self.db.commit()
+
+                logger.info(
+                    f"A/B 테스트 결과 기록 완료: test={ab_test_name}, "
+                    f"group={ab_test_group}, TP={is_tp}, FP={is_fp}, FN={is_fn}"
+                )
+            except Exception as e:
+                logger.error(f"A/B 테스트 결과 기록 실패 (무시하고 계속): {e}")
+                # Rollback하고 계속 진행
+                await self.db.rollback()
 
         # 평가 메타데이터
         metadata = EvaluationMetadata(

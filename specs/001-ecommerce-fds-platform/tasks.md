@@ -256,10 +256,10 @@
 
 ### A/B 테스트 기능 (User Story 5)
 
-- [ ] T101 [P] [US5] ABTest 모델 생성 (services/fds/src/models/ab_test.py)
-- [ ] T102 [US5] A/B 테스트 설정 API 구현: POST /v1/ab-tests (services/admin-dashboard/backend/src/api/ab_tests.py)
-- [ ] T103 [US5] A/B 테스트 결과 집계 API 구현: GET /v1/ab-tests/{id}/results (services/admin-dashboard/backend/src/api/ab_tests.py)
-- [ ] T104 [US5] FDS 평가 시 A/B 테스트 그룹 분할 로직 구현
+- [X] T101 [P] [US5] ABTest 모델 생성 (services/fds/src/models/ab_test.py)
+- [X] T102 [US5] A/B 테스트 설정 API 구현: POST /v1/ab-tests (services/admin-dashboard/backend/src/api/ab_tests.py)
+- [X] T103 [US5] A/B 테스트 결과 집계 API 구현: GET /v1/ab-tests/{id}/results (services/admin-dashboard/backend/src/api/ab_tests.py)
+- [X] T104 [US5] FDS 평가 시 A/B 테스트 그룹 분할 로직 구현
 
 ### 보안팀 프론트엔드 (User Story 5)
 

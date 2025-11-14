@@ -108,10 +108,17 @@ async def evaluate_transaction(
             f"user_id={request.user_id}, amount={request.amount}"
         )
 
-        # 1. 평가 엔진으로 거래 평가
-        evaluation_result = await evaluation_engine.evaluate(request)
+        # 1. 평가 엔진 초기화 (db와 redis 주입 - A/B 테스트용)
+        from ..engines.evaluation_engine import EvaluationEngine
+        from ..models import get_redis
 
-        # 2. 평가 결과를 데이터베이스에 저장
+        redis = await get_redis()
+        engine = EvaluationEngine(db=db, redis=redis)
+
+        # 2. 평가 엔진으로 거래 평가
+        evaluation_result = await engine.evaluate(request)
+
+        # 3. 평가 결과를 데이터베이스에 저장
         transaction = Transaction(
             id=request.transaction_id,
             user_id=request.user_id,
@@ -139,7 +146,7 @@ async def evaluate_transaction(
         await db.commit()
         await db.refresh(transaction)
 
-        # 3. 고위험 거래(BLOCKED)는 자동으로 검토 큐에 추가 (Phase 5: T073)
+        # 4. 고위험 거래(BLOCKED)는 자동으로 검토 큐에 추가 (Phase 5: T073)
         if evaluation_result.decision.value == "blocked":
             try:
                 review_queue_service = ReviewQueueService(db)
