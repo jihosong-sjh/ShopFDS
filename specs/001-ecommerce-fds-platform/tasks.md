@@ -269,8 +269,8 @@
 
 ### 통합 및 검증 (User Story 5)
 
-- [ ] T108 [US5] 새 룰 추가 및 즉시 적용 검증
-- [ ] T109 [US5] A/B 테스트 실행 및 결과 집계 검증
+- [X] T108 [US5] 새 룰 추가 및 즉시 적용 검증
+- [X] T109 [US5] A/B 테스트 실행 및 결과 집계 검증
 
 **체크포인트**: 사용자 스토리 5가 독립적으로 작동하며, 보안팀이 룰을 동적으로 관리할 수 있습니다.
 
@@ -284,13 +284,13 @@
 
 ### ML 모델 학습 (User Story 6)
 
-- [ ] T110 [P] [US6] MLModel 모델 생성 (services/ml-service/src/models/ml_model.py)
-- [ ] T111 [P] [US6] FraudCase 모델 생성 (services/ml-service/src/models/fraud_case.py)
-- [ ] T112 [US6] 학습 데이터 전처리 파이프라인 구현 (services/ml-service/src/data/preprocessing.py)
-- [ ] T113 [US6] Feature Engineering 로직 구현 (services/ml-service/src/data/feature_engineering.py)
-- [ ] T114 [US6] Isolation Forest 학습 스크립트 구현 (services/ml-service/src/training/train_isolation_forest.py)
-- [ ] T115 [US6] LightGBM 학습 스크립트 구현 (services/ml-service/src/training/train_lightgbm.py)
-- [ ] T116 [US6] 모델 평가 스크립트 구현 (정확도, 정밀도, 재현율, F1 스코어, services/ml-service/src/evaluation/evaluate.py)
+- [X] T110 [P] [US6] MLModel 모델 생성 (services/ml-service/src/models/ml_model.py)
+- [X] T111 [P] [US6] FraudCase 모델 생성 (services/ml-service/src/models/fraud_case.py)
+- [X] T112 [US6] 학습 데이터 전처리 파이프라인 구현 (services/ml-service/src/data/preprocessing.py)
+- [X] T113 [US6] Feature Engineering 로직 구현 (services/ml-service/src/data/feature_engineering.py)
+- [X] T114 [US6] Isolation Forest 학습 스크립트 구현 (services/ml-service/src/training/train_isolation_forest.py)
+- [X] T115 [US6] LightGBM 학습 스크립트 구현 (services/ml-service/src/training/train_lightgbm.py)
+- [X] T116 [US6] 모델 평가 스크립트 구현 (정확도, 정밀도, 재현율, F1 스코어, services/ml-service/src/evaluation/evaluate.py)
 
 ### ML 모델 배포 (User Story 6)
 
