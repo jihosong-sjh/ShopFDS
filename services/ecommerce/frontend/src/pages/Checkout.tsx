@@ -157,40 +157,36 @@ export const Checkout: React.FC = () => {
 
   // OTP 검증 핸들러 (T063)
   const handleOtpVerify = async (otpCode: string) => {
-    try {
-      const result = await authApi.verifyOtp({
+    const result = await authApi.verifyOtp({
+      otp_token: otpToken,
+      otp_code: otpCode,
+    });
+
+    if (result.verified) {
+      // OTP 검증 성공: otp_token을 포함하여 주문 재시도
+      const orderData = {
+        ...pendingOrderData,
         otp_token: otpToken,
-        otp_code: otpCode,
-      });
+      };
 
-      if (result.verified) {
-        // OTP 검증 성공: otp_token을 포함하여 주문 재시도
-        const orderData = {
-          ...pendingOrderData,
-          otp_token: otpToken,
-        };
+      const response = await ordersApi.createOrder(orderData);
 
-        const response = await ordersApi.createOrder(orderData);
-
-        if (response.order) {
-          setShowOtpModal(false);
-          resetCartCount();
-          navigate(`/orders/${response.order.id}`);
-        } else {
-          throw new Error(response.message || '주문 처리에 실패했습니다.');
-        }
+      if (response.order) {
+        setShowOtpModal(false);
+        resetCartCount();
+        navigate(`/orders/${response.order.id}`);
       } else {
-        setOtpAttempts((prev) => prev - 1);
-        if (otpAttempts <= 1) {
-          setShowOtpModal(false);
-          setErrors({
-            submit: '인증 실패 횟수를 초과했습니다. 거래가 차단되었습니다.',
-          });
-        }
-        throw new Error('인증번호가 올바르지 않습니다.');
+        throw new Error(response.message || '주문 처리에 실패했습니다.');
       }
-    } catch (error: any) {
-      throw error;
+    } else {
+      setOtpAttempts((prev) => prev - 1);
+      if (otpAttempts <= 1) {
+        setShowOtpModal(false);
+        setErrors({
+          submit: '인증 실패 횟수를 초과했습니다. 거래가 차단되었습니다.',
+        });
+      }
+      throw new Error('인증번호가 올바르지 않습니다.');
     }
   };
 
