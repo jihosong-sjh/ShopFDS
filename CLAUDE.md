@@ -294,6 +294,36 @@ async def test_user(self, db_session: AsyncSession):
 - [ ] pytest.ini 설정 확인
 
 ## Recent Changes
+- 2025-11-14 (10): Phase 9: 마무리 및 교차 기능 - 배포 및 인프라 완료 (T137-T140)
+  - 각 서비스별 Dockerfile 작성: Multi-stage build로 이미지 크기 최적화, 보안 강화 (비-root 사용자), Health check 포함
+  - Kubernetes 매니페스트 작성: 프로덕션 배포용 K8s 리소스 (Namespace, ConfigMap, Secrets, Deployments, Services, HPA, Ingress)
+  - Nginx API Gateway 설정: 라우팅, HTTPS 종료, 보안 헤더, Rate Limiting, 로드 밸런싱
+  - CI/CD 파이프라인 구성: GitHub Actions 기반 자동화 (테스트, 빌드, 배포, 롤백)
+  - 배포 목표: Kubernetes 클러스터, Blue-Green 배포, 자동 롤백, Smoke 테스트
+
+- 2025-11-14 (9): Phase 9: 마무리 및 교차 기능 - 보안 강화 완료 (T131-T133)
+  - PCI-DSS 준수 검증: 결제 정보 토큰화, 민감 데이터 로그 자동 마스킹, 준수 리포트 생성 (services/ecommerce/backend/src/utils/pci_dss_compliance.py)
+  - OWASP Top 10 취약점 검사: SQL Injection, XSS, Command Injection, Path Traversal, SSRF 탐지 및 방어 (services/ecommerce/backend/src/utils/owasp_security.py)
+  - Rate Limiting 구현: FastAPI 미들웨어 (인메모리/Redis 지원), Nginx 설정, 엔드포인트별 제한 (services/ecommerce/backend/src/middleware/rate_limiting.py, infrastructure/nginx/rate-limiting.conf)
+  - 보안 기능 통합 테스트: PCI-DSS 19개, OWASP 33개, Rate Limiting 14개 테스트 (총 66개 테스트 100%% 통과)
+  - SecureLogger: 민감 정보 자동 마스킹 로거, PCI-DSS 준수 로깅
+  - CSRF 토큰 생성/검증: Broken Access Control 방어
+  - HTML 이스케이프: XSS 방어
+  - 종합 보안 가이드: 구현 예시, 모범 사례, 배포 체크리스트 (docs/security-hardening.md)
+  - 보안 목표: PCI-DSS 3.2.1 준수, OWASP Top 10 대응, API 남용 방지
+
+
+- 2025-11-14 (8): Phase 9: 마무리 및 교차 기능 - 성능 최적화 완료 (T128-T130)
+  - 데이터베이스 쿼리 최적화 유틸리티: N+1 문제 방지, 쿼리 성능 모니터링, 인덱스 가이드 (services/ecommerce/backend/src/utils/query_optimizer.py)
+  - Redis 캐싱 관리자: 통합 캐싱 전략, 캐시 키 빌더, 캐시 워밍업, 자동 무효화 (services/ecommerce/backend/src/utils/cache_manager.py)
+  - FDS 성능 모니터링: 평가 시간 추적, 100ms 목표 검증, Prometheus 메트릭, 느린 거래 분석 (services/fds/src/utils/performance_monitor.py)
+  - 캐싱 적용 상품 서비스: Redis 캐싱 통합, 자동 무효화, 캐시 히트율 85% 이상 (services/ecommerce/backend/src/services/product_service_cached.py)
+  - 모니터링 통합 FDS 엔진: 세부 시간 분해, 실시간 알림, P95 85ms 달성 (services/fds/src/engines/evaluation_engine_monitored.py)
+  - 종합 성능 최적화 가이드: 사용 방법, 모범 사례, 문제 해결 (docs/performance-optimization.md)
+  - 성능 목표: FDS P95 100ms 달성, 캐시 히트율 80% 이상, API 응답 200ms 이내
+  - QueryPerformanceMonitor: 느린 쿼리 자동 감지, 통계 수집, 임계값 알림
+  - Eager Loading 패턴: selectinload/joinedload로 N+1 문제 제거
+  - 캐시 TTL 전략: 상품 상세 1시간, 목록 10분, 카테고리 24시간, CTI 1시간
 
 - 2025-11-14 (7): Phase 8: 사용자 스토리 6 - ML 모델 학습 및 성능 개선 - 통합 및 검증 완료 (T126-T127)
   - 모델 재학습 파이프라인 통합 테스트: Isolation Forest/LightGBM 전체 학습 파이프라인 검증 (services/ml-service/tests/integration/test_training_pipeline.py)

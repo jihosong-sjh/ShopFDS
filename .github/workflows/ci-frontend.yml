@@ -1,0 +1,106 @@
+name: CI - Frontend Services
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'services/ecommerce/frontend/**'
+      - 'services/admin-dashboard/frontend/**'
+      - '.github/workflows/ci-frontend.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'services/ecommerce/frontend/**'
+      - 'services/admin-dashboard/frontend/**'
+
+jobs:
+  test-ecommerce-frontend:
+    name: Test Ecommerce Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'services/ecommerce/frontend/package-lock.json'
+
+    - name: Install dependencies
+      working-directory: services/ecommerce/frontend
+      run: npm ci
+
+    - name: Run linting (ESLint)
+      working-directory: services/ecommerce/frontend
+      run: npm run lint
+
+    - name: Run type checking (TypeScript)
+      working-directory: services/ecommerce/frontend
+      run: npx tsc --noEmit
+
+    - name: Run unit tests
+      working-directory: services/ecommerce/frontend
+      run: npm test -- --coverage --watchAll=false
+
+    - name: Build production
+      working-directory: services/ecommerce/frontend
+      env:
+        VITE_API_BASE_URL: https://api.shopfds.example.com
+        VITE_FDS_API_URL: https://api.shopfds.example.com
+      run: npm run build
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./services/ecommerce/frontend/coverage/coverage-final.json
+        flags: ecommerce-frontend
+        name: ecommerce-frontend-coverage
+
+  test-admin-dashboard-frontend:
+    name: Test Admin Dashboard Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'services/admin-dashboard/frontend/package-lock.json'
+
+    - name: Install dependencies
+      working-directory: services/admin-dashboard/frontend
+      run: npm ci
+
+    - name: Run linting (ESLint)
+      working-directory: services/admin-dashboard/frontend
+      run: npm run lint
+
+    - name: Run type checking (TypeScript)
+      working-directory: services/admin-dashboard/frontend
+      run: npx tsc --noEmit
+
+    - name: Run unit tests
+      working-directory: services/admin-dashboard/frontend
+      run: npm test -- --coverage --watchAll=false
+
+    - name: Build production
+      working-directory: services/admin-dashboard/frontend
+      env:
+        VITE_ADMIN_API_URL: https://api.shopfds.example.com
+        VITE_FDS_API_URL: https://api.shopfds.example.com
+        VITE_ECOMMERCE_API_URL: https://api.shopfds.example.com
+      run: npm run build
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./services/admin-dashboard/frontend/coverage/coverage-final.json
+        flags: admin-dashboard-frontend
+        name: admin-dashboard-frontend-coverage

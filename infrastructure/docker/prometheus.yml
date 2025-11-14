@@ -1,0 +1,107 @@
+# Prometheus 설정 파일
+# ShopFDS 프로젝트의 모든 서비스에서 메트릭을 수집합니다.
+
+global:
+  scrape_interval: 15s      # 기본 스크래핑 간격
+  evaluation_interval: 15s  # 알림 룰 평가 간격
+  external_labels:
+    cluster: 'shopfds-dev'
+    environment: 'development'
+
+# 알림 관리자 설정 (선택사항)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           - 'alertmanager:9093'
+
+# 알림 룰 파일 (선택사항)
+# rule_files:
+#   - '/etc/prometheus/rules/*.yml'
+
+# 메트릭 수집 대상 설정
+scrape_configs:
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # 이커머스 백엔드
+  - job_name: 'ecommerce-backend'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['ecommerce-backend:8000']
+        labels:
+          service: 'ecommerce-backend'
+          team: 'ecommerce'
+
+  # FDS 서비스 (핵심 메트릭)
+  - job_name: 'fds'
+    scrape_interval: 10s  # FDS는 더 자주 수집 (100ms 목표 모니터링)
+    scrape_timeout: 5s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['fds:8001']
+        labels:
+          service: 'fds'
+          team: 'security'
+          critical: 'true'  # 중요 서비스 표시
+
+  # ML 서비스
+  - job_name: 'ml-service'
+    scrape_interval: 30s  # ML 서비스는 덜 자주 수집
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['ml-service:8002']
+        labels:
+          service: 'ml-service'
+          team: 'ml'
+
+  # 관리자 대시보드 백엔드
+  - job_name: 'admin-dashboard-backend'
+    scrape_interval: 20s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['admin-dashboard-backend:8003']
+        labels:
+          service: 'admin-dashboard'
+          team: 'admin'
+
+  # PostgreSQL Exporter (선택사항)
+  - job_name: 'postgres'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          database: 'shopfds'
+
+  # Redis Exporter (선택사항)
+  - job_name: 'redis'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          cache: 'main'
+
+  # Nginx Exporter (선택사항)
+  - job_name: 'nginx'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+        labels:
+          service: 'nginx'
+          gateway: 'main'
+
+# 원격 저장소 설정 (장기 저장용, 선택사항)
+# remote_write:
+#   - url: 'http://thanos-receiver:19291/api/v1/receive'
+
+# 원격 읽기 설정 (선택사항)
+# remote_read:
+#   - url: 'http://thanos-query:19192/api/v1/query'

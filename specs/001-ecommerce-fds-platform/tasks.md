@@ -325,28 +325,28 @@
 
 ### 성능 최적화
 
-- [ ] T128 [P] 데이터베이스 쿼리 최적화 (인덱스 활용, N+1 문제 해결)
-- [ ] T129 [P] Redis 캐싱 전략 확대 (상품 목록, CTI 결과 등)
-- [ ] T130 [P] FDS 평가 시간 모니터링 및 100ms 목표 달성 검증
+- [X] T128 [P] 데이터베이스 쿼리 최적화 (인덱스 활용, N+1 문제 해결)
+- [X] T129 [P] Redis 캐싱 전략 확대 (상품 목록, CTI 결과 등)
+- [X] T130 [P] FDS 평가 시간 모니터링 및 100ms 목표 달성 검증
 
 ### 보안 강화
 
-- [ ] T131 [P] PCI-DSS 준수 검증 (결제 정보 토큰화, 민감 데이터 로그 금지)
-- [ ] T132 [P] SQL Injection, XSS 등 OWASP Top 10 취약점 점검
-- [ ] T133 Rate Limiting 구현 (Nginx 및 FastAPI 레벨)
+- [X] T131 [P] PCI-DSS 준수 검증 (결제 정보 토큰화, 민감 데이터 로그 금지)
+- [X] T132 [P] SQL Injection, XSS 등 OWASP Top 10 취약점 점검
+- [X] T133 Rate Limiting 구현 (Nginx 및 FastAPI 레벨)
 
 ### 모니터링 및 로깅
 
-- [ ] T134 [P] Prometheus 메트릭 수집 설정 (services/ecommerce/backend, services/fds)
-- [ ] T135 [P] Grafana 대시보드 구성 (FDS 평가 시간, 거래 처리량, 에러율)
-- [ ] T136 Sentry 에러 트래킹 통합
+- [X] T134 [P] Prometheus 메트릭 수집 설정 (services/ecommerce/backend, services/fds)
+- [X] T135 [P] Grafana 대시보드 구성 (FDS 평가 시간, 거래 처리량, 에러율)
+- [X] T136 Sentry 에러 트래킹 통합
 
 ### 배포 및 인프라
 
-- [ ] T137 [P] 각 서비스별 Dockerfile 작성 (Multi-stage build)
-- [ ] T138 [P] Kubernetes 매니페스트 작성 (Deployment, Service, Ingress)
-- [ ] T139 Nginx API Gateway 설정 (라우팅, HTTPS 종료)
-- [ ] T140 CI/CD 파이프라인 구성 (GitHub Actions: 테스트, 빌드, 배포)
+- [X] T137 [P] 각 서비스별 Dockerfile 작성 (Multi-stage build)
+- [X] T138 [P] Kubernetes 매니페스트 작성 (Deployment, Service, Ingress)
+- [X] T139 Nginx API Gateway 설정 (라우팅, HTTPS 종료)
+- [X] T140 CI/CD 파이프라인 구성 (GitHub Actions: 테스트, 빌드, 배포)
 
 ### 문서화
 
