@@ -295,6 +295,14 @@ async def test_user(self, db_session: AsyncSession):
 
 ## Recent Changes
 
+- 2025-11-14 (4): Phase 7: 보안팀 프론트엔드 구현 완료 (T105-T107)
+  - 룰 관리 페이지: 룰 목록 조회, 필터링, 활성화/비활성화, 생성/수정/삭제 (services/admin-dashboard/frontend/src/pages/RuleManagement.tsx)
+  - A/B 테스트 설정 페이지: 테스트 목록, 필터링, 상태 관리 (시작/일시중지/재개/완료), 생성/삭제 (services/admin-dashboard/frontend/src/pages/ABTestSetup.tsx)
+  - A/B 테스트 결과 대시보드: 그룹 A/B 성과 지표 비교, 정밀도/재현율/F1 스코어 차트, 평가 시간 비교, 권장 사항 표시 (services/admin-dashboard/frontend/src/pages/ABTestResults.tsx)
+  - API 서비스 확장: rulesApi, abTestsApi 추가 (services/admin-dashboard/frontend/src/services/api.ts)
+  - React Query + Zustand 기반 상태 관리, Recharts 차트 라이브러리 활용
+  - Tailwind CSS 기반 반응형 UI 디자인
+
 - 2025-11-14 (3): Phase 7: A/B 테스트 기능 구현 완료 (T101-T104)
   - ABTest 모델 생성: 그룹 A/B 설정, 트래픽 분할, 성과 지표 집계 (services/fds/src/models/ab_test.py)
   - A/B 테스트 관리 API: POST /v1/ab-tests, GET /v1/ab-tests, PUT /v1/ab-tests/{id}, PATCH /v1/ab-tests/{id}/status (services/admin-dashboard/backend/src/api/ab_tests.py)

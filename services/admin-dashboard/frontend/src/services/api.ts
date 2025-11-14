@@ -150,4 +150,132 @@ export const transactionApi = {
   },
 };
 
+/**
+ * 룰 관리 API
+ */
+export const rulesApi = {
+  /**
+   * 룰 목록 조회
+   */
+  getList: async (params?: {
+    is_active?: boolean;
+    rule_type?: string;
+    skip?: number;
+    limit?: number;
+  }) => {
+    const response = await apiClient.get(`/v1/rules`, { params });
+    return response.data;
+  },
+
+  /**
+   * 룰 상세 조회
+   */
+  getDetail: async (ruleId: string) => {
+    const response = await apiClient.get(`/v1/rules/${ruleId}`);
+    return response.data;
+  },
+
+  /**
+   * 새 룰 생성
+   */
+  create: async (data: any) => {
+    const response = await apiClient.post(`/v1/rules`, data);
+    return response.data;
+  },
+
+  /**
+   * 룰 수정
+   */
+  update: async (ruleId: string, data: any) => {
+    const response = await apiClient.put(`/v1/rules/${ruleId}`, data);
+    return response.data;
+  },
+
+  /**
+   * 룰 삭제
+   */
+  delete: async (ruleId: string) => {
+    const response = await apiClient.delete(`/v1/rules/${ruleId}`);
+    return response.data;
+  },
+
+  /**
+   * 룰 활성화/비활성화 토글
+   */
+  toggle: async (ruleId: string) => {
+    const response = await apiClient.patch(`/v1/rules/${ruleId}/toggle`);
+    return response.data;
+  },
+};
+
+/**
+ * A/B 테스트 API
+ */
+export const abTestsApi = {
+  /**
+   * A/B 테스트 목록 조회
+   */
+  getList: async (params?: {
+    test_type?: string;
+    status?: string;
+    skip?: number;
+    limit?: number;
+  }) => {
+    const response = await apiClient.get(`/v1/ab-tests`, { params });
+    return response.data;
+  },
+
+  /**
+   * A/B 테스트 상세 조회
+   */
+  getDetail: async (testId: string) => {
+    const response = await apiClient.get(`/v1/ab-tests/${testId}`);
+    return response.data;
+  },
+
+  /**
+   * 새 A/B 테스트 생성
+   */
+  create: async (data: any) => {
+    const response = await apiClient.post(`/v1/ab-tests`, data);
+    return response.data;
+  },
+
+  /**
+   * A/B 테스트 수정
+   */
+  update: async (testId: string, data: any) => {
+    const response = await apiClient.put(`/v1/ab-tests/${testId}`, data);
+    return response.data;
+  },
+
+  /**
+   * A/B 테스트 상태 변경
+   */
+  updateStatus: async (testId: string, data: {
+    action: 'start' | 'pause' | 'resume' | 'complete' | 'cancel';
+    winner?: string;
+    confidence_level?: number;
+  }) => {
+    const response = await apiClient.patch(`/v1/ab-tests/${testId}/status`, data);
+    return response.data;
+  },
+
+  /**
+   * A/B 테스트 결과 조회
+   */
+  getResults: async (testId: string) => {
+    const response = await apiClient.get(`/v1/ab-tests/${testId}/results`);
+    return response.data;
+  },
+
+  /**
+   * A/B 테스트 삭제
+   */
+  delete: async (testId: string) => {
+    const response = await apiClient.delete(`/v1/ab-tests/${testId}`);
+    return response.data;
+  },
+};
+
 export default apiClient;

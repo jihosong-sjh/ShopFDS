@@ -263,9 +263,9 @@
 
 ### 보안팀 프론트엔드 (User Story 5)
 
-- [ ] T105 [P] [US5] 룰 관리 페이지 구현 (룰 목록, 추가/수정, services/admin-dashboard/frontend/src/pages/RuleManagement.tsx)
-- [ ] T106 [US5] A/B 테스트 설정 페이지 구현 (services/admin-dashboard/frontend/src/pages/ABTestSetup.tsx)
-- [ ] T107 [US5] A/B 테스트 결과 대시보드 구현 (정탐률, 오탐률 비교, services/admin-dashboard/frontend/src/pages/ABTestResults.tsx)
+- [X] T105 [P] [US5] 룰 관리 페이지 구현 (룰 목록, 추가/수정, services/admin-dashboard/frontend/src/pages/RuleManagement.tsx)
+- [X] T106 [US5] A/B 테스트 설정 페이지 구현 (services/admin-dashboard/frontend/src/pages/ABTestSetup.tsx)
+- [X] T107 [US5] A/B 테스트 결과 대시보드 구현 (정탐률, 오탐률 비교, services/admin-dashboard/frontend/src/pages/ABTestResults.tsx)
 
 ### 통합 및 검증 (User Story 5)
 
