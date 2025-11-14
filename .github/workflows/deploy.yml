@@ -1,0 +1,180 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Images"]
+    types:
+      - completed
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    environment:
+      name: staging
+      url: https://staging.shopfds.example.com
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure kubectl
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBECONFIG_STAGING }}" | base64 -d > $HOME/.kube/config
+
+    - name: Deploy to Kubernetes
+      working-directory: infrastructure/k8s
+      run: |
+        # Update image tags to latest
+        kubectl set image deployment/ecommerce-backend -n shopfds \
+          ecommerce-backend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ecommerce-backend:${{ github.sha }}
+
+        kubectl set image deployment/fds-service -n shopfds \
+          fds-service=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-fds-service:${{ github.sha }}
+
+        kubectl set image deployment/ml-service -n shopfds \
+          ml-service=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ml-service:${{ github.sha }}
+
+        kubectl set image deployment/admin-dashboard-backend -n shopfds \
+          admin-dashboard-backend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-admin-dashboard-backend:${{ github.sha }}
+
+        kubectl set image deployment/ecommerce-frontend -n shopfds \
+          ecommerce-frontend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ecommerce-frontend:${{ github.sha }}
+
+        kubectl set image deployment/admin-dashboard-frontend -n shopfds \
+          admin-dashboard-frontend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-admin-dashboard-frontend:${{ github.sha }}
+
+    - name: Wait for rollout
+      run: |
+        kubectl rollout status deployment/ecommerce-backend -n shopfds --timeout=5m
+        kubectl rollout status deployment/fds-service -n shopfds --timeout=5m
+        kubectl rollout status deployment/ml-service -n shopfds --timeout=5m
+        kubectl rollout status deployment/admin-dashboard-backend -n shopfds --timeout=5m
+        kubectl rollout status deployment/ecommerce-frontend -n shopfds --timeout=5m
+        kubectl rollout status deployment/admin-dashboard-frontend -n shopfds --timeout=5m
+
+    - name: Run smoke tests
+      run: |
+        # Health check
+        kubectl exec -n shopfds deployment/ecommerce-backend -- curl -f http://localhost:8000/health
+        kubectl exec -n shopfds deployment/fds-service -- curl -f http://localhost:8001/health
+
+    - name: Notify deployment status
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: 'Staging deployment ${{ job.status }}'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: https://shopfds.example.com
+    needs: []
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure kubectl
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBECONFIG_PRODUCTION }}" | base64 -d > $HOME/.kube/config
+
+    - name: Create backup
+      run: |
+        # Backup current deployment state
+        kubectl get all -n shopfds -o yaml > deployment-backup-$(date +%Y%m%d-%H%M%S).yaml
+
+    - name: Deploy to Kubernetes (Blue-Green)
+      working-directory: infrastructure/k8s
+      run: |
+        # Update image tags to specific version
+        VERSION=${{ github.ref_name }}
+
+        kubectl set image deployment/ecommerce-backend -n shopfds \
+          ecommerce-backend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ecommerce-backend:${VERSION}
+
+        kubectl set image deployment/fds-service -n shopfds \
+          fds-service=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-fds-service:${VERSION}
+
+        kubectl set image deployment/ml-service -n shopfds \
+          ml-service=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ml-service:${VERSION}
+
+        kubectl set image deployment/admin-dashboard-backend -n shopfds \
+          admin-dashboard-backend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-admin-dashboard-backend:${VERSION}
+
+        kubectl set image deployment/ecommerce-frontend -n shopfds \
+          ecommerce-frontend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-ecommerce-frontend:${VERSION}
+
+        kubectl set image deployment/admin-dashboard-frontend -n shopfds \
+          admin-dashboard-frontend=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-admin-dashboard-frontend:${VERSION}
+
+    - name: Wait for rollout
+      run: |
+        kubectl rollout status deployment/ecommerce-backend -n shopfds --timeout=10m
+        kubectl rollout status deployment/fds-service -n shopfds --timeout=10m
+        kubectl rollout status deployment/ml-service -n shopfds --timeout=10m
+        kubectl rollout status deployment/admin-dashboard-backend -n shopfds --timeout=10m
+        kubectl rollout status deployment/ecommerce-frontend -n shopfds --timeout=10m
+        kubectl rollout status deployment/admin-dashboard-frontend -n shopfds --timeout=10m
+
+    - name: Run smoke tests
+      run: |
+        # Health check
+        kubectl exec -n shopfds deployment/ecommerce-backend -- curl -f http://localhost:8000/health
+        kubectl exec -n shopfds deployment/fds-service -- curl -f http://localhost:8001/health
+
+        # FDS performance test (100ms goal)
+        kubectl exec -n shopfds deployment/fds-service -- python -m pytest tests/performance/test_fds_latency.py -v
+
+    - name: Rollback on failure
+      if: failure()
+      run: |
+        kubectl rollout undo deployment/ecommerce-backend -n shopfds
+        kubectl rollout undo deployment/fds-service -n shopfds
+        kubectl rollout undo deployment/ml-service -n shopfds
+        kubectl rollout undo deployment/admin-dashboard-backend -n shopfds
+        kubectl rollout undo deployment/ecommerce-frontend -n shopfds
+        kubectl rollout undo deployment/admin-dashboard-frontend -n shopfds
+
+    - name: Notify deployment status
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: 'Production deployment ${{ job.status }}'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/shopfds

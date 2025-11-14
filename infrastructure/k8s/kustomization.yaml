@@ -1,0 +1,50 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: shopfds
+
+resources:
+  # Namespace
+  - namespace.yaml
+
+  # ConfigMaps and Secrets
+  - configmap.yaml
+  - secrets.yaml
+
+  # Persistent Volumes
+  - persistent-volumes.yaml
+
+  # Database and Cache
+  - postgres.yaml
+  - redis.yaml
+
+  # Backend Services
+  - ecommerce-backend.yaml
+  - fds-service.yaml
+  - ml-service.yaml
+  - admin-dashboard-backend.yaml
+
+  # Frontend Services
+  - ecommerce-frontend.yaml
+  - admin-dashboard-frontend.yaml
+
+  # Ingress
+  - ingress.yaml
+
+commonLabels:
+  project: shopfds
+  managed-by: kustomize
+
+images:
+  - name: shopfds/ecommerce-backend
+    newTag: latest
+  - name: shopfds/fds-service
+    newTag: latest
+  - name: shopfds/ml-service
+    newTag: latest
+  - name: shopfds/admin-dashboard-backend
+    newTag: latest
+  - name: shopfds/ecommerce-frontend
+    newTag: latest
+  - name: shopfds/admin-dashboard-frontend
+    newTag: latest

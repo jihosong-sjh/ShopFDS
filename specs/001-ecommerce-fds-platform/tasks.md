@@ -343,10 +343,10 @@
 
 ### 배포 및 인프라
 
-- [ ] T137 [P] 각 서비스별 Dockerfile 작성 (Multi-stage build)
-- [ ] T138 [P] Kubernetes 매니페스트 작성 (Deployment, Service, Ingress)
-- [ ] T139 Nginx API Gateway 설정 (라우팅, HTTPS 종료)
-- [ ] T140 CI/CD 파이프라인 구성 (GitHub Actions: 테스트, 빌드, 배포)
+- [X] T137 [P] 각 서비스별 Dockerfile 작성 (Multi-stage build)
+- [X] T138 [P] Kubernetes 매니페스트 작성 (Deployment, Service, Ingress)
+- [X] T139 Nginx API Gateway 설정 (라우팅, HTTPS 종료)
+- [X] T140 CI/CD 파이프라인 구성 (GitHub Actions: 테스트, 빌드, 배포)
 
 ### 문서화
 

@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shopfds-config
+  namespace: shopfds
+data:
+  # PostgreSQL 설정
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "shopfds"
+
+  # Redis 설정
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+
+  # 서비스 엔드포인트
+  ECOMMERCE_API_URL: "http://ecommerce-backend-service:8000"
+  FDS_API_URL: "http://fds-service:8001"
+  ML_API_URL: "http://ml-service:8002"
+  ADMIN_API_URL: "http://admin-dashboard-backend-service:8003"
+
+  # 환경 설정
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+
+  # FDS 설정
+  FDS_EVALUATION_TIMEOUT_MS: "100"
+  CTI_TIMEOUT_MS: "50"
+
+  # ML 설정
+  MLFLOW_TRACKING_URI: "http://mlflow-service:5000"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: shopfds
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'ecommerce-backend'
+        static_configs:
+          - targets: ['ecommerce-backend-service:8000']
+
+      - job_name: 'fds-service'
+        static_configs:
+          - targets: ['fds-service:8001']
+
+      - job_name: 'ml-service'
+        static_configs:
+          - targets: ['ml-service:8002']
+
+      - job_name: 'admin-dashboard-backend'
+        static_configs:
+          - targets: ['admin-dashboard-backend-service:8003']

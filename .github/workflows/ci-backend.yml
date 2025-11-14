@@ -1,0 +1,230 @@
+name: CI - Backend Services
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'services/ecommerce/backend/**'
+      - 'services/fds/**'
+      - 'services/ml-service/**'
+      - 'services/admin-dashboard/backend/**'
+      - '.github/workflows/ci-backend.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'services/ecommerce/backend/**'
+      - 'services/fds/**'
+      - 'services/ml-service/**'
+      - 'services/admin-dashboard/backend/**'
+
+jobs:
+  test-ecommerce-backend:
+    name: Test Ecommerce Backend
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: timescale/timescaledb:latest-pg15
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'services/ecommerce/backend/requirements.txt'
+
+    - name: Install dependencies
+      working-directory: services/ecommerce/backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pytest-asyncio
+
+    - name: Run linting (Black)
+      working-directory: services/ecommerce/backend
+      run: |
+        pip install black
+        black --check src/ || echo "Black formatting check failed"
+
+    - name: Run linting (Ruff)
+      working-directory: services/ecommerce/backend
+      run: |
+        pip install ruff
+        ruff check src/ || echo "Ruff linting check failed"
+
+    - name: Run unit tests
+      working-directory: services/ecommerce/backend
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_DB: test_db
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test_secret_key_for_ci
+        ENCRYPTION_KEY: test_encryption_key_32_bytes_!!
+      run: |
+        pytest tests/unit -v --cov=src --cov-report=xml --cov-report=term
+
+    - name: Run integration tests
+      working-directory: services/ecommerce/backend
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_DB: test_db
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test_secret_key_for_ci
+        ENCRYPTION_KEY: test_encryption_key_32_bytes_!!
+      run: |
+        pytest tests/integration -v
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./services/ecommerce/backend/coverage.xml
+        flags: ecommerce-backend
+        name: ecommerce-backend-coverage
+
+  test-fds-service:
+    name: Test FDS Service
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: timescale/timescaledb:latest-pg15
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'services/fds/requirements.txt'
+
+    - name: Install dependencies
+      working-directory: services/fds
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pytest-asyncio pytest-benchmark
+
+    - name: Run unit tests
+      working-directory: services/fds
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_DB: test_db
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        ABUSEIPDB_API_KEY: test_api_key
+      run: |
+        pytest tests/unit -v --cov=src --cov-report=xml
+
+    - name: Run performance tests (FDS 100ms goal)
+      working-directory: services/fds
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_DB: test_db
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+      run: |
+        pytest tests/performance -v --benchmark-only
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./services/fds/coverage.xml
+        flags: fds-service
+        name: fds-service-coverage
+
+  test-ml-service:
+    name: Test ML Service
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'services/ml-service/requirements.txt'
+
+    - name: Install dependencies
+      working-directory: services/ml-service
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+
+    - name: Run unit tests
+      working-directory: services/ml-service
+      run: |
+        pytest tests/unit -v --cov=src --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./services/ml-service/coverage.xml
+        flags: ml-service
+        name: ml-service-coverage

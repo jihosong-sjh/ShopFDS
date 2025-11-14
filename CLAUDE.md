@@ -294,6 +294,13 @@ async def test_user(self, db_session: AsyncSession):
 - [ ] pytest.ini 설정 확인
 
 ## Recent Changes
+- 2025-11-14 (10): Phase 9: 마무리 및 교차 기능 - 배포 및 인프라 완료 (T137-T140)
+  - 각 서비스별 Dockerfile 작성: Multi-stage build로 이미지 크기 최적화, 보안 강화 (비-root 사용자), Health check 포함
+  - Kubernetes 매니페스트 작성: 프로덕션 배포용 K8s 리소스 (Namespace, ConfigMap, Secrets, Deployments, Services, HPA, Ingress)
+  - Nginx API Gateway 설정: 라우팅, HTTPS 종료, 보안 헤더, Rate Limiting, 로드 밸런싱
+  - CI/CD 파이프라인 구성: GitHub Actions 기반 자동화 (테스트, 빌드, 배포, 롤백)
+  - 배포 목표: Kubernetes 클러스터, Blue-Green 배포, 자동 롤백, Smoke 테스트
+
 - 2025-11-14 (9): Phase 9: 마무리 및 교차 기능 - 보안 강화 완료 (T131-T133)
   - PCI-DSS 준수 검증: 결제 정보 토큰화, 민감 데이터 로그 자동 마스킹, 준수 리포트 생성 (services/ecommerce/backend/src/utils/pci_dss_compliance.py)
   - OWASP Top 10 취약점 검사: SQL Injection, XSS, Command Injection, Path Traversal, SSRF 탐지 및 방어 (services/ecommerce/backend/src/utils/owasp_security.py)

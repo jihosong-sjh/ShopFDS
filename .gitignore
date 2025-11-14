@@ -116,3 +116,30 @@ secrets/
 *.tmp
 *.temp
 *.swp
+
+# ========================================
+# Kubernetes & Deployment (Phase 9)
+# ========================================
+
+# Kubernetes Secrets (절대 커밋 금지! ⚠️)
+infrastructure/k8s/secrets.yaml
+**/secrets.yaml
+kubeconfig*
+*-kubeconfig*
+*.kubeconfig
+*-base64.txt
+deployment-backup-*.yaml
+
+# SSL/TLS 인증서 파일
+infrastructure/nginx/ssl/
+*.csr
+*.p12
+*.pfx
+letsencrypt/
+
+# Docker 빌드 캐시
+.buildx-cache/
+
+# Kubernetes 컨텍스트 백업
+*.context
+
