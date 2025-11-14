@@ -33,7 +33,7 @@ class DataPreprocessor:
         self.label_encoders: Dict[str, LabelEncoder] = {}
 
     def preprocess(
-        self, df: pd.DataFrame, fit_scaler: bool = True
+        self, df: pd.DataFrame, fit_scaler: bool = True, remove_outliers: bool = False
     ) -> Tuple[pd.DataFrame, pd.Series]:
         """
         데이터 전처리 메인 파이프라인
@@ -41,6 +41,7 @@ class DataPreprocessor:
         Args:
             df: 원본 데이터프레임 (transaction + features)
             fit_scaler: True이면 스케일러 학습, False이면 기존 스케일러 사용
+            remove_outliers: True이면 이상치 제거, False이면 건너뜀 (기본값: False)
 
         Returns:
             (전처리된 특성 DataFrame, 레이블 Series)
@@ -50,8 +51,9 @@ class DataPreprocessor:
         # 1. 결측치 처리
         df = self._handle_missing_values(df)
 
-        # 2. 이상치 제거
-        df = self._remove_outliers(df)
+        # 2. 이상치 제거 (선택적)
+        if remove_outliers:
+            df = self._remove_outliers(df)
 
         # 3. 범주형 변수 인코딩
         df = self._encode_categorical_features(df, fit=fit_scaler)

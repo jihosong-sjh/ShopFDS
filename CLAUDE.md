@@ -295,6 +295,15 @@ async def test_user(self, db_session: AsyncSession):
 
 ## Recent Changes
 
+- 2025-11-14 (7): Phase 8: 사용자 스토리 6 - ML 모델 학습 및 성능 개선 - 통합 및 검증 완료 (T126-T127)
+  - 모델 재학습 파이프라인 통합 테스트: Isolation Forest/LightGBM 전체 학습 파이프라인 검증 (services/ml-service/tests/integration/test_training_pipeline.py)
+  - 카나리 배포 및 롤백 통합 테스트: 트래픽 분할, 성능 모니터링, 점진적 배포, 롤백 시나리오 검증 (services/ml-service/tests/integration/test_canary_rollback.py)
+  - 10개 테스트 클래스, 20개 테스트 메서드로 구성
+  - 검증 항목: 데이터 로드, Feature Engineering, 모델 학습/평가/저장, 버전 관리, 카나리 배포(10%→100%), 긴급 롤백, 특정 버전 롤백, 롤백 히스토리
+  - pytest 설정 파일 추가: pytest.ini, conftest.py
+  - SQLite In-Memory 데이터베이스 사용, 1000개 샘플 데이터 (정상 80%, 사기 20%)
+  - 엔드투엔드 워크플로우 검증: 데이터 → 학습 → 평가 → 배포 → 모니터링 → 롤백
+
 - 2025-11-14 (6): Phase 8: ML 서비스 API 구현 완료 (T121-T123)
   - 모델 학습 트리거 API: 비동기 학습 시작, 상태 추적, 학습 히스토리 조회 (services/ml-service/src/api/training.py)
   - 모델 배포 API: 스테이징/프로덕션 배포, 카나리 배포 관리 (시작/상태/트래픽조정/완료/중단), 롤백 (긴급/특정버전) (services/ml-service/src/api/deployment.py)

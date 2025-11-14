@@ -291,6 +291,14 @@ class LightGBMTrainer:
         # 메타데이터 저장
         metadata_path = model_path.with_suffix(".pkl")
         metadata = {
+            "init_params": {
+                "num_leaves": self.num_leaves,
+                "max_depth": self.max_depth,
+                "learning_rate": self.learning_rate,
+                "n_estimators": self.n_estimators,
+                "class_weight": self.class_weight,
+                "random_state": self.random_state,
+            },
             "params": self.params,
             "preprocessor": self.preprocessor,
             "feature_columns": self.feature_columns,
@@ -322,8 +330,14 @@ class LightGBMTrainer:
         with open(metadata_path, "rb") as f:
             metadata = pickle.load(f)
 
-        trainer = cls(**metadata["params"])
+        # 이전 버전 호환성: init_params가 없으면 기본값 사용
+        if "init_params" in metadata:
+            trainer = cls(**metadata["init_params"])
+        else:
+            trainer = cls()
+
         trainer.model = model
+        trainer.params = metadata.get("params", trainer.params)
         trainer.preprocessor = metadata["preprocessor"]
         trainer.feature_columns = metadata["feature_columns"]
         trainer.best_iteration = metadata["best_iteration"]
