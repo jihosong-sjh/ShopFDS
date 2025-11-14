@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_
 from sqlalchemy.sql import func
 
-from models.product import Product, ProductStatus
-from utils.exceptions import ResourceNotFoundError, ValidationError
+from src.models.product import Product, ProductStatus
+from src.utils.exceptions import ResourceNotFoundError, ValidationError
 
 
 class ProductService:

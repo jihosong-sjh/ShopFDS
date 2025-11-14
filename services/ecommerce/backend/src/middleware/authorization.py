@@ -8,7 +8,7 @@ from enum import Enum
 from typing import List, Optional, Set
 from fastapi import Depends, HTTPException, status
 from functools import wraps
-from middleware.auth import get_current_user, AuthorizationError
+from src.middleware.auth import get_current_user, AuthorizationError
 
 
 class UserRole(str, Enum):

@@ -110,6 +110,15 @@ export interface Order {
   items?: OrderItem[];
 }
 
+// FDS 평가 결과 (T062-T063)
+export interface FDSResult {
+  risk_score: number;
+  risk_level: 'low' | 'medium' | 'high';
+  requires_verification: boolean;
+  verification_method?: 'otp' | 'biometric';
+  transaction_id?: string;
+}
+
 // API 함수들
 
 // 인증 API
@@ -126,6 +135,24 @@ export const authApi = {
 
   getCurrentUser: async () => {
     const response = await apiClient.get<User>('/v1/auth/me');
+    return response.data;
+  },
+
+  // OTP 인증 관련 API (T062-T063)
+  requestOtp: async (data: { phone_number: string }) => {
+    const response = await apiClient.post<{
+      message: string;
+      otp_token: string;
+      expires_at: string;
+    }>('/v1/auth/request-otp', data);
+    return response.data;
+  },
+
+  verifyOtp: async (data: { otp_token: string; otp_code: string }) => {
+    const response = await apiClient.post<{
+      verified: boolean;
+      message: string;
+    }>('/v1/auth/verify-otp', data);
     return response.data;
   },
 };
@@ -209,10 +236,12 @@ export const ordersApi = {
       card_expiry: string;
       card_cvv: string;
     };
+    otp_token?: string; // 추가 인증이 필요한 경우 (T063)
   }) => {
     const response = await apiClient.post<{
-      order: Order;
-      fds_result: any;
+      order?: Order;
+      fds_result: FDSResult;
+      message?: string;
     }>('/v1/orders', data);
     return response.data;
   },

@@ -8,9 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from models.cart import Cart, CartItem
-from models.product import Product
-from utils.exceptions import ResourceNotFoundError, ValidationError
+from src.models.cart import Cart, CartItem
+from src.models.product import Product
+from src.utils.exceptions import ResourceNotFoundError, ValidationError
 
 
 class CartService:

@@ -17,6 +17,7 @@ from ..models.schemas import (
     FDSErrorResponse,
 )
 from ..engines.evaluation_engine import evaluation_engine
+from ..services.review_queue_service import ReviewQueueService
 
 # 로거 설정
 logger = logging.getLogger(__name__)
@@ -107,10 +108,17 @@ async def evaluate_transaction(
             f"user_id={request.user_id}, amount={request.amount}"
         )
 
-        # 1. 평가 엔진으로 거래 평가
-        evaluation_result = await evaluation_engine.evaluate(request)
+        # 1. 평가 엔진 초기화 (db와 redis 주입 - A/B 테스트용)
+        from ..engines.evaluation_engine import EvaluationEngine
+        from ..models import get_redis
 
-        # 2. 평가 결과를 데이터베이스에 저장
+        redis = await get_redis()
+        engine = EvaluationEngine(db=db, redis=redis)
+
+        # 2. 평가 엔진으로 거래 평가
+        evaluation_result = await engine.evaluate(request)
+
+        # 3. 평가 결과를 데이터베이스에 저장
         transaction = Transaction(
             id=request.transaction_id,
             user_id=request.user_id,
@@ -137,6 +145,29 @@ async def evaluate_transaction(
         db.add(transaction)
         await db.commit()
         await db.refresh(transaction)
+
+        # 4. 고위험 거래(BLOCKED)는 자동으로 검토 큐에 추가 (Phase 5: T073)
+        if evaluation_result.decision.value == "blocked":
+            try:
+                review_queue_service = ReviewQueueService(db)
+                review_queue = await review_queue_service.add_to_review_queue(
+                    transaction.id
+                )
+
+                if review_queue:
+                    # 검토 큐 ID를 응답에 포함
+                    evaluation_result.recommended_action.review_queue_id = str(review_queue.id)
+
+                    logger.info(
+                        f"고위험 거래를 검토 큐에 추가: transaction_id={transaction.id}, "
+                        f"queue_id={review_queue.id}, risk_score={evaluation_result.risk_score}"
+                    )
+            except Exception as e:
+                # 검토 큐 추가 실패 시 로그만 남기고 계속 진행 (fail-safe)
+                logger.error(
+                    f"검토 큐 추가 실패: transaction_id={transaction.id}, error={str(e)}",
+                    exc_info=True,
+                )
 
         logger.info(
             f"FDS 평가 완료: transaction_id={request.transaction_id}, "

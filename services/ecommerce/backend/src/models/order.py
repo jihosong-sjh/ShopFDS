@@ -53,7 +53,7 @@ class Order(Base):
 
     # 관계
     user = relationship("User", back_populates="orders")
-    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan", lazy="dynamic")
+    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
     payment = relationship("Payment", back_populates="order", uselist=False)
 
     # 제약 조건

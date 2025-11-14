@@ -10,12 +10,14 @@ from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 import httpx
 
-from models.order import Order, OrderItem, OrderStatus
-from models.cart import Cart, CartItem
-from models.product import Product
-from models.payment import Payment, PaymentMethod, PaymentStatus
-from utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
-from config import get_settings
+from src.models.order import Order, OrderItem, OrderStatus
+from src.models.cart import Cart, CartItem
+from src.models.product import Product
+from src.models.payment import Payment, PaymentMethod, PaymentStatus
+from src.utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
+from src.utils.otp import get_otp_service
+from src.utils.redis_client import get_redis
+from src.config import get_settings
 
 
 class OrderService:
@@ -142,10 +144,49 @@ class OrderService:
             payment.mark_as_completed(transaction_id=f"TXN-{order.order_number}")
             order.mark_as_paid()
         elif fds_result["risk_level"] == "medium":
-            # 중간 위험: 추가 인증 필요 (Phase 4에서 구현)
-            pass
+            # 중간 위험: 추가 인증 필요 (OTP 발급)
+            try:
+                redis_client = await get_redis()
+                otp_service = await get_otp_service(redis_client)
+
+                otp_result = await otp_service.generate_otp(
+                    user_id=str(user_id),
+                    purpose="transaction",
+                    metadata={
+                        "order_id": str(order.id),
+                        "order_number": order.order_number,
+                        "amount": str(total_amount),
+                        "risk_score": fds_result.get("risk_score"),
+                        "risk_factors": fds_result.get("risk_factors", [])
+                    }
+                )
+
+                # OTP 정보를 FDS 결과에 추가
+                fds_result["otp_required"] = True
+                fds_result["otp_code"] = otp_result["otp_code"]  # 개발 환경에서만
+                fds_result["otp_expires_at"] = otp_result["expires_at"]
+                fds_result["otp_attempts_remaining"] = otp_result["attempts_remaining"]
+
+                # 주문 상태: PENDING_AUTH (추가 인증 대기)
+                # 결제 상태: PENDING (결제 대기)
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.info(
+                    f"중간 위험 거래 탐지 - OTP 발급: order_id={order.id}, "
+                    f"risk_score={fds_result.get('risk_score')}, "
+                    f"otp_code={otp_result['otp_code']}"
+                )
+
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"OTP 생성 실패: order_id={order.id}, error={str(e)}")
+                # OTP 생성 실패 시에도 거래는 보류 상태로 유지
+                fds_result["otp_required"] = True
+                fds_result["otp_error"] = str(e)
+
         elif fds_result["risk_level"] == "high":
-            # 고위험: 자동 차단 (Phase 4에서 구현)
+            # 고위험: 자동 차단
             payment.mark_as_failed(reason="고위험 거래로 자동 차단됨")
             order.cancel()
 
@@ -254,6 +295,92 @@ class OrderService:
         await self.db.refresh(order)
 
         return order
+
+    async def complete_order_with_otp(
+        self,
+        user_id: str,
+        order_id: str,
+        otp_code: str
+    ) -> tuple[Order, dict]:
+        """
+        OTP 검증 후 주문 완료 처리
+
+        중간 위험도 거래에서 OTP 인증 성공 시 결제를 완료합니다.
+
+        Args:
+            user_id: 사용자 ID
+            order_id: 주문 ID
+            otp_code: 사용자가 입력한 OTP 코드
+
+        Returns:
+            (Order, otp_result): 완료된 주문 및 OTP 검증 결과
+
+        Raises:
+            ResourceNotFoundError: 주문을 찾을 수 없는 경우
+            ValidationError: OTP 검증 실패 또는 이미 완료된 주문
+            BusinessLogicError: 주문 완료 불가능한 상태
+        """
+        # 1. 주문 조회
+        order = await self.get_order_by_id(user_id, order_id)
+
+        # 2. 주문 상태 확인
+        if order.status == OrderStatus.PAID:
+            raise ValidationError("이미 결제가 완료된 주문입니다")
+
+        if order.status == OrderStatus.CANCELLED:
+            raise ValidationError("취소된 주문입니다")
+
+        if order.status != OrderStatus.PENDING:
+            raise BusinessLogicError(
+                f"주문 완료 불가능한 상태: {order.status} "
+                f"(PENDING 상태만 OTP 인증 가능)"
+            )
+
+        # 3. OTP 검증
+        redis_client = await get_redis()
+        otp_service = await get_otp_service(redis_client)
+
+        otp_result = await otp_service.verify_otp(
+            user_id=user_id,
+            otp_code=otp_code,
+            purpose="transaction"
+        )
+
+        if not otp_result["valid"]:
+            raise ValidationError(
+                f"OTP 검증 실패: {otp_result['message']} "
+                f"(남은 시도 횟수: {otp_result['attempts_remaining']})"
+            )
+
+        # 4. OTP 메타데이터 확인 (주문 ID 일치 여부)
+        metadata = otp_result.get("metadata", {})
+        otp_order_id = metadata.get("order_id")
+
+        if otp_order_id != str(order.id):
+            raise ValidationError(
+                f"OTP가 이 주문에 대한 것이 아닙니다 "
+                f"(OTP 주문 ID: {otp_order_id}, 현재 주문 ID: {order.id})"
+            )
+
+        # 5. 결제 완료 처리
+        if not order.payment:
+            raise BusinessLogicError("결제 정보가 없습니다")
+
+        order.payment.mark_as_completed(transaction_id=f"TXN-{order.order_number}")
+        order.mark_as_paid()
+
+        await self.db.commit()
+        await self.db.refresh(order)
+
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(
+            f"OTP 검증 성공 - 주문 완료: order_id={order.id}, "
+            f"order_number={order.order_number}, "
+            f"amount={order.total_amount}"
+        )
+
+        return order, otp_result
 
     async def track_order(self, user_id: str, order_id: str) -> dict:
         """

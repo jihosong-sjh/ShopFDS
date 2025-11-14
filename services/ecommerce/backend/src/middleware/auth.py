@@ -8,8 +8,8 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
-from utils.security import JWTManager
-from models.base import get_db
+from src.utils.security import JWTManager
+from src.models.base import get_db
 
 
 # HTTP Bearer 토큰 스킴 (Authorization: Bearer <token>)

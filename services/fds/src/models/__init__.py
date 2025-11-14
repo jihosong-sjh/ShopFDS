@@ -11,6 +11,27 @@ from .transaction import (
     RiskLevel,
     EvaluationStatus,
 )
+from .risk_factor import (
+    RiskFactor,
+    FactorType,
+    FactorSeverity,
+)
+from .detection_rule import (
+    DetectionRule,
+    RuleType,
+    RulePriority,
+)
+from .threat_intelligence import (
+    ThreatIntelligence,
+    ThreatType,
+    ThreatLevel,
+    ThreatSource,
+)
+from .review_queue import (
+    ReviewQueue,
+    ReviewStatus,
+    ReviewDecision,
+)
 
 __all__ = [
     # Base
@@ -25,4 +46,21 @@ __all__ = [
     "DeviceType",
     "RiskLevel",
     "EvaluationStatus",
+    # RiskFactor
+    "RiskFactor",
+    "FactorType",
+    "FactorSeverity",
+    # DetectionRule
+    "DetectionRule",
+    "RuleType",
+    "RulePriority",
+    # ReviewQueue
+    "ReviewQueue",
+    "ReviewStatus",
+    "ReviewDecision",
+    # ThreatIntelligence
+    "ThreatIntelligence",
+    "ThreatType",
+    "ThreatLevel",
+    "ThreatSource",
 ]

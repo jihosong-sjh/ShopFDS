@@ -7,9 +7,9 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from models.payment import Payment, PaymentStatus, PaymentMethod
-from models.order import Order, OrderStatus
-from utils.exceptions import ResourceNotFoundError, BusinessLogicError, ValidationError
+from src.models.payment import Payment, PaymentStatus, PaymentMethod
+from src.models.order import Order, OrderStatus
+from src.utils.exceptions import ResourceNotFoundError, BusinessLogicError, ValidationError
 
 
 class PaymentService:

@@ -23,7 +23,7 @@ class Cart(Base):
 
     # 관계
     user = relationship("User", back_populates="cart")
-    items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan", lazy="dynamic")
+    items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Cart(id={self.id}, user_id={self.user_id})>"

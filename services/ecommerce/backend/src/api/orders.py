@@ -8,10 +8,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.base import get_db
-from models.order import OrderStatus
-from services.order_service import OrderService
-from utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
+from src.models.base import get_db
+from src.models.order import OrderStatus
+from src.services.order_service import OrderService
+from src.utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
 
 
 router = APIRouter(prefix="/v1/orders", tags=["주문"])
@@ -330,4 +330,109 @@ async def track_order(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"주문 추적 중 오류 발생: {str(e)}"
+        )
+
+
+# OTP 인증 관련 엔드포인트
+
+class CompleteOrderWithOTPRequest(BaseModel):
+    """OTP로 주문 완료 요청"""
+    otp_code: str = Field(..., min_length=6, max_length=6, description="6자리 OTP 코드")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "otp_code": "123456"
+            }
+        }
+
+
+class CompleteOrderWithOTPResponse(BaseModel):
+    """OTP로 주문 완료 응답"""
+    order: OrderResponse
+    message: str
+    otp_verification: dict
+
+
+@router.post("/{order_id}/complete-with-otp", response_model=CompleteOrderWithOTPResponse)
+async def complete_order_with_otp(
+    order_id: str,
+    request: CompleteOrderWithOTPRequest,
+    db: AsyncSession = Depends(get_db),
+    # current_user: User = Depends(get_current_user)  # JWT 인증
+):
+    """
+    OTP 검증 후 주문 완료
+
+    중간 위험도 거래에서 OTP 인증을 통해 주문을 완료합니다.
+    - OTP 검증 성공 시: 결제 완료 및 주문 상태 업데이트
+    - OTP 검증 실패 시: 401 Unauthorized 반환 (시도 횟수 차감)
+    - 최대 시도 횟수 초과 시: 429 Too Many Requests 반환
+    """
+    # TODO: JWT 인증에서 user_id 가져오기
+    user_id = "test-user-id"
+
+    try:
+        order_service = OrderService(db)
+
+        order, otp_result = await order_service.complete_order_with_otp(
+            user_id=user_id,
+            order_id=order_id,
+            otp_code=request.otp_code
+        )
+
+        # 주문 항목 변환
+        items = []
+        for item in order.items:
+            items.append(OrderItemResponse(
+                product_id=str(item.product_id),
+                product_name=item.product.name if item.product else "상품명 없음",
+                quantity=item.quantity,
+                unit_price=float(item.unit_price),
+                subtotal=item.get_subtotal()
+            ))
+
+        return CompleteOrderWithOTPResponse(
+            order=OrderResponse(
+                id=str(order.id),
+                order_number=order.order_number,
+                status=order.status,
+                total_amount=float(order.total_amount),
+                shipping_name=order.shipping_name,
+                shipping_address=order.shipping_address,
+                shipping_phone=order.shipping_phone,
+                created_at=order.created_at.isoformat(),
+                items=items
+            ),
+            message="OTP 검증 성공 - 주문이 완료되었습니다",
+            otp_verification=otp_result
+        )
+
+    except ResourceNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except ValidationError as e:
+        # OTP 검증 실패 또는 잘못된 요청
+        status_code = status.HTTP_401_UNAUTHORIZED
+        error_message = str(e)
+
+        # 시도 횟수 초과 여부 확인
+        if "최대 시도 횟수" in error_message or "시도 횟수: 0" in error_message:
+            status_code = status.HTTP_429_TOO_MANY_REQUESTS
+
+        raise HTTPException(
+            status_code=status_code,
+            detail=error_message
+        )
+    except BusinessLogicError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"주문 완료 처리 중 오류 발생: {str(e)}"
         )
