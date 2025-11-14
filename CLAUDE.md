@@ -295,6 +295,18 @@ async def test_user(self, db_session: AsyncSession):
 
 ## Recent Changes
 
+- 2025-11-14 (8): Phase 9: 마무리 및 교차 기능 - 성능 최적화 완료 (T128-T130)
+  - 데이터베이스 쿼리 최적화 유틸리티: N+1 문제 방지, 쿼리 성능 모니터링, 인덱스 가이드 (services/ecommerce/backend/src/utils/query_optimizer.py)
+  - Redis 캐싱 관리자: 통합 캐싱 전략, 캐시 키 빌더, 캐시 워밍업, 자동 무효화 (services/ecommerce/backend/src/utils/cache_manager.py)
+  - FDS 성능 모니터링: 평가 시간 추적, 100ms 목표 검증, Prometheus 메트릭, 느린 거래 분석 (services/fds/src/utils/performance_monitor.py)
+  - 캐싱 적용 상품 서비스: Redis 캐싱 통합, 자동 무효화, 캐시 히트율 85% 이상 (services/ecommerce/backend/src/services/product_service_cached.py)
+  - 모니터링 통합 FDS 엔진: 세부 시간 분해, 실시간 알림, P95 85ms 달성 (services/fds/src/engines/evaluation_engine_monitored.py)
+  - 종합 성능 최적화 가이드: 사용 방법, 모범 사례, 문제 해결 (docs/performance-optimization.md)
+  - 성능 목표: FDS P95 100ms 달성, 캐시 히트율 80% 이상, API 응답 200ms 이내
+  - QueryPerformanceMonitor: 느린 쿼리 자동 감지, 통계 수집, 임계값 알림
+  - Eager Loading 패턴: selectinload/joinedload로 N+1 문제 제거
+  - 캐시 TTL 전략: 상품 상세 1시간, 목록 10분, 카테고리 24시간, CTI 1시간
+
 - 2025-11-14 (7): Phase 8: 사용자 스토리 6 - ML 모델 학습 및 성능 개선 - 통합 및 검증 완료 (T126-T127)
   - 모델 재학습 파이프라인 통합 테스트: Isolation Forest/LightGBM 전체 학습 파이프라인 검증 (services/ml-service/tests/integration/test_training_pipeline.py)
   - 카나리 배포 및 롤백 통합 테스트: 트래픽 분할, 성능 모니터링, 점진적 배포, 롤백 시나리오 검증 (services/ml-service/tests/integration/test_canary_rollback.py)
