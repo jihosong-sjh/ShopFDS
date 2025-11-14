@@ -295,6 +295,13 @@ async def test_user(self, db_session: AsyncSession):
 
 ## Recent Changes
 
+- 2025-11-14 (5): Phase 8: ML 모델 배포 구현 완료 (T117-T120)
+  - 모델 버전 관리 시스템: MLflow 기반 모델 등록, 로드, 승격, 비교 기능 (services/ml-service/src/deployment/version_manager.py)
+  - 카나리 배포 로직: 트래픽 분할 (10% → 25% → 50% → 100%), 실시간 성능 모니터링, 자동 권장사항 (services/ml-service/src/deployment/canary_deploy.py)
+  - 모델 롤백 시스템: 긴급 롤백, 특정 버전 롤백, 롤백 히스토리 관리 (services/ml-service/src/deployment/rollback.py)
+  - FDS ML 엔진 통합: Isolation Forest/LightGBM 지원, 특징 추출, 카나리 라우팅 (services/fds/src/engines/ml_engine.py)
+  - MLflow 트래킹 서버 연동, Semantic Versioning, 성능 지표 추적 (Accuracy, Precision, Recall, F1 Score)
+
 - 2025-11-14 (4): Phase 7: 보안팀 프론트엔드 구현 완료 (T105-T107)
   - 룰 관리 페이지: 룰 목록 조회, 필터링, 활성화/비활성화, 생성/수정/삭제 (services/admin-dashboard/frontend/src/pages/RuleManagement.tsx)
   - A/B 테스트 설정 페이지: 테스트 목록, 필터링, 상태 관리 (시작/일시중지/재개/완료), 생성/삭제 (services/admin-dashboard/frontend/src/pages/ABTestSetup.tsx)

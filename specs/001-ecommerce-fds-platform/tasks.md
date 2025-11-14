@@ -294,10 +294,10 @@
 
 ### ML 모델 배포 (User Story 6)
 
-- [ ] T117 [US6] 모델 버전 관리 시스템 구현 (MLflow 연동, services/ml-service/src/deployment/version_manager.py)
-- [ ] T118 [US6] 카나리 배포 로직 구현 (트래픽 일부에만 새 모델 적용, services/ml-service/src/deployment/canary_deploy.py)
-- [ ] T119 [US6] 모델 롤백 로직 구현 (services/ml-service/src/deployment/rollback.py)
-- [ ] T120 [US6] FDS 엔진에 ML 모델 통합 (services/fds/src/engines/ml_engine.py)
+- [X] T117 [US6] 모델 버전 관리 시스템 구현 (MLflow 연동, services/ml-service/src/deployment/version_manager.py)
+- [X] T118 [US6] 카나리 배포 로직 구현 (트래픽 일부에만 새 모델 적용, services/ml-service/src/deployment/canary_deploy.py)
+- [X] T119 [US6] 모델 롤백 로직 구현 (services/ml-service/src/deployment/rollback.py)
+- [X] T120 [US6] FDS 엔진에 ML 모델 통합 (services/fds/src/engines/ml_engine.py)
 
 ### ML 서비스 API (User Story 6)
 
