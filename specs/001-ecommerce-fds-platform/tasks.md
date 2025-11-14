@@ -301,9 +301,9 @@
 
 ### ML 서비스 API (User Story 6)
 
-- [ ] T121 [P] [US6] 모델 학습 트리거 API 구현: POST /v1/ml/train (services/ml-service/src/api/training.py)
-- [ ] T122 [P] [US6] 모델 배포 API 구현: POST /v1/ml/deploy (services/ml-service/src/api/deployment.py)
-- [ ] T123 [US6] 모델 성능 비교 API 구현: GET /v1/ml/models/compare (services/ml-service/src/api/evaluation.py)
+- [X] T121 [P] [US6] 모델 학습 트리거 API 구현: POST /v1/ml/train (services/ml-service/src/api/training.py)
+- [X] T122 [P] [US6] 모델 배포 API 구현: POST /v1/ml/deploy (services/ml-service/src/api/deployment.py)
+- [X] T123 [US6] 모델 성능 비교 API 구현: GET /v1/ml/models/compare (services/ml-service/src/api/evaluation.py)
 
 ### 관리자 대시보드 통합 (User Story 6)
 

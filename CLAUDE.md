@@ -295,6 +295,13 @@ async def test_user(self, db_session: AsyncSession):
 
 ## Recent Changes
 
+- 2025-11-14 (6): Phase 8: ML 서비스 API 구현 완료 (T121-T123)
+  - 모델 학습 트리거 API: 비동기 학습 시작, 상태 추적, 학습 히스토리 조회 (services/ml-service/src/api/training.py)
+  - 모델 배포 API: 스테이징/프로덕션 배포, 카나리 배포 관리 (시작/상태/트래픽조정/완료/중단), 롤백 (긴급/특정버전) (services/ml-service/src/api/deployment.py)
+  - 모델 평가 API: 모델 비교, 목록 조회, 상세 조회, 성능 지표, 현재 프로덕션 모델 (services/ml-service/src/api/evaluation.py)
+  - FastAPI 라우터, Pydantic 모델, 백그라운드 작업 지원
+  - 총 17개 REST API 엔드포인트 구현 (POST /v1/ml/train, GET /v1/ml/train/status, GET /v1/ml/models/compare 등)
+
 - 2025-11-14 (5): Phase 8: ML 모델 배포 구현 완료 (T117-T120)
   - 모델 버전 관리 시스템: MLflow 기반 모델 등록, 로드, 승격, 비교 기능 (services/ml-service/src/deployment/version_manager.py)
   - 카나리 배포 로직: 트래픽 분할 (10% → 25% → 50% → 100%), 실시간 성능 모니터링, 자동 권장사항 (services/ml-service/src/deployment/canary_deploy.py)
