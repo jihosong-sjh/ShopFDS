@@ -37,3 +37,6 @@ faker
 black
 ruff
 mypy
+# Monitoring
+prometheus-client
+sentry-sdk[fastapi]

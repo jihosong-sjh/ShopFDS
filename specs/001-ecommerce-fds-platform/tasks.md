@@ -337,9 +337,9 @@
 
 ### 모니터링 및 로깅
 
-- [ ] T134 [P] Prometheus 메트릭 수집 설정 (services/ecommerce/backend, services/fds)
-- [ ] T135 [P] Grafana 대시보드 구성 (FDS 평가 시간, 거래 처리량, 에러율)
-- [ ] T136 Sentry 에러 트래킹 통합
+- [X] T134 [P] Prometheus 메트릭 수집 설정 (services/ecommerce/backend, services/fds)
+- [X] T135 [P] Grafana 대시보드 구성 (FDS 평가 시간, 거래 처리량, 에러율)
+- [X] T136 Sentry 에러 트래킹 통합
 
 ### 배포 및 인프라
 
