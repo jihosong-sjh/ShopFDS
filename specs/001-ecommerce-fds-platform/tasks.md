@@ -331,9 +331,9 @@
 
 ### 보안 강화
 
-- [ ] T131 [P] PCI-DSS 준수 검증 (결제 정보 토큰화, 민감 데이터 로그 금지)
-- [ ] T132 [P] SQL Injection, XSS 등 OWASP Top 10 취약점 점검
-- [ ] T133 Rate Limiting 구현 (Nginx 및 FastAPI 레벨)
+- [X] T131 [P] PCI-DSS 준수 검증 (결제 정보 토큰화, 민감 데이터 로그 금지)
+- [X] T132 [P] SQL Injection, XSS 등 OWASP Top 10 취약점 점검
+- [X] T133 Rate Limiting 구현 (Nginx 및 FastAPI 레벨)
 
 ### 모니터링 및 로깅
 
