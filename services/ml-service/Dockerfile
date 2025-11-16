@@ -21,9 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Python 의존성 복사
 COPY requirements.txt .
 
-# Python 패키지 설치 (wheel 생성)
+# Python 패키지 설치 (시스템 전역)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --user -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime
 FROM python:3.11-slim
@@ -45,10 +45,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # builder stage에서 설치된 패키지 복사
-COPY --from=builder /root/.local /root/.local
-
-# PATH 환경변수에 추가
-ENV PATH=/root/.local/bin:$PATH
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # 애플리케이션 코드 복사
 COPY src/ ./src/
