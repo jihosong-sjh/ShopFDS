@@ -175,6 +175,11 @@ export const Checkout: React.FC = () => {
 
     if (result.verified) {
       // OTP 검증 성공: otp_token을 포함하여 주문 재시도
+      if (!pendingOrderData) {
+        setErrors({ submit: '주문 정보를 찾을 수 없습니다.' });
+        return;
+      }
+
       const orderData = {
         ...pendingOrderData,
         otp_token: otpToken,
