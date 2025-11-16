@@ -173,9 +173,7 @@ class OTPRequest(BaseModel):
     purpose: str = Field(
         default="transaction", description="OTP 목적 (transaction, login 등)"
     )
-    metadata: dict = Field(
-        default_factory=dict, description="추가 메타데이터 (주문 ID 등)"
-    )
+    metadata: dict = Field(default_factory=dict, description="추가 메타데이터 (주문 ID 등)")
 
     class Config:
         json_schema_extra = {
@@ -192,9 +190,7 @@ class OTPResponse(BaseModel):
 
     success: bool
     message: str
-    otp_code: str = Field(
-        description="OTP 코드 (개발 환경에서만 반환, 프로덕션에서는 SMS/이메일 발송)"
-    )
+    otp_code: str = Field(description="OTP 코드 (개발 환경에서만 반환, 프로덕션에서는 SMS/이메일 발송)")
     expires_at: str
     attempts_remaining: int
 
@@ -233,9 +229,7 @@ class OTPVerifyResponse(BaseModel):
     valid: bool
     message: str
     attempts_remaining: int
-    metadata: dict = Field(
-        default_factory=dict, description="OTP 생성 시 저장된 메타데이터"
-    )
+    metadata: dict = Field(default_factory=dict, description="OTP 생성 시 저장된 메타데이터")
 
     class Config:
         json_schema_extra = {

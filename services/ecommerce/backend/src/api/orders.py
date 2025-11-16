@@ -36,9 +36,7 @@ class PaymentInfoRequest(BaseModel):
 class CreateOrderRequest(BaseModel):
     """주문 생성 요청"""
 
-    shipping_name: str = Field(
-        ..., min_length=1, max_length=100, description="수령인 이름"
-    )
+    shipping_name: str = Field(..., min_length=1, max_length=100, description="수령인 이름")
     shipping_address: str = Field(..., min_length=1, description="배송 주소")
     shipping_phone: str = Field(..., description="연락처")
     payment_info: PaymentInfoRequest

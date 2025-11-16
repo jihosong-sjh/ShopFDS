@@ -285,8 +285,7 @@ if __name__ == "__main__":
             window_seconds=10,
         )
         print(
-            f"요청 {i}: 허용={result['allowed']}, "
-            f"남은 요청={result['requests_remaining']}"
+            f"요청 {i}: 허용={result['allowed']}, " f"남은 요청={result['requests_remaining']}"
         )
 
         if not result["allowed"]:

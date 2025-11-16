@@ -31,9 +31,7 @@ class ProductCreateRequest(BaseModel):
     stock_quantity: int = Field(..., ge=0, description="재고 수량 (0 이상)")
     category: str = Field(..., min_length=1, max_length=100, description="카테고리")
     image_url: Optional[str] = Field(None, max_length=500, description="이미지 URL")
-    status: ProductStatus = Field(
-        default=ProductStatus.AVAILABLE, description="상품 상태"
-    )
+    status: ProductStatus = Field(default=ProductStatus.AVAILABLE, description="상품 상태")
 
     @validator("price")
     def validate_price(cls, v):
@@ -59,9 +57,7 @@ class ProductCreateRequest(BaseModel):
 class ProductUpdateRequest(BaseModel):
     """상품 수정 요청 (모든 필드 선택 사항)"""
 
-    name: Optional[str] = Field(
-        None, min_length=1, max_length=255, description="상품명"
-    )
+    name: Optional[str] = Field(None, min_length=1, max_length=255, description="상품명")
     description: Optional[str] = Field(None, description="상품 설명")
     price: Optional[Decimal] = Field(None, gt=0, description="가격 (양수)")
     stock_quantity: Optional[int] = Field(None, ge=0, description="재고 수량 (0 이상)")

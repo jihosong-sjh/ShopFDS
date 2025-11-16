@@ -15,8 +15,9 @@ from sqlalchemy import (
     DateTime,
     Index,
     CheckConstraint,
+    Uuid,
 )
-from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy.dialects.postgresql import ENUM
 import uuid
 
 from .base import Base
@@ -35,7 +36,7 @@ class Product(Base):
 
     __tablename__ = "products"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     price = Column(DECIMAL(10, 2), nullable=False)

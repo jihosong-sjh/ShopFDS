@@ -119,9 +119,7 @@ class UserService:
 
         # 계정 잠금 확인 (3회 초과 로그인 실패)
         if user.is_locked():
-            raise AuthenticationError(
-                "로그인 실패 횟수 초과로 계정이 일시 잠금되었습니다. 15분 후 다시 시도해주세요."
-            )
+            raise AuthenticationError("로그인 실패 횟수 초과로 계정이 일시 잠금되었습니다. 15분 후 다시 시도해주세요.")
 
         # 비밀번호 검증
         if not verify_password(password, user.password_hash):
@@ -134,9 +132,7 @@ class UserService:
                     f"비밀번호가 올바르지 않습니다. 남은 시도 횟수: {remaining_attempts}"
                 )
             else:
-                raise AuthenticationError(
-                    "로그인 실패 횟수 초과로 계정이 일시 잠금되었습니다."
-                )
+                raise AuthenticationError("로그인 실패 횟수 초과로 계정이 일시 잠금되었습니다.")
 
         # 로그인 성공: 실패 횟수 초기화 및 마지막 로그인 시각 업데이트
         user.reset_failed_attempts()

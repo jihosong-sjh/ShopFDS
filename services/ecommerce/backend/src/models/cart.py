@@ -12,8 +12,8 @@ from sqlalchemy import (
     ForeignKey,
     UniqueConstraint,
     CheckConstraint,
+    Uuid,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 
@@ -25,9 +25,9 @@ class Cart(Base):
 
     __tablename__ = "carts"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     user_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("users.id", ondelete="CASCADE"),
         unique=True,
         nullable=False,
@@ -64,12 +64,10 @@ class CartItem(Base):
 
     __tablename__ = "cart_items"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    cart_id = Column(
-        UUID(as_uuid=True), ForeignKey("carts.id", ondelete="CASCADE"), nullable=False
-    )
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
+    cart_id = Column(Uuid, ForeignKey("carts.id", ondelete="CASCADE"), nullable=False)
     product_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("products.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -83,9 +81,7 @@ class CartItem(Base):
     # 제약 조건
     __table_args__ = (
         CheckConstraint("quantity > 0", name="check_cart_quantity_positive"),
-        UniqueConstraint(
-            "cart_id", "product_id", name="uq_cart_product"
-        ),  # 중복 상품 방지
+        UniqueConstraint("cart_id", "product_id", name="uq_cart_product"),  # 중복 상품 방지
     )
 
     def __repr__(self):

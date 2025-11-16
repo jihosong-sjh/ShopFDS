@@ -334,8 +334,7 @@ class OrderService:
 
         if order.status != OrderStatus.PENDING:
             raise BusinessLogicError(
-                f"주문 완료 불가능한 상태: {order.status} "
-                f"(PENDING 상태만 OTP 인증 가능)"
+                f"주문 완료 불가능한 상태: {order.status} " f"(PENDING 상태만 OTP 인증 가능)"
             )
 
         # 3. OTP 검증

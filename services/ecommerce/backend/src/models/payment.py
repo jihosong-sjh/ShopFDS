@@ -14,8 +14,9 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     CheckConstraint,
+    Uuid,
 )
-from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship
 import uuid
 
@@ -43,9 +44,9 @@ class Payment(Base):
 
     __tablename__ = "payments"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     order_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("orders.id", ondelete="CASCADE"),
         unique=True,
         nullable=False,
@@ -67,9 +68,7 @@ class Payment(Base):
     card_last_four = Column(String(4), nullable=False)  # 표시용 마지막 4자리
 
     # 결제 게이트웨이 정보
-    transaction_id = Column(
-        String(100), nullable=True
-    )  # 외부 결제 게이트웨이의 거래 ID
+    transaction_id = Column(String(100), nullable=True)  # 외부 결제 게이트웨이의 거래 ID
 
     # 타임스탬프
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
