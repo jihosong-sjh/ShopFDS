@@ -16,8 +16,9 @@ from sqlalchemy import (
     ForeignKey,
     CheckConstraint,
     Index,
+    Uuid,
 )
-from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship
 import uuid
 
@@ -41,10 +42,10 @@ class Order(Base):
 
     __tablename__ = "orders"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     order_number = Column(String(20), unique=True, nullable=False, index=True)
     user_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -138,14 +139,14 @@ class OrderItem(Base):
 
     __tablename__ = "order_items"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     order_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("orders.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
-    product_id = Column(UUID(as_uuid=True), ForeignKey("products.id"), nullable=False)
+    product_id = Column(Uuid, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     unit_price = Column(DECIMAL(10, 2), nullable=False)  # 주문 시점의 가격
 
