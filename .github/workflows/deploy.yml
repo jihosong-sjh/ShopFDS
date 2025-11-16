@@ -1,11 +1,11 @@
 name: Deploy to Kubernetes
 
 on:
-  workflow_run:
-    workflows: ["Build and Push Docker Images"]
-    types:
-      - completed
-    branches: [main]
+  # workflow_run:  # Disabled until K8s cluster is ready
+  #   workflows: ["Build and Push Docker Images"]
+  #   types:
+  #     - completed
+  #   branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -39,6 +39,11 @@ jobs:
 
     - name: Configure kubectl
       run: |
+        if [ -z "${{ secrets.KUBECONFIG_STAGING }}" ]; then
+          echo "::error::KUBECONFIG_STAGING secret is not set. Please configure it in GitHub Settings > Secrets."
+          echo "::notice::To set up Kubernetes deployment, add KUBECONFIG_STAGING to repository secrets."
+          exit 1
+        fi
         mkdir -p $HOME/.kube
         echo "${{ secrets.KUBECONFIG_STAGING }}" | base64 -d > $HOME/.kube/config
 
@@ -80,12 +85,14 @@ jobs:
         kubectl exec -n shopfds deployment/fds-service -- curl -f http://localhost:8001/health
 
     - name: Notify deployment status
-      if: always()
+      if: always() && secrets.SLACK_WEBHOOK != ''
       uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
         text: 'Staging deployment ${{ job.status }}'
         webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   deploy-production:
     name: Deploy to Production
@@ -107,6 +114,11 @@ jobs:
 
     - name: Configure kubectl
       run: |
+        if [ -z "${{ secrets.KUBECONFIG_PRODUCTION }}" ]; then
+          echo "::error::KUBECONFIG_PRODUCTION secret is not set. Please configure it in GitHub Settings > Secrets."
+          echo "::notice::To set up Kubernetes deployment, add KUBECONFIG_PRODUCTION to repository secrets."
+          exit 1
+        fi
         mkdir -p $HOME/.kube
         echo "${{ secrets.KUBECONFIG_PRODUCTION }}" | base64 -d > $HOME/.kube/config
 
@@ -168,12 +180,14 @@ jobs:
         kubectl rollout undo deployment/admin-dashboard-frontend -n shopfds
 
     - name: Notify deployment status
-      if: always()
+      if: always() && secrets.SLACK_WEBHOOK != ''
       uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
         text: 'Production deployment ${{ job.status }}'
         webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
 env:
   REGISTRY: ghcr.io
