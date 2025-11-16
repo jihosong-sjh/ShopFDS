@@ -145,9 +145,7 @@ async def get_orders(
     status: Optional[OrderStatus] = Query(None, description="주문 상태 필터"),
     user_email: Optional[str] = Query(None, description="사용자 이메일 검색"),
     order_number: Optional[str] = Query(None, description="주문 번호 검색"),
-    start_date: Optional[datetime] = Query(
-        None, description="시작 날짜 (ISO 8601 형식)"
-    ),
+    start_date: Optional[datetime] = Query(None, description="시작 날짜 (ISO 8601 형식)"),
     end_date: Optional[datetime] = Query(None, description="종료 날짜 (ISO 8601 형식)"),
     page: int = Query(1, ge=1, description="페이지 번호 (1부터 시작)"),
     page_size: int = Query(20, ge=1, le=100, description="페이지 크기 (최대 100)"),
@@ -383,9 +381,7 @@ async def update_order_status(
                 )
             order.status = OrderStatus.REFUNDED
         else:
-            raise ValueError(
-                f"지원하지 않는 상태 전환: {old_status.value} → {new_status.value}"
-            )
+            raise ValueError(f"지원하지 않는 상태 전환: {old_status.value} → {new_status.value}")
 
     except ValueError as e:
         raise ValidationError(detail=str(e))

@@ -65,9 +65,7 @@ class PCIDSSCompliance:
         # 1. 금지된 카드 데이터 필드 검사
         for field in cls.PROHIBITED_CARD_FIELDS:
             if field in data:
-                violations.append(
-                    f"금지된 필드 발견: '{field}' - 카드 데이터는 반드시 토큰화되어야 합니다"
-                )
+                violations.append(f"금지된 필드 발견: '{field}' - 카드 데이터는 반드시 토큰화되어야 합니다")
 
         # 2. 민감 데이터 패턴 검사
         data_str = str(data)
@@ -75,8 +73,7 @@ class PCIDSSCompliance:
             matches = re.findall(pattern, data_str, re.IGNORECASE)
             if matches:
                 violations.append(
-                    f"민감 데이터 패턴 발견: {pattern_name} - "
-                    f"{len(matches)}개 일치 항목"
+                    f"민감 데이터 패턴 발견: {pattern_name} - " f"{len(matches)}개 일치 항목"
                 )
 
         # 3. 토큰화 검증
@@ -84,21 +81,17 @@ class PCIDSSCompliance:
             token = data["card_token"]
             if not cls._is_valid_token(token):
                 violations.append(
-                    f"유효하지 않은 토큰 형식: {token[:10]}... - "
-                    "토큰은 원본 카드 번호를 포함해서는 안 됩니다"
+                    f"유효하지 않은 토큰 형식: {token[:10]}... - " "토큰은 원본 카드 번호를 포함해서는 안 됩니다"
                 )
         else:
-            warnings.append(
-                "card_token 필드가 없습니다 - " "결제 정보는 반드시 토큰화되어야 합니다"
-            )
+            warnings.append("card_token 필드가 없습니다 - " "결제 정보는 반드시 토큰화되어야 합니다")
 
         # 4. 카드 마지막 4자리 검증
         if "card_last_four" in data:
             last_four = data["card_last_four"]
             if not re.match(r"^\d{4}$", str(last_four)):
                 violations.append(
-                    f"card_last_four 형식 오류: {last_four} - "
-                    "정확히 4자리 숫자여야 합니다"
+                    f"card_last_four 형식 오류: {last_four} - " "정확히 4자리 숫자여야 합니다"
                 )
 
         is_compliant = len(violations) == 0
@@ -240,15 +233,13 @@ class PCIDSSCompliance:
                 {
                     "requirement": "4. 저장된 데이터 암호화",
                     "status": "부분 구현",
-                    "description": "토큰화로 카드 데이터 보호. "
-                    "추가: 데이터베이스 컬럼 레벨 암호화 권장",
+                    "description": "토큰화로 카드 데이터 보호. " "추가: 데이터베이스 컬럼 레벨 암호화 권장",
                     "implementation": "PostgreSQL pgcrypto 확장 사용 권장",
                 },
                 {
                     "requirement": "5. 접근 제어",
                     "status": "구현됨",
-                    "description": "RBAC(역할 기반 접근 제어) 구현. "
-                    "관리자만 민감 데이터 접근 가능",
+                    "description": "RBAC(역할 기반 접근 제어) 구현. " "관리자만 민감 데이터 접근 가능",
                     "implementation": "services/ecommerce/backend/src/middleware/authorization.py",
                 },
                 {

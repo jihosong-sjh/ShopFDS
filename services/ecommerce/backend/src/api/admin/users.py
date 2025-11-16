@@ -137,12 +137,8 @@ async def get_users(
     status: Optional[UserStatus] = Query(None, description="회원 상태 필터"),
     email: Optional[str] = Query(None, description="이메일 검색 (부분 일치)"),
     name: Optional[str] = Query(None, description="이름 검색 (부분 일치)"),
-    start_date: Optional[datetime] = Query(
-        None, description="가입 시작 날짜 (ISO 8601 형식)"
-    ),
-    end_date: Optional[datetime] = Query(
-        None, description="가입 종료 날짜 (ISO 8601 형식)"
-    ),
+    start_date: Optional[datetime] = Query(None, description="가입 시작 날짜 (ISO 8601 형식)"),
+    end_date: Optional[datetime] = Query(None, description="가입 종료 날짜 (ISO 8601 형식)"),
     page: int = Query(1, ge=1, description="페이지 번호 (1부터 시작)"),
     page_size: int = Query(20, ge=1, le=100, description="페이지 크기 (최대 100)"),
     db: AsyncSession = Depends(get_db),

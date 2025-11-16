@@ -161,9 +161,7 @@ class CartService:
         cart_item = result.scalars().first()
 
         if not cart_item:
-            raise ResourceNotFoundError(
-                f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}"
-            )
+            raise ResourceNotFoundError(f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}")
 
         # 재고 확인
         if cart_item.product and not cart_item.product.can_purchase(quantity):
@@ -202,9 +200,7 @@ class CartService:
         cart_item = result.scalars().first()
 
         if not cart_item:
-            raise ResourceNotFoundError(
-                f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}"
-            )
+            raise ResourceNotFoundError(f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}")
 
         await self.db.delete(cart_item)
         await self.db.commit()

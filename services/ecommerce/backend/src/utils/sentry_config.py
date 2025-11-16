@@ -47,9 +47,7 @@ def init_sentry(
         dsn = os.getenv("SENTRY_DSN")
 
     if not dsn:
-        logging.info(
-            "Sentry DSN이 설정되지 않았습니다. Sentry 모니터링이 비활성화됩니다."
-        )
+        logging.info("Sentry DSN이 설정되지 않았습니다. Sentry 모니터링이 비활성화됩니다.")
         return
 
     # 환경별 샘플링 비율 자동 조정

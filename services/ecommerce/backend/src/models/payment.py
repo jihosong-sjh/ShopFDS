@@ -67,9 +67,7 @@ class Payment(Base):
     card_last_four = Column(String(4), nullable=False)  # 표시용 마지막 4자리
 
     # 결제 게이트웨이 정보
-    transaction_id = Column(
-        String(100), nullable=True
-    )  # 외부 결제 게이트웨이의 거래 ID
+    transaction_id = Column(String(100), nullable=True)  # 외부 결제 게이트웨이의 거래 ID
 
     # 타임스탬프
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)

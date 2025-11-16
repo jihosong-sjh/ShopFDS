@@ -42,9 +42,7 @@ class PaymentService:
         payment = result.scalars().first()
 
         if not payment:
-            raise ResourceNotFoundError(
-                f"결제 정보를 찾을 수 없습니다: order_id={order_id}"
-            )
+            raise ResourceNotFoundError(f"결제 정보를 찾을 수 없습니다: order_id={order_id}")
 
         return payment
 

@@ -83,9 +83,7 @@ class CartItem(Base):
     # 제약 조건
     __table_args__ = (
         CheckConstraint("quantity > 0", name="check_cart_quantity_positive"),
-        UniqueConstraint(
-            "cart_id", "product_id", name="uq_cart_product"
-        ),  # 중복 상품 방지
+        UniqueConstraint("cart_id", "product_id", name="uq_cart_product"),  # 중복 상품 방지
     )
 
     def __repr__(self):
