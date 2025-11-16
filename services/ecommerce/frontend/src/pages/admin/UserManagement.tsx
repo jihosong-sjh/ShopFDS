@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi, adminQueryKeys } from '../../services/admin-api';
+import type { User } from '../../services/api';
 
 export const UserManagement: React.FC = () => {
   const queryClient = useQueryClient();
@@ -41,8 +42,9 @@ export const UserManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.users.all });
       alert('회원 상태가 성공적으로 업데이트되었습니다.');
     },
-    onError: (error: any) => {
-      alert(`회원 상태 업데이트 실패: ${error.response?.data?.detail || error.message}`);
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      alert(`회원 상태 업데이트 실패: ${err.response?.data?.detail || err.message}`);
     },
   });
 
@@ -258,7 +260,7 @@ export const UserManagement: React.FC = () => {
 
 // 회원 행 컴포넌트
 interface UserRowProps {
-  user: any;
+  user: User;
   onStatusChange: (userId: string, newStatus: string) => void;
   isUpdating: boolean;
   userStatuses: Array<{ value: string; label: string }>;

@@ -29,9 +29,10 @@ export const Register: React.FC = () => {
       setAuth(data.user, data.access_token, data.refresh_token);
       navigate('/');
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } } };
       setErrors({
-        submit: error.response?.data?.detail || '회원가입에 실패했습니다.',
+        submit: err.response?.data?.detail || '회원가입에 실패했습니다.',
       });
     },
   });

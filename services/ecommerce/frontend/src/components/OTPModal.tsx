@@ -134,8 +134,9 @@ export const OTPModal: React.FC<OTPModalProps> = ({
     try {
       await onVerify(otpCode);
       // 성공 시 모달은 상위 컴포넌트에서 닫힘
-    } catch (err: any) {
-      setError(err.response?.data?.detail || '인증번호가 올바르지 않습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || '인증번호가 올바르지 않습니다.');
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } finally {
@@ -153,8 +154,9 @@ export const OTPModal: React.FC<OTPModalProps> = ({
       setOtp(['', '', '', '', '', '']);
       setError('');
       inputRefs.current[0]?.focus();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || '인증번호 재전송에 실패했습니다.');
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || '인증번호 재전송에 실패했습니다.');
     }
   };
 

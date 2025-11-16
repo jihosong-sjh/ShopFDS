@@ -115,8 +115,9 @@ const MLModelManagement: React.FC = () => {
         limit: 50,
       });
       setModels(data);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "모델 목록 조회 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "모델 목록 조회 실패");
       console.error("모델 목록 조회 오류:", err);
     } finally {
       setLoading(false);
@@ -128,7 +129,7 @@ const MLModelManagement: React.FC = () => {
     try {
       const data = await mlModelsApi.getCanaryStatus();
       setCanaryStatus(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("카나리 상태 조회 오류:", err);
     }
   };
@@ -146,19 +147,21 @@ const MLModelManagement: React.FC = () => {
             setTrainingModelId(null);
             fetchModels(); // 모델 목록 새로고침
           }
-        } catch (err: any) {
+        } catch (err) {
           console.error("학습 상태 조회 오류:", err);
         }
       }, 3000); // 3초마다 조회
 
       return () => clearInterval(interval);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trainingModelId]);
 
   // 초기 로드 및 필터 변경 시 모델 목록 조회
   useEffect(() => {
     fetchModels();
     fetchCanaryStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deploymentStatusFilter, modelTypeFilter]);
 
   // 모델 학습 트리거
@@ -173,8 +176,9 @@ const MLModelManagement: React.FC = () => {
       setShowTrainModal(false);
       alert(`모델 학습이 시작되었습니다: ${response.model_name}`);
       fetchModels();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "모델 학습 트리거 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "모델 학습 트리거 실패");
       console.error("모델 학습 오류:", err);
     } finally {
       setLoading(false);
@@ -197,8 +201,9 @@ const MLModelManagement: React.FC = () => {
       setShowDeployModal(false);
       alert(`모델이 ${deployForm.target_environment}에 배포되었습니다`);
       fetchModels();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "모델 배포 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "모델 배포 실패");
       console.error("모델 배포 오류:", err);
     } finally {
       setLoading(false);
@@ -222,8 +227,9 @@ const MLModelManagement: React.FC = () => {
       alert("카나리 배포가 시작되었습니다");
       fetchCanaryStatus();
       fetchModels();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "카나리 배포 시작 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "카나리 배포 시작 실패");
       console.error("카나리 배포 오류:", err);
     } finally {
       setLoading(false);
@@ -239,8 +245,9 @@ const MLModelManagement: React.FC = () => {
       await mlModelsApi.adjustCanaryTraffic(newPercentage);
       alert(`카나리 트래픽이 ${newPercentage}%로 조정되었습니다`);
       fetchCanaryStatus();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "트래픽 조정 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "트래픽 조정 실패");
       console.error("트래픽 조정 오류:", err);
     } finally {
       setLoading(false);
@@ -259,8 +266,9 @@ const MLModelManagement: React.FC = () => {
       alert("카나리 배포가 완료되었습니다");
       fetchCanaryStatus();
       fetchModels();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "카나리 배포 완료 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "카나리 배포 완료 실패");
       console.error("카나리 배포 완료 오류:", err);
     } finally {
       setLoading(false);
@@ -280,8 +288,9 @@ const MLModelManagement: React.FC = () => {
       alert("카나리 배포가 중단되었습니다");
       fetchCanaryStatus();
       fetchModels();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "카나리 배포 중단 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "카나리 배포 중단 실패");
       console.error("카나리 배포 중단 오류:", err);
     } finally {
       setLoading(false);
@@ -311,8 +320,9 @@ const MLModelManagement: React.FC = () => {
       setShowRollbackModal(false);
       alert("모델 롤백이 완료되었습니다");
       fetchModels();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "모델 롤백 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "모델 롤백 실패");
       console.error("모델 롤백 오류:", err);
     } finally {
       setLoading(false);

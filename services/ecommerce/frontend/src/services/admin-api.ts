@@ -146,15 +146,15 @@ export const adminQueryKeys = {
   },
   orders: {
     all: ['admin', 'orders'] as const,
-    list: (params?: any) => ['admin', 'orders', 'list', params] as const,
+    list: (params?: Record<string, unknown>) => ['admin', 'orders', 'list', params] as const,
     detail: (id: string) => ['admin', 'orders', id] as const,
   },
   users: {
     all: ['admin', 'users'] as const,
-    list: (params?: any) => ['admin', 'users', 'list', params] as const,
+    list: (params?: Record<string, unknown>) => ['admin', 'users', 'list', params] as const,
     detail: (id: string) => ['admin', 'users', id] as const,
   },
   sales: {
-    stats: (params?: any) => ['admin', 'sales', 'stats', params] as const,
+    stats: (params?: Record<string, unknown>) => ['admin', 'sales', 'stats', params] as const,
   },
 };

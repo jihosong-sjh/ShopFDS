@@ -13,7 +13,7 @@ interface Rule {
   name: string;
   description: string;
   rule_type: string;
-  conditions: any;
+  conditions: Record<string, unknown>;
   risk_score_addition: number;
   is_active: boolean;
   priority: number;

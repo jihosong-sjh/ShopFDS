@@ -59,14 +59,15 @@ export const ProductEditor: React.FC = () => {
       alert('상품이 성공적으로 등록되었습니다.');
       navigate('/admin/products');
     },
-    onError: (error: any) => {
-      alert(`상품 등록 실패: ${error.response?.data?.detail || error.message}`);
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      alert(`상품 등록 실패: ${err.response?.data?.detail || err.message}`);
     },
   });
 
   // 상품 수정 뮤테이션
   const updateProductMutation = useMutation({
-    mutationFn: ({ productId, data }: { productId: string; data: any }) =>
+    mutationFn: ({ productId, data }: { productId: string; data: Record<string, unknown> }) =>
       adminApi.updateProduct(productId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.products.all });
@@ -75,8 +76,9 @@ export const ProductEditor: React.FC = () => {
       alert('상품이 성공적으로 수정되었습니다.');
       navigate('/admin/products');
     },
-    onError: (error: any) => {
-      alert(`상품 수정 실패: ${error.response?.data?.detail || error.message}`);
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      alert(`상품 수정 실패: ${err.response?.data?.detail || err.message}`);
     },
   });
 
@@ -89,8 +91,9 @@ export const ProductEditor: React.FC = () => {
       alert('상품이 성공적으로 삭제되었습니다.');
       navigate('/admin/products');
     },
-    onError: (error: any) => {
-      alert(`상품 삭제 실패: ${error.response?.data?.detail || error.message}`);
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      alert(`상품 삭제 실패: ${err.response?.data?.detail || err.message}`);
     },
   });
 
