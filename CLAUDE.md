@@ -1,6 +1,6 @@
 # ShopFDS Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2025-11-13
+Auto-generated from all feature plans. Last updated: 2025-11-16
 
 ## 프로젝트 개요
 
@@ -501,7 +501,26 @@ async def test_user(self, db_session: AsyncSession):
 - [ ] pytest.ini 설정 확인
 
 ## Recent Changes
-- 2025-11-16: CI/CD Guidelines 추가
+- 2025-11-16 (2): Phase 9: 마무리 및 교차 기능 - 문서화 완료 (T141-T143)
+  - ML Service main.py 생성: FastAPI 애플리케이션 구조, API 라우터 통합 (training, evaluation, deployment), 포트 8002
+  - 통합 API 문서 생성 (docs/api/): 4개 서비스별 상세 API 문서 작성
+    - README.md: API 개요, 서비스별 엔드포인트, 인증 방법, 공통 사양, 테스트 방법
+    - ecommerce-api.md: 인증, 상품, 장바구니, 주문 API (총 30+ 엔드포인트)
+    - fds-api.md: 실시간 거래 평가, 위협 인텔리전스 API, Fail-Open 정책
+    - ml-service-api.md: 모델 학습, 평가, 배포 (카나리 배포), 롤백 API
+    - admin-dashboard-api.md: 대시보드, 검토 큐, 탐지 룰, A/B 테스트 API
+  - 아키텍처 다이어그램 생성 (docs/architecture/README.md): Mermaid 기반 시각화
+    - 마이크로서비스 아키텍처 개요: 4개 서비스 + Nginx Gateway + 데이터베이스
+    - FDS 평가 플로우: 시퀀스 다이어그램 (Low/Medium/High Risk 분기)
+    - 데이터 흐름: 행동 로그 → Feature Engineering → ML 학습 → 실시간 예측
+    - 배포 아키텍처: Kubernetes 기반 프로덕션 배포, HPA, StatefulSet
+    - 데이터베이스 스키마: ERD (15개 주요 엔티티)
+    - 보안 아키텍처: JWT 인증, RBAC, PCI-DSS 준수, Rate Limiting
+  - Swagger/OpenAPI 자동 문서: 각 서비스에서 /docs, /redoc 엔드포인트 제공
+  - API 문서 포함 내용: 요청/응답 예시, cURL 예시, 에러 코드, Postman 컬렉션 가이드
+  - 성능 지표 명시: FDS P95 85ms, 1,000 TPS, 캐시 히트율 85%
+
+- 2025-11-16 (1): CI/CD Guidelines 추가
   - CI 실패 방지 체크리스트: Black/Ruff, TypeScript/ESLint, 의존성 관리, 데이터베이스 호환성, 테스트 완성도
   - 커밋 전 최종 체크리스트: Python/TypeScript 서비스별 검증 절차
   - GitHub Actions CI 워크플로우 이해: Lint → Test → Build → Deploy 단계
