@@ -125,7 +125,7 @@ async def get_current_user(
 
 
 async def get_current_active_user(
-    current_user = Depends(get_current_user),
+    current_user=Depends(get_current_user),
 ):
     """
     활성화된 사용자만 허용
@@ -167,7 +167,7 @@ def require_role(*allowed_roles: str):
     """
 
     async def role_checker(
-        current_user = Depends(get_current_user),
+        current_user=Depends(get_current_user),
     ):
         # TODO: User 모델 생성 후 주석 해제
         # if current_user.role not in allowed_roles:

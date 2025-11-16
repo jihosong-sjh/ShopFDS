@@ -3,9 +3,19 @@
 
 목적: 판매 중인 상품 정보
 """
+
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import Column, String, Text, DECIMAL, Integer, DateTime, Index, CheckConstraint
+from sqlalchemy import (
+    Column,
+    String,
+    Text,
+    DECIMAL,
+    Integer,
+    DateTime,
+    Index,
+    CheckConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 import uuid
 
@@ -14,6 +24,7 @@ from .base import Base
 
 class ProductStatus(str, Enum):
     """상품 상태"""
+
     AVAILABLE = "available"
     OUT_OF_STOCK = "out_of_stock"
     DISCONTINUED = "discontinued"
@@ -21,6 +32,7 @@ class ProductStatus(str, Enum):
 
 class Product(Base):
     """상품 모델"""
+
     __tablename__ = "products"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -34,17 +46,19 @@ class Product(Base):
         ENUM(ProductStatus, name="product_status_enum", create_type=True),
         nullable=False,
         default=ProductStatus.AVAILABLE,
-        index=True
+        index=True,
     )
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     # 제약 조건
     __table_args__ = (
-        CheckConstraint('price >= 0', name='check_price_non_negative'),
-        CheckConstraint('stock_quantity >= 0', name='check_stock_non_negative'),
-        Index('idx_products_category', 'category'),
-        Index('idx_products_status', 'status'),
+        CheckConstraint("price >= 0", name="check_price_non_negative"),
+        CheckConstraint("stock_quantity >= 0", name="check_stock_non_negative"),
+        Index("idx_products_category", "category"),
+        Index("idx_products_status", "status"),
     )
 
     def __repr__(self):
@@ -62,7 +76,9 @@ class Product(Base):
         """재고 수량 업데이트 (음수: 감소, 양수: 증가)"""
         new_quantity = self.stock_quantity + quantity_delta
         if new_quantity < 0:
-            raise ValueError(f"재고 부족: 현재 {self.stock_quantity}, 요청 {abs(quantity_delta)}")
+            raise ValueError(
+                f"재고 부족: 현재 {self.stock_quantity}, 요청 {abs(quantity_delta)}"
+            )
 
         self.stock_quantity = new_quantity
 

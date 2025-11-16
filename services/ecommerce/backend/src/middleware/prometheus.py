@@ -43,7 +43,6 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         method = request.method
-        path = request.url.path
 
         # 경로 템플릿 추출 (동적 경로 파라미터 처리)
         endpoint = self._get_endpoint_template(request)
@@ -61,9 +60,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
 
         except Exception as e:
             # 예외 발생 시 에러 메트릭 기록
-            errors_total.labels(
-                error_type=type(e).__name__, severity="critical"
-            ).inc()
+            errors_total.labels(error_type=type(e).__name__, severity="critical").inc()
             raise
 
         finally:
@@ -76,9 +73,9 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             ).inc()
 
             # 요청 처리 시간 기록
-            http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe(
-                duration
-            )
+            http_request_duration_seconds.labels(
+                method=method, endpoint=endpoint
+            ).observe(duration)
 
             # 진행 중인 요청 감소
             http_requests_in_progress.labels(method=method, endpoint=endpoint).dec()

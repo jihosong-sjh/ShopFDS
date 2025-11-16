@@ -10,13 +10,13 @@ Rate Limiting 미들웨어 (FastAPI 레벨)
 
 import time
 import logging
-from typing import Dict, Optional, Callable
+from typing import Dict, Callable
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.base import RequestResponseEndpoint
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +34,7 @@ class RateLimiter:
         self.memory_store: Dict[str, Dict] = defaultdict(dict)
 
     def check_rate_limit(
-        self,
-        key: str,
-        max_requests: int,
-        window_seconds: int
+        self, key: str, max_requests: int, window_seconds: int
     ) -> Dict[str, any]:
         """
         Rate Limit 확인
@@ -59,16 +56,16 @@ class RateLimiter:
         current_time = time.time()
 
         if self.redis:
-            return self._check_rate_limit_redis(key, max_requests, window_seconds, current_time)
+            return self._check_rate_limit_redis(
+                key, max_requests, window_seconds, current_time
+            )
         else:
-            return self._check_rate_limit_memory(key, max_requests, window_seconds, current_time)
+            return self._check_rate_limit_memory(
+                key, max_requests, window_seconds, current_time
+            )
 
     def _check_rate_limit_redis(
-        self,
-        key: str,
-        max_requests: int,
-        window_seconds: int,
-        current_time: float
+        self, key: str, max_requests: int, window_seconds: int, current_time: float
     ) -> Dict[str, any]:
         """Redis 기반 Rate Limiting"""
         redis_key = f"rate_limit:{key}"
@@ -95,11 +92,7 @@ class RateLimiter:
         }
 
     def _check_rate_limit_memory(
-        self,
-        key: str,
-        max_requests: int,
-        window_seconds: int,
-        current_time: float
+        self, key: str, max_requests: int, window_seconds: int, current_time: float
     ) -> Dict[str, any]:
         """인메모리 Rate Limiting (Redis 없을 때)"""
         # 만료된 요청 제거
@@ -161,11 +154,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.limiter = RateLimiter(redis_client)
 
-    async def dispatch(
-        self,
-        request: Request,
-        call_next: RequestResponseEndpoint
-    ):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
         """모든 요청에 대해 Rate Limiting 적용"""
         # Rate Limit 제외 경로 (Health Check 등)
         excluded_paths = ["/health", "/metrics", "/docs", "/openapi.json"]
@@ -182,9 +171,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # 엔드포인트별 Rate Limit 설정 가져오기
         path = request.url.path
-        rate_limit_config = self.ENDPOINT_RATE_LIMITS.get(
-            path, self.DEFAULT_RATE_LIMIT
-        )
+        rate_limit_config = self.ENDPOINT_RATE_LIMITS.get(path, self.DEFAULT_RATE_LIMIT)
 
         # Rate Limit 키 생성
         rate_limit_key = f"ip:{client_ip}:{path}"
@@ -217,8 +204,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 content={
                     "error": "Too Many Requests",
                     "message": f"Rate limit exceeded. "
-                               f"Max {rate_limit_config['max_requests']} requests "
-                               f"per {rate_limit_config['window_seconds']} seconds.",
+                    f"Max {rate_limit_config['max_requests']} requests "
+                    f"per {rate_limit_config['window_seconds']} seconds.",
                     "retry_after": result["retry_after"],
                 },
                 headers=headers,
@@ -297,8 +284,10 @@ if __name__ == "__main__":
             max_requests=5,
             window_seconds=10,
         )
-        print(f"요청 {i}: 허용={result['allowed']}, "
-              f"남은 요청={result['requests_remaining']}")
+        print(
+            f"요청 {i}: 허용={result['allowed']}, "
+            f"남은 요청={result['requests_remaining']}"
+        )
 
         if not result["allowed"]:
             print(f"  → {result['retry_after']}초 후 재시도")

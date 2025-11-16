@@ -4,6 +4,7 @@
 기존 ProductService에 Redis 캐싱을 추가하여 성능을 개선합니다.
 상품 조회가 빈번한 경우 캐시를 활용하여 데이터베이스 부하를 줄입니다.
 """
+
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_
@@ -13,7 +14,7 @@ from redis import asyncio as aioredis
 from src.models.product import Product, ProductStatus
 from src.utils.exceptions import ResourceNotFoundError, ValidationError
 from src.utils.cache_manager import CacheManager, CacheKeyBuilder
-from src.utils.query_optimizer import monitor_query, QueryOptimizationHelper
+from src.utils.query_optimizer import monitor_query
 
 
 class CachedProductService:
@@ -47,7 +48,7 @@ class CachedProductService:
         status: Optional[ProductStatus] = None,
         limit: int = 20,
         offset: int = 0,
-        use_cache: bool = True
+        use_cache: bool = True,
     ) -> tuple[List[Product], int]:
         """
         상품 목록 조회 (캐싱 지원)
@@ -72,7 +73,7 @@ class CachedProductService:
                 min_price=min_price,
                 max_price=max_price,
                 limit=limit,
-                offset=offset
+                offset=offset,
             )
 
             cached_data = await self.cache_manager.get(cache_key)
@@ -93,7 +94,7 @@ class CachedProductService:
             filters.append(
                 or_(
                     Product.name.ilike(search_pattern),
-                    Product.description.ilike(search_pattern)
+                    Product.description.ilike(search_pattern),
                 )
             )
 
@@ -130,21 +131,17 @@ class CachedProductService:
         if use_cache and self.cache_manager and not search_query and products:
             cache_data = {
                 "products": [self._product_to_dict(p) for p in products],
-                "total_count": total_count
+                "total_count": total_count,
             }
             await self.cache_manager.set(
-                cache_key,
-                cache_data,
-                ttl=CacheManager.MEDIUM_TTL  # 10분 캐시
+                cache_key, cache_data, ttl=CacheManager.MEDIUM_TTL  # 10분 캐시
             )
 
         return products, total_count
 
     @monitor_query("get_product_by_id")
     async def get_product_by_id(
-        self,
-        product_id: str,
-        use_cache: bool = True
+        self, product_id: str, use_cache: bool = True
     ) -> Product:
         """
         상품 ID로 상세 조회 (캐싱 지원)
@@ -168,9 +165,7 @@ class CachedProductService:
                 return self._dict_to_product(cached_data)
 
         # 데이터베이스 조회
-        result = await self.db.execute(
-            select(Product).where(Product.id == product_id)
-        )
+        result = await self.db.execute(select(Product).where(Product.id == product_id))
         product = result.scalars().first()
 
         if not product:
@@ -182,16 +177,14 @@ class CachedProductService:
             await self.cache_manager.set(
                 cache_key,
                 self._product_to_dict(product),
-                ttl=CacheManager.LONG_TTL  # 1시간 캐시
+                ttl=CacheManager.LONG_TTL,  # 1시간 캐시
             )
 
         return product
 
     @monitor_query("get_featured_products")
     async def get_featured_products(
-        self,
-        limit: int = 10,
-        use_cache: bool = True
+        self, limit: int = 10, use_cache: bool = True
     ) -> List[Product]:
         """
         추천 상품 조회 (캐싱 지원)
@@ -227,7 +220,7 @@ class CachedProductService:
             await self.cache_manager.set(
                 cache_key,
                 [self._product_to_dict(p) for p in products],
-                ttl=CacheManager.MEDIUM_TTL  # 10분 캐시
+                ttl=CacheManager.MEDIUM_TTL,  # 10분 캐시
             )
 
         return products
@@ -263,7 +256,7 @@ class CachedProductService:
             await self.cache_manager.set(
                 cache_key,
                 categories,
-                ttl=CacheManager.VERY_LONG_TTL  # 24시간 캐시 (카테고리는 자주 변경되지 않음)
+                ttl=CacheManager.VERY_LONG_TTL,  # 24시간 캐시 (카테고리는 자주 변경되지 않음)
             )
 
         return categories
@@ -277,7 +270,7 @@ class CachedProductService:
         category: str,
         stock_quantity: int,
         description: Optional[str] = None,
-        image_url: Optional[str] = None
+        image_url: Optional[str] = None,
     ) -> Product:
         """
         새 상품 등록 (캐시 무효화 포함)
@@ -306,7 +299,11 @@ class CachedProductService:
             stock_quantity=stock_quantity,
             description=description,
             image_url=image_url,
-            status=ProductStatus.AVAILABLE if stock_quantity > 0 else ProductStatus.OUT_OF_STOCK
+            status=(
+                ProductStatus.AVAILABLE
+                if stock_quantity > 0
+                else ProductStatus.OUT_OF_STOCK
+            ),
         )
 
         self.db.add(product)
@@ -325,7 +322,7 @@ class CachedProductService:
         price: Optional[float] = None,
         category: Optional[str] = None,
         description: Optional[str] = None,
-        image_url: Optional[str] = None
+        image_url: Optional[str] = None,
     ) -> Product:
         """
         상품 정보 수정 (캐시 무효화 포함)
@@ -390,7 +387,9 @@ class CachedProductService:
 
             # 캐시 무효화
             if self.cache_manager:
-                await self.cache_manager.delete(CacheKeyBuilder.product_detail(product_id))
+                await self.cache_manager.delete(
+                    CacheKeyBuilder.product_detail(product_id)
+                )
                 await self._invalidate_product_caches(product.category)
 
             return product
@@ -434,7 +433,9 @@ class CachedProductService:
 
         # 카테고리별 목록 캐시 무효화
         if category:
-            await self.cache_manager.delete_pattern(f"product:list:category={category}:*")
+            await self.cache_manager.delete_pattern(
+                f"product:list:category={category}:*"
+            )
 
         # 추천 상품 캐시 무효화
         await self.cache_manager.delete_pattern("product:featured:*")
@@ -454,8 +455,12 @@ class CachedProductService:
             "stock_quantity": product.stock_quantity,
             "status": product.status.value,
             "image_url": product.image_url,
-            "created_at": product.created_at.isoformat() if product.created_at else None,
-            "updated_at": product.updated_at.isoformat() if product.updated_at else None
+            "created_at": (
+                product.created_at.isoformat() if product.created_at else None
+            ),
+            "updated_at": (
+                product.updated_at.isoformat() if product.updated_at else None
+            ),
         }
 
     @staticmethod
@@ -472,7 +477,7 @@ class CachedProductService:
             category=data["category"],
             stock_quantity=data["stock_quantity"],
             status=ProductStatus(data["status"]),
-            image_url=data.get("image_url")
+            image_url=data.get("image_url"),
         )
 
         if data.get("created_at"):

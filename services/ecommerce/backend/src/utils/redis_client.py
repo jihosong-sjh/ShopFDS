@@ -140,9 +140,7 @@ class RedisCache:
             logger.error(f"Redis GET 실패: {key}, {e}")
             return default
 
-    async def set(
-        self, key: str, value: Any, ttl: Optional[int] = None
-    ) -> bool:
+    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
         """
         캐시에 값 저장
 

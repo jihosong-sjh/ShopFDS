@@ -3,7 +3,7 @@
 
 장바구니 추가/수정/삭제 등 장바구니 관련 비즈니스 로직
 """
-from typing import List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -63,7 +63,9 @@ class CartService:
 
         return cart
 
-    async def add_item(self, user_id: str, product_id: str, quantity: int = 1) -> CartItem:
+    async def add_item(
+        self, user_id: str, product_id: str, quantity: int = 1
+    ) -> CartItem:
         """
         장바구니에 상품 추가
 
@@ -83,9 +85,7 @@ class CartService:
             raise ValidationError("수량은 1 이상이어야 합니다")
 
         # 상품 조회 및 재고 확인
-        result = await self.db.execute(
-            select(Product).where(Product.id == product_id)
-        )
+        result = await self.db.execute(select(Product).where(Product.id == product_id))
         product = result.scalars().first()
 
         if not product:
@@ -121,9 +121,7 @@ class CartService:
         else:
             # 새 항목 추가
             cart_item = CartItem(
-                cart_id=cart.id,
-                product_id=product_id,
-                quantity=quantity
+                cart_id=cart.id, product_id=product_id, quantity=quantity
             )
             self.db.add(cart_item)
             await self.db.commit()
@@ -131,10 +129,7 @@ class CartService:
             return cart_item
 
     async def update_item_quantity(
-        self,
-        user_id: str,
-        cart_item_id: str,
-        quantity: int
+        self, user_id: str, cart_item_id: str, quantity: int
     ) -> CartItem:
         """
         장바구니 항목 수량 수정
@@ -166,7 +161,9 @@ class CartService:
         cart_item = result.scalars().first()
 
         if not cart_item:
-            raise ResourceNotFoundError(f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}")
+            raise ResourceNotFoundError(
+                f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}"
+            )
 
         # 재고 확인
         if cart_item.product and not cart_item.product.can_purchase(quantity):
@@ -205,7 +202,9 @@ class CartService:
         cart_item = result.scalars().first()
 
         if not cart_item:
-            raise ResourceNotFoundError(f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}")
+            raise ResourceNotFoundError(
+                f"장바구니 항목을 찾을 수 없습니다: {cart_item_id}"
+            )
 
         await self.db.delete(cart_item)
         await self.db.commit()
@@ -259,20 +258,22 @@ class CartService:
                 total_amount += subtotal
                 total_items += item.quantity
 
-                items_detail.append({
-                    "cart_item_id": str(item.id),
-                    "product_id": str(item.product.id),
-                    "product_name": item.product.name,
-                    "unit_price": float(item.product.price),
-                    "quantity": item.quantity,
-                    "subtotal": subtotal,
-                    "image_url": item.product.image_url,
-                    "is_available": item.product.is_available()
-                })
+                items_detail.append(
+                    {
+                        "cart_item_id": str(item.id),
+                        "product_id": str(item.product.id),
+                        "product_name": item.product.name,
+                        "unit_price": float(item.product.price),
+                        "quantity": item.quantity,
+                        "subtotal": subtotal,
+                        "image_url": item.product.image_url,
+                        "is_available": item.product.is_available(),
+                    }
+                )
 
         return {
             "cart_id": str(cart.id),
             "total_amount": total_amount,
             "total_items": total_items,
-            "items": items_detail
+            "items": items_detail,
         }

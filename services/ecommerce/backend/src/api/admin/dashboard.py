@@ -3,20 +3,17 @@
 
 관리자가 매출 통계 및 전체 시스템 현황을 조회할 수 있는 API 엔드포인트
 """
+
 from typing import Optional, List
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, case
 from decimal import Decimal
 
 from src.models.order import Order, OrderStatus
-from src.models.user import User
-from src.models.product import Product
-from src.models.payment import Payment, PaymentStatus
 from src.models.base import get_db
-from src.middleware.auth import get_current_user
 from src.middleware.authorization import require_permission, Permission
 from src.utils.exceptions import ValidationError
 
@@ -26,8 +23,10 @@ router = APIRouter(prefix="/v1/admin/dashboard", tags=["Admin - Dashboard"])
 
 # ===== Response 스키마 =====
 
+
 class SalesStatsByPeriod(BaseModel):
     """기간별 매출 통계"""
+
     period: str  # 날짜 또는 기간 (예: "2025-11-14", "2025-11-01 ~ 2025-11-07")
     total_sales: Decimal  # 총 매출액
     order_count: int  # 주문 건수
@@ -39,13 +38,14 @@ class SalesStatsByPeriod(BaseModel):
                 "period": "2025-11-14",
                 "total_sales": "5000000.00",
                 "order_count": 150,
-                "average_order_value": "33333.33"
+                "average_order_value": "33333.33",
             }
         }
 
 
 class SalesByStatus(BaseModel):
     """주문 상태별 통계"""
+
     status: str
     count: int
     total_amount: Decimal
@@ -55,13 +55,14 @@ class SalesByStatus(BaseModel):
             "example": {
                 "status": "delivered",
                 "count": 120,
-                "total_amount": "4500000.00"
+                "total_amount": "4500000.00",
             }
         }
 
 
 class TopProduct(BaseModel):
     """인기 상품 정보"""
+
     product_id: str
     product_name: str
     total_quantity: int
@@ -73,13 +74,14 @@ class TopProduct(BaseModel):
                 "product_id": "550e8400-e29b-41d4-a716-446655440000",
                 "product_name": "무선 이어폰",
                 "total_quantity": 50,
-                "total_sales": "4450000.00"
+                "total_sales": "4450000.00",
             }
         }
 
 
 class SalesDashboardResponse(BaseModel):
     """매출 대시보드 응답"""
+
     period_type: str  # "daily", "weekly", "monthly"
     start_date: str
     end_date: str
@@ -99,39 +101,38 @@ class SalesDashboardResponse(BaseModel):
                     "total_orders": 300,
                     "average_order_value": "33333.33",
                     "completed_orders": 250,
-                    "cancelled_orders": 10
+                    "cancelled_orders": 10,
                 },
                 "sales_by_period": [],
                 "sales_by_status": [],
-                "top_products": []
+                "top_products": [],
             }
         }
 
 
 # ===== API 엔드포인트 =====
 
+
 @router.get(
     "/sales",
     response_model=SalesDashboardResponse,
     summary="매출 대시보드 조회",
-    description="관리자가 매출 통계를 조회합니다 (일/주/월별 집계 지원)."
+    description="관리자가 매출 통계를 조회합니다 (일/주/월별 집계 지원).",
 )
 async def get_sales_dashboard(
     period_type: str = Query(
         "daily",
         regex="^(daily|weekly|monthly)$",
-        description="집계 기간 타입 (daily, weekly, monthly)"
+        description="집계 기간 타입 (daily, weekly, monthly)",
     ),
     start_date: Optional[datetime] = Query(
-        None,
-        description="시작 날짜 (ISO 8601 형식, 기본값: 14일 전)"
+        None, description="시작 날짜 (ISO 8601 형식, 기본값: 14일 전)"
     ),
     end_date: Optional[datetime] = Query(
-        None,
-        description="종료 날짜 (ISO 8601 형식, 기본값: 오늘)"
+        None, description="종료 날짜 (ISO 8601 형식, 기본값: 오늘)"
     ),
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_permission(Permission.ORDER_READ_ALL))
+    current_user=Depends(require_permission(Permission.ORDER_READ_ALL)),
 ):
     """
     매출 대시보드를 조회합니다.
@@ -177,7 +178,7 @@ async def get_sales_dashboard(
         OrderStatus.PAID,
         OrderStatus.PREPARING,
         OrderStatus.SHIPPED,
-        OrderStatus.DELIVERED
+        OrderStatus.DELIVERED,
     ]
 
     # 1. 전체 요약 통계 조회
@@ -185,13 +186,17 @@ async def get_sales_dashboard(
         func.count(Order.id).label("total_orders"),
         func.sum(Order.total_amount).label("total_sales"),
         func.avg(Order.total_amount).label("average_order_value"),
-        func.sum(case((Order.status == OrderStatus.DELIVERED, 1), else_=0)).label("completed_orders"),
-        func.sum(case((Order.status == OrderStatus.CANCELLED, 1), else_=0)).label("cancelled_orders")
+        func.sum(case((Order.status == OrderStatus.DELIVERED, 1), else_=0)).label(
+            "completed_orders"
+        ),
+        func.sum(case((Order.status == OrderStatus.CANCELLED, 1), else_=0)).label(
+            "cancelled_orders"
+        ),
     ).where(
         and_(
             Order.created_at >= start_date,
             Order.created_at <= end_date,
-            Order.status.in_(revenue_statuses)
+            Order.status.in_(revenue_statuses),
         )
     )
 
@@ -203,27 +208,28 @@ async def get_sales_dashboard(
         "total_orders": summary_row.total_orders or 0,
         "average_order_value": float(summary_row.average_order_value or 0),
         "completed_orders": summary_row.completed_orders or 0,
-        "cancelled_orders": summary_row.cancelled_orders or 0
+        "cancelled_orders": summary_row.cancelled_orders or 0,
     }
 
     # 2. 기간별 매출 통계 (기간 타입에 따라 그룹화)
     # 간소화: 일별 집계만 구현 (주별/월별은 추후 확장 가능)
     if period_type == "daily":
         # 일별 집계
-        daily_query = select(
-            func.date(Order.created_at).label("date"),
-            func.count(Order.id).label("order_count"),
-            func.sum(Order.total_amount).label("total_sales")
-        ).where(
-            and_(
-                Order.created_at >= start_date,
-                Order.created_at <= end_date,
-                Order.status.in_(revenue_statuses)
+        daily_query = (
+            select(
+                func.date(Order.created_at).label("date"),
+                func.count(Order.id).label("order_count"),
+                func.sum(Order.total_amount).label("total_sales"),
             )
-        ).group_by(
-            func.date(Order.created_at)
-        ).order_by(
-            func.date(Order.created_at)
+            .where(
+                and_(
+                    Order.created_at >= start_date,
+                    Order.created_at <= end_date,
+                    Order.status.in_(revenue_statuses),
+                )
+            )
+            .group_by(func.date(Order.created_at))
+            .order_by(func.date(Order.created_at))
         )
 
         daily_result = await db.execute(daily_query)
@@ -235,8 +241,10 @@ async def get_sales_dashboard(
                 total_sales=row.total_sales or Decimal("0.00"),
                 order_count=row.order_count or 0,
                 average_order_value=(
-                    row.total_sales / row.order_count if row.order_count > 0 else Decimal("0.00")
-                )
+                    row.total_sales / row.order_count
+                    if row.order_count > 0
+                    else Decimal("0.00")
+                ),
             )
             for row in daily_rows
         ]
@@ -245,17 +253,14 @@ async def get_sales_dashboard(
         sales_by_period = []
 
     # 3. 주문 상태별 통계
-    status_query = select(
-        Order.status,
-        func.count(Order.id).label("count"),
-        func.sum(Order.total_amount).label("total_amount")
-    ).where(
-        and_(
-            Order.created_at >= start_date,
-            Order.created_at <= end_date
+    status_query = (
+        select(
+            Order.status,
+            func.count(Order.id).label("count"),
+            func.sum(Order.total_amount).label("total_amount"),
         )
-    ).group_by(
-        Order.status
+        .where(and_(Order.created_at >= start_date, Order.created_at <= end_date))
+        .group_by(Order.status)
     )
 
     status_result = await db.execute(status_query)
@@ -265,7 +270,7 @@ async def get_sales_dashboard(
         SalesByStatus(
             status=row.status.value,
             count=row.count,
-            total_amount=row.total_amount or Decimal("0.00")
+            total_amount=row.total_amount or Decimal("0.00"),
         )
         for row in status_rows
     ]
@@ -289,9 +294,10 @@ async def get_sales_dashboard(
         LIMIT 10
     """
 
-    top_products_result = await db.execute(
+    # Raw SQL 쿼리 실행 (결과는 사용하지 않지만 쿼리 유효성 확인용)
+    _ = await db.execute(
         select(Order).from_statement(db.text(top_products_query)),
-        {"start_date": start_date, "end_date": end_date}
+        {"start_date": start_date, "end_date": end_date},
     )
 
     # 간소화: Raw SQL 결과 파싱이 복잡하므로, 빈 목록 반환 (추후 구현)
@@ -305,5 +311,5 @@ async def get_sales_dashboard(
         summary=summary,
         sales_by_period=sales_by_period,
         sales_by_status=sales_by_status,
-        top_products=top_products
+        top_products=top_products,
     )

@@ -3,6 +3,7 @@
 
 주문 생성, 주문 상태 관리 등 주문 관련 비즈니스 로직
 """
+
 from typing import List, Optional, Dict
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,9 +13,12 @@ import httpx
 
 from src.models.order import Order, OrderItem, OrderStatus
 from src.models.cart import Cart, CartItem
-from src.models.product import Product
 from src.models.payment import Payment, PaymentMethod, PaymentStatus
-from src.utils.exceptions import ResourceNotFoundError, ValidationError, BusinessLogicError
+from src.utils.exceptions import (
+    ResourceNotFoundError,
+    ValidationError,
+    BusinessLogicError,
+)
 from src.utils.otp import get_otp_service
 from src.utils.redis_client import get_redis
 from src.config import get_settings
@@ -34,7 +38,7 @@ class OrderService:
         shipping_address: str,
         shipping_phone: str,
         payment_info: Dict[str, str],
-        request_context: Optional[Dict[str, str]] = None
+        request_context: Optional[Dict[str, str]] = None,
     ) -> tuple[Order, dict]:
         """
         장바구니로부터 주문 생성
@@ -72,7 +76,7 @@ class OrderService:
         for cart_item in cart.items:
             product = cart_item.product
             if not product:
-                raise ValidationError(f"상품을 찾을 수 없습니다")
+                raise ValidationError("상품을 찾을 수 없습니다")
 
             if not product.can_purchase(cart_item.quantity):
                 raise ValidationError(
@@ -82,11 +86,13 @@ class OrderService:
             subtotal = float(product.price) * cart_item.quantity
             total_amount += subtotal
 
-            order_items_data.append({
-                "product": product,
-                "quantity": cart_item.quantity,
-                "unit_price": float(product.price)
-            })
+            order_items_data.append(
+                {
+                    "product": product,
+                    "quantity": cart_item.quantity,
+                    "unit_price": float(product.price),
+                }
+            )
 
         # 3. 주문 생성
         order = Order(
@@ -96,7 +102,7 @@ class OrderService:
             status=OrderStatus.PENDING,
             shipping_name=shipping_name,
             shipping_address=shipping_address,
-            shipping_phone=shipping_phone
+            shipping_phone=shipping_phone,
         )
         self.db.add(order)
         await self.db.flush()  # ID 생성
@@ -107,7 +113,7 @@ class OrderService:
                 order_id=order.id,
                 product_id=item_data["product"].id,
                 quantity=item_data["quantity"],
-                unit_price=item_data["unit_price"]
+                unit_price=item_data["unit_price"],
             )
             self.db.add(order_item)
 
@@ -115,16 +121,13 @@ class OrderService:
             item_data["product"].update_stock(-item_data["quantity"])
 
         # 5. 결제 정보 생성 (토큰화)
-        from src.models.payment import Payment
+
         payment = await self._create_payment(order.id, total_amount, payment_info)
 
         # 6. FDS 평가 요청 (비동기)
         # 요청 컨텍스트 준비
         if not request_context:
-            request_context = {
-                "ip_address": "127.0.0.1",
-                "user_agent": "Unknown"
-            }
+            request_context = {"ip_address": "127.0.0.1", "user_agent": "Unknown"}
 
         fds_result = await self._evaluate_transaction(
             user_id=user_id,
@@ -135,7 +138,7 @@ class OrderService:
             shipping_name=shipping_name,
             shipping_address=shipping_address,
             shipping_phone=shipping_phone,
-            payment_info=payment_info
+            payment_info=payment_info,
         )
 
         # 7. FDS 결과에 따른 처리
@@ -157,8 +160,8 @@ class OrderService:
                         "order_number": order.order_number,
                         "amount": str(total_amount),
                         "risk_score": fds_result.get("risk_score"),
-                        "risk_factors": fds_result.get("risk_factors", [])
-                    }
+                        "risk_factors": fds_result.get("risk_factors", []),
+                    },
                 )
 
                 # OTP 정보를 FDS 결과에 추가
@@ -170,6 +173,7 @@ class OrderService:
                 # 주문 상태: PENDING_AUTH (추가 인증 대기)
                 # 결제 상태: PENDING (결제 대기)
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.info(
                     f"중간 위험 거래 탐지 - OTP 발급: order_id={order.id}, "
@@ -179,6 +183,7 @@ class OrderService:
 
             except Exception as e:
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.error(f"OTP 생성 실패: order_id={order.id}, error={str(e)}")
                 # OTP 생성 실패 시에도 거래는 보류 상태로 유지
@@ -219,7 +224,7 @@ class OrderService:
             .where(and_(Order.id == order_id, Order.user_id == user_id))
             .options(
                 selectinload(Order.items).selectinload(OrderItem.product),
-                selectinload(Order.payment)
+                selectinload(Order.payment),
             )
         )
         order = result.scalars().first()
@@ -234,7 +239,7 @@ class OrderService:
         user_id: str,
         status: Optional[OrderStatus] = None,
         limit: int = 20,
-        offset: int = 0
+        offset: int = 0,
     ) -> List[Order]:
         """
         사용자의 주문 목록 조회
@@ -297,10 +302,7 @@ class OrderService:
         return order
 
     async def complete_order_with_otp(
-        self,
-        user_id: str,
-        order_id: str,
-        otp_code: str
+        self, user_id: str, order_id: str, otp_code: str
     ) -> tuple[Order, dict]:
         """
         OTP 검증 후 주문 완료 처리
@@ -341,9 +343,7 @@ class OrderService:
         otp_service = await get_otp_service(redis_client)
 
         otp_result = await otp_service.verify_otp(
-            user_id=user_id,
-            otp_code=otp_code,
-            purpose="transaction"
+            user_id=user_id, otp_code=otp_code, purpose="transaction"
         )
 
         if not otp_result["valid"]:
@@ -373,6 +373,7 @@ class OrderService:
         await self.db.refresh(order)
 
         import logging
+
         logger = logging.getLogger(__name__)
         logger.info(
             f"OTP 검증 성공 - 주문 완료: order_id={order.id}, "
@@ -400,50 +401,62 @@ class OrderService:
             "order_number": order.order_number,
             "status": order.status,
             "status_history": [],
-            "estimated_delivery": None
+            "estimated_delivery": None,
         }
 
         # 상태 히스토리 구성
         if order.created_at:
-            tracking_info["status_history"].append({
-                "status": "pending",
-                "timestamp": order.created_at.isoformat(),
-                "description": "주문 접수"
-            })
+            tracking_info["status_history"].append(
+                {
+                    "status": "pending",
+                    "timestamp": order.created_at.isoformat(),
+                    "description": "주문 접수",
+                }
+            )
 
         if order.paid_at:
-            tracking_info["status_history"].append({
-                "status": "paid",
-                "timestamp": order.paid_at.isoformat(),
-                "description": "결제 완료"
-            })
+            tracking_info["status_history"].append(
+                {
+                    "status": "paid",
+                    "timestamp": order.paid_at.isoformat(),
+                    "description": "결제 완료",
+                }
+            )
 
         if order.shipped_at:
-            tracking_info["status_history"].append({
-                "status": "shipped",
-                "timestamp": order.shipped_at.isoformat(),
-                "description": "배송 시작"
-            })
+            tracking_info["status_history"].append(
+                {
+                    "status": "shipped",
+                    "timestamp": order.shipped_at.isoformat(),
+                    "description": "배송 시작",
+                }
+            )
 
         if order.delivered_at:
-            tracking_info["status_history"].append({
-                "status": "delivered",
-                "timestamp": order.delivered_at.isoformat(),
-                "description": "배송 완료"
-            })
+            tracking_info["status_history"].append(
+                {
+                    "status": "delivered",
+                    "timestamp": order.delivered_at.isoformat(),
+                    "description": "배송 완료",
+                }
+            )
 
         if order.cancelled_at:
-            tracking_info["status_history"].append({
-                "status": "cancelled",
-                "timestamp": order.cancelled_at.isoformat(),
-                "description": "주문 취소"
-            })
+            tracking_info["status_history"].append(
+                {
+                    "status": "cancelled",
+                    "timestamp": order.cancelled_at.isoformat(),
+                    "description": "주문 취소",
+                }
+            )
 
         return tracking_info
 
     # 관리자 전용 메서드
 
-    async def update_order_status(self, order_id: str, new_status: OrderStatus) -> Order:
+    async def update_order_status(
+        self, order_id: str, new_status: OrderStatus
+    ) -> Order:
         """
         주문 상태 변경 (관리자 전용)
 
@@ -454,9 +467,7 @@ class OrderService:
         Returns:
             Order: 업데이트된 주문 객체
         """
-        result = await self.db.execute(
-            select(Order).where(Order.id == order_id)
-        )
+        result = await self.db.execute(select(Order).where(Order.id == order_id))
         order = result.scalars().first()
 
         if not order:
@@ -480,10 +491,7 @@ class OrderService:
     # 내부 메서드
 
     async def _create_payment(
-        self,
-        order_id: str,
-        amount: float,
-        payment_info: Dict[str, str]
+        self, order_id: str, amount: float, payment_info: Dict[str, str]
     ) -> Payment:
         """결제 정보 생성 (내부 메서드)"""
         card_number = payment_info.get("card_number", "")
@@ -496,7 +504,7 @@ class OrderService:
             amount=amount,
             status=PaymentStatus.PENDING,
             card_token=card_token,
-            card_last_four=card_last_four
+            card_last_four=card_last_four,
         )
 
         self.db.add(payment)
@@ -512,7 +520,7 @@ class OrderService:
         shipping_name: str,
         shipping_address: str,
         shipping_phone: str,
-        payment_info: Dict[str, str]
+        payment_info: Dict[str, str],
     ) -> dict:
         """
         FDS 서비스에 거래 평가 요청 (내부 메서드)
@@ -533,7 +541,6 @@ class OrderService:
         Returns:
             dict: FDS 평가 결과
         """
-        import uuid
         from datetime import timezone
 
         fds_url = f"{self.settings.FDS_SERVICE_URL}/internal/fds/evaluate"
@@ -563,41 +570,40 @@ class OrderService:
             "device_fingerprint": {
                 "device_type": device_type,
                 "os": None,  # Phase 3에서는 추출하지 않음
-                "browser": None  # Phase 3에서는 추출하지 않음
+                "browser": None,  # Phase 3에서는 추출하지 않음
             },
             "shipping_info": {
                 "name": shipping_name,
                 "address": shipping_address,
-                "phone": shipping_phone
+                "phone": shipping_phone,
             },
             "payment_info": {
                 "method": "credit_card",
                 "card_bin": card_bin,
-                "card_last_four": card_last_four
+                "card_last_four": card_last_four,
             },
             "session_context": None,  # Phase 3에서는 수집하지 않음
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         # 서비스 간 인증 헤더
         headers = {
             "X-Service-Token": self.settings.FDS_SERVICE_TOKEN,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         try:
             timeout = self.settings.FDS_TIMEOUT_MS / 1000.0  # ms to seconds
             async with httpx.AsyncClient(timeout=timeout) as client:
                 response = await client.post(
-                    fds_url,
-                    json=request_data,
-                    headers=headers
+                    fds_url, json=request_data, headers=headers
                 )
                 response.raise_for_status()
                 fds_response = response.json()
 
                 # 응답 로깅
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.info(
                     f"FDS 평가 완료: order_id={order_id}, "
@@ -610,10 +616,9 @@ class OrderService:
         except httpx.TimeoutException as e:
             # FDS 타임아웃 시 Fail-Open 정책 (거래 승인 + 사후 검토)
             import logging
+
             logger = logging.getLogger(__name__)
-            logger.warning(
-                f"FDS 타임아웃: order_id={order_id}, error={str(e)}"
-            )
+            logger.warning(f"FDS 타임아웃: order_id={order_id}, error={str(e)}")
             return {
                 "transaction_id": order_id,
                 "risk_score": 15,
@@ -623,22 +628,21 @@ class OrderService:
                 "evaluation_metadata": {
                     "evaluation_time_ms": int(self.settings.FDS_TIMEOUT_MS),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "error": "FDS timeout - fail open"
+                    "error": "FDS timeout - fail open",
                 },
                 "recommended_action": {
                     "action": "approve",
                     "reason": "FDS 타임아웃으로 자동 승인 (사후 검토 필요)",
-                    "additional_auth_required": False
-                }
+                    "additional_auth_required": False,
+                },
             }
 
         except httpx.RequestError as e:
             # FDS 서비스 연결 실패 시 Fail-Open 정책
             import logging
+
             logger = logging.getLogger(__name__)
-            logger.error(
-                f"FDS 서비스 연결 실패: order_id={order_id}, error={str(e)}"
-            )
+            logger.error(f"FDS 서비스 연결 실패: order_id={order_id}, error={str(e)}")
             return {
                 "transaction_id": order_id,
                 "risk_score": 15,
@@ -648,11 +652,11 @@ class OrderService:
                 "evaluation_metadata": {
                     "evaluation_time_ms": 0,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "error": f"FDS service unavailable: {str(e)}"
+                    "error": f"FDS service unavailable: {str(e)}",
                 },
                 "recommended_action": {
                     "action": "approve",
                     "reason": "FDS 서비스 장애로 자동 승인 (사후 검토 필요)",
-                    "additional_auth_required": False
-                }
+                    "additional_auth_required": False,
+                },
             }

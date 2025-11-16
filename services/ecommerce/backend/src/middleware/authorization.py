@@ -5,10 +5,9 @@
 """
 
 from enum import Enum
-from typing import List, Optional, Set
-from fastapi import Depends, HTTPException, status
-from functools import wraps
-from src.middleware.auth import get_current_user, AuthorizationError
+from typing import List, Set
+from fastapi import Depends
+from src.middleware.auth import get_current_user
 
 
 class UserRole(str, Enum):

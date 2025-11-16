@@ -3,6 +3,7 @@
 
 관리자가 상품을 생성, 수정, 삭제하고 재고를 관리할 수 있는 API 엔드포인트
 """
+
 from typing import Optional
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, Field, validator
@@ -11,9 +12,7 @@ from decimal import Decimal
 
 from src.models.product import Product, ProductStatus
 from src.models.base import get_db
-from src.middleware.auth import get_current_user
 from src.middleware.authorization import require_permission, Permission
-from src.utils.exceptions import ResourceNotFoundError, ValidationError
 from src.services.product_service import ProductService
 
 
@@ -22,21 +21,25 @@ router = APIRouter(prefix="/v1/admin/products", tags=["Admin - Products"])
 
 # ===== Request/Response 스키마 =====
 
+
 class ProductCreateRequest(BaseModel):
     """상품 생성 요청"""
+
     name: str = Field(..., min_length=1, max_length=255, description="상품명")
     description: Optional[str] = Field(None, description="상품 설명")
     price: Decimal = Field(..., gt=0, description="가격 (양수)")
     stock_quantity: int = Field(..., ge=0, description="재고 수량 (0 이상)")
     category: str = Field(..., min_length=1, max_length=100, description="카테고리")
     image_url: Optional[str] = Field(None, max_length=500, description="이미지 URL")
-    status: ProductStatus = Field(default=ProductStatus.AVAILABLE, description="상품 상태")
+    status: ProductStatus = Field(
+        default=ProductStatus.AVAILABLE, description="상품 상태"
+    )
 
-    @validator('price')
+    @validator("price")
     def validate_price(cls, v):
         """가격이 너무 크지 않은지 검증"""
-        if v > Decimal('99999999.99'):
-            raise ValueError('가격은 99,999,999.99를 초과할 수 없습니다.')
+        if v > Decimal("99999999.99"):
+            raise ValueError("가격은 99,999,999.99를 초과할 수 없습니다.")
         return v
 
     class Config:
@@ -48,26 +51,31 @@ class ProductCreateRequest(BaseModel):
                 "stock_quantity": 100,
                 "category": "전자기기",
                 "image_url": "https://example.com/images/earphone.jpg",
-                "status": "available"
+                "status": "available",
             }
         }
 
 
 class ProductUpdateRequest(BaseModel):
     """상품 수정 요청 (모든 필드 선택 사항)"""
-    name: Optional[str] = Field(None, min_length=1, max_length=255, description="상품명")
+
+    name: Optional[str] = Field(
+        None, min_length=1, max_length=255, description="상품명"
+    )
     description: Optional[str] = Field(None, description="상품 설명")
     price: Optional[Decimal] = Field(None, gt=0, description="가격 (양수)")
     stock_quantity: Optional[int] = Field(None, ge=0, description="재고 수량 (0 이상)")
-    category: Optional[str] = Field(None, min_length=1, max_length=100, description="카테고리")
+    category: Optional[str] = Field(
+        None, min_length=1, max_length=100, description="카테고리"
+    )
     image_url: Optional[str] = Field(None, max_length=500, description="이미지 URL")
     status: Optional[ProductStatus] = Field(None, description="상품 상태")
 
-    @validator('price')
+    @validator("price")
     def validate_price(cls, v):
         """가격이 너무 크지 않은지 검증"""
-        if v is not None and v > Decimal('99999999.99'):
-            raise ValueError('가격은 99,999,999.99를 초과할 수 없습니다.')
+        if v is not None and v > Decimal("99999999.99"):
+            raise ValueError("가격은 99,999,999.99를 초과할 수 없습니다.")
         return v
 
     class Config:
@@ -75,25 +83,23 @@ class ProductUpdateRequest(BaseModel):
             "example": {
                 "name": "무선 이어폰 Pro",
                 "price": 129000,
-                "stock_quantity": 50
+                "stock_quantity": 50,
             }
         }
 
 
 class StockUpdateRequest(BaseModel):
     """재고 수량 수정 요청"""
+
     stock_quantity: int = Field(..., ge=0, description="새로운 재고 수량 (0 이상)")
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "stock_quantity": 150
-            }
-        }
+        json_schema_extra = {"example": {"stock_quantity": 150}}
 
 
 class ProductResponse(BaseModel):
     """상품 응답"""
+
     id: str
     name: str
     description: Optional[str]
@@ -118,24 +124,25 @@ class ProductResponse(BaseModel):
                 "image_url": "https://example.com/images/earphone.jpg",
                 "status": "available",
                 "created_at": "2025-11-14T10:00:00",
-                "updated_at": "2025-11-14T10:00:00"
+                "updated_at": "2025-11-14T10:00:00",
             }
         }
 
 
 # ===== API 엔드포인트 =====
 
+
 @router.post(
     "",
     response_model=ProductResponse,
     status_code=status.HTTP_201_CREATED,
     summary="상품 생성",
-    description="관리자가 새로운 상품을 등록합니다."
+    description="관리자가 새로운 상품을 등록합니다.",
 )
 async def create_product(
     request: ProductCreateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_permission(Permission.PRODUCT_CREATE))
+    current_user=Depends(require_permission(Permission.PRODUCT_CREATE)),
 ):
     """
     새로운 상품을 생성합니다.
@@ -162,7 +169,7 @@ async def create_product(
         stock_quantity=request.stock_quantity,
         category=request.category,
         image_url=request.image_url,
-        status=request.status
+        status=request.status,
     )
 
     # 재고가 0이면 품절 상태로 자동 변경
@@ -183,7 +190,7 @@ async def create_product(
         image_url=new_product.image_url,
         status=new_product.status.value,
         created_at=new_product.created_at.isoformat(),
-        updated_at=new_product.updated_at.isoformat()
+        updated_at=new_product.updated_at.isoformat(),
     )
 
 
@@ -191,13 +198,13 @@ async def create_product(
     "/{product_id}",
     response_model=ProductResponse,
     summary="상품 수정",
-    description="관리자가 기존 상품 정보를 수정합니다."
+    description="관리자가 기존 상품 정보를 수정합니다.",
 )
 async def update_product(
     product_id: str,
     request: ProductUpdateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_permission(Permission.PRODUCT_UPDATE))
+    current_user=Depends(require_permission(Permission.PRODUCT_UPDATE)),
 ):
     """
     기존 상품 정보를 수정합니다.
@@ -243,7 +250,7 @@ async def update_product(
         image_url=product.image_url,
         status=product.status.value,
         created_at=product.created_at.isoformat(),
-        updated_at=product.updated_at.isoformat()
+        updated_at=product.updated_at.isoformat(),
     )
 
 
@@ -251,12 +258,12 @@ async def update_product(
     "/{product_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="상품 삭제",
-    description="관리자가 상품을 삭제합니다 (논리 삭제: DISCONTINUED 상태로 변경)."
+    description="관리자가 상품을 삭제합니다 (논리 삭제: DISCONTINUED 상태로 변경).",
 )
 async def delete_product(
     product_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_permission(Permission.PRODUCT_DELETE))
+    current_user=Depends(require_permission(Permission.PRODUCT_DELETE)),
 ):
     """
     상품을 삭제합니다 (논리 삭제).
@@ -289,13 +296,13 @@ async def delete_product(
     "/{product_id}/stock",
     response_model=ProductResponse,
     summary="재고 수량 수정",
-    description="관리자가 상품의 재고 수량을 직접 수정합니다."
+    description="관리자가 상품의 재고 수량을 직접 수정합니다.",
 )
 async def update_stock(
     product_id: str,
     request: StockUpdateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_permission(Permission.PRODUCT_UPDATE))
+    current_user=Depends(require_permission(Permission.PRODUCT_UPDATE)),
 ):
     """
     상품의 재고 수량을 수정합니다.
@@ -342,5 +349,5 @@ async def update_stock(
         image_url=product.image_url,
         status=product.status.value,
         created_at=product.created_at.isoformat(),
-        updated_at=product.updated_at.isoformat()
+        updated_at=product.updated_at.isoformat(),
     )

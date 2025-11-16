@@ -3,9 +3,10 @@
 
 목적: 플랫폼에 가입한 고객 및 관리자 계정
 """
+
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import Column, String, DateTime, Integer, Index
+from sqlalchemy import Column, String, DateTime, Integer
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 from sqlalchemy.orm import relationship
 import uuid
@@ -15,6 +16,7 @@ from .base import Base
 
 class UserRole(str, Enum):
     """사용자 역할"""
+
     CUSTOMER = "customer"
     ADMIN = "admin"
     SECURITY_TEAM = "security_team"
@@ -22,6 +24,7 @@ class UserRole(str, Enum):
 
 class UserStatus(str, Enum):
     """계정 상태"""
+
     ACTIVE = "active"
     SUSPENDED = "suspended"
     DELETED = "deleted"
@@ -29,6 +32,7 @@ class UserStatus(str, Enum):
 
 class User(Base):
     """사용자 모델"""
+
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
@@ -38,13 +42,13 @@ class User(Base):
     role = Column(
         ENUM(UserRole, name="user_role_enum", create_type=True),
         nullable=False,
-        default=UserRole.CUSTOMER
+        default=UserRole.CUSTOMER,
     )
     status = Column(
         ENUM(UserStatus, name="user_status_enum", create_type=True),
         nullable=False,
         default=UserStatus.ACTIVE,
-        index=True
+        index=True,
     )
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     last_login_at = Column(DateTime, nullable=True)

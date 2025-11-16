@@ -3,9 +3,20 @@
 
 목적: 고객의 구매 주문
 """
+
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import Column, String, Text, DECIMAL, Integer, DateTime, ForeignKey, CheckConstraint, Index
+from sqlalchemy import (
+    Column,
+    String,
+    Text,
+    DECIMAL,
+    Integer,
+    DateTime,
+    ForeignKey,
+    CheckConstraint,
+    Index,
+)
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 from sqlalchemy.orm import relationship
 import uuid
@@ -15,28 +26,35 @@ from .base import Base
 
 class OrderStatus(str, Enum):
     """주문 상태"""
-    PENDING = "pending"        # 주문 접수 (결제 대기)
-    PAID = "paid"              # 결제 완료 (배송 준비)
-    PREPARING = "preparing"    # 배송 준비 중
-    SHIPPED = "shipped"        # 배송 중
-    DELIVERED = "delivered"    # 배송 완료
-    CANCELLED = "cancelled"    # 취소됨
-    REFUNDED = "refunded"      # 환불 완료
+
+    PENDING = "pending"  # 주문 접수 (결제 대기)
+    PAID = "paid"  # 결제 완료 (배송 준비)
+    PREPARING = "preparing"  # 배송 준비 중
+    SHIPPED = "shipped"  # 배송 중
+    DELIVERED = "delivered"  # 배송 완료
+    CANCELLED = "cancelled"  # 취소됨
+    REFUNDED = "refunded"  # 환불 완료
 
 
 class Order(Base):
     """주문 모델"""
+
     __tablename__ = "orders"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     order_number = Column(String(20), unique=True, nullable=False, index=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     total_amount = Column(DECIMAL(10, 2), nullable=False)
     status = Column(
         ENUM(OrderStatus, name="order_status_enum", create_type=True),
         nullable=False,
         default=OrderStatus.PENDING,
-        index=True
+        index=True,
     )
 
     # 배송 정보
@@ -53,15 +71,17 @@ class Order(Base):
 
     # 관계
     user = relationship("User", back_populates="orders")
-    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+    items = relationship(
+        "OrderItem", back_populates="order", cascade="all, delete-orphan"
+    )
     payment = relationship("Payment", back_populates="order", uselist=False)
 
     # 제약 조건
     __table_args__ = (
-        CheckConstraint('total_amount > 0', name='check_total_amount_positive'),
-        Index('idx_orders_user_id', 'user_id'),
-        Index('idx_orders_status', 'status'),
-        Index('idx_orders_created_at', 'created_at'),
+        CheckConstraint("total_amount > 0", name="check_total_amount_positive"),
+        Index("idx_orders_user_id", "user_id"),
+        Index("idx_orders_status", "status"),
+        Index("idx_orders_created_at", "created_at"),
     )
 
     def __repr__(self):
@@ -71,13 +91,18 @@ class Order(Base):
     def generate_order_number() -> str:
         """주문 번호 생성: ORD-YYYYMMDD-###"""
         from datetime import datetime
+
         date_str = datetime.utcnow().strftime("%Y%m%d")
         random_suffix = str(uuid.uuid4().int)[:3]
         return f"ORD-{date_str}-{random_suffix}"
 
     def can_cancel(self) -> bool:
         """주문 취소 가능 여부"""
-        return self.status in [OrderStatus.PENDING, OrderStatus.PAID, OrderStatus.PREPARING]
+        return self.status in [
+            OrderStatus.PENDING,
+            OrderStatus.PAID,
+            OrderStatus.PREPARING,
+        ]
 
     def mark_as_paid(self):
         """결제 완료로 상태 변경"""
@@ -110,10 +135,16 @@ class Order(Base):
 
 class OrderItem(Base):
     """주문 항목 모델 (주문 시점의 가격 기록)"""
+
     __tablename__ = "order_items"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True)
+    order_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("orders.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     product_id = Column(UUID(as_uuid=True), ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     unit_price = Column(DECIMAL(10, 2), nullable=False)  # 주문 시점의 가격
@@ -124,7 +155,7 @@ class OrderItem(Base):
 
     # 제약 조건
     __table_args__ = (
-        CheckConstraint('quantity > 0', name='check_order_item_quantity_positive'),
+        CheckConstraint("quantity > 0", name="check_order_item_quantity_positive"),
     )
 
     def __repr__(self):

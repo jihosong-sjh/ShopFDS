@@ -3,6 +3,7 @@ OTP (One-Time Password) 생성 및 검증 유틸리티
 
 추가 인증이 필요한 의심 거래 시 사용되는 OTP 관리
 """
+
 import secrets
 import string
 from datetime import datetime, timedelta
@@ -35,7 +36,7 @@ class OTPService:
         Returns:
             str: 6자리 OTP 코드 (예: "123456")
         """
-        return ''.join(secrets.choice(string.digits) for _ in range(self.otp_length))
+        return "".join(secrets.choice(string.digits) for _ in range(self.otp_length))
 
     def _get_otp_key(self, user_id: str, purpose: str) -> str:
         """
@@ -67,7 +68,7 @@ class OTPService:
         self,
         user_id: str,
         purpose: str = "transaction",
-        metadata: Optional[Dict] = None
+        metadata: Optional[Dict] = None,
     ) -> Dict[str, str]:
         """
         OTP 생성 및 Redis에 저장
@@ -98,17 +99,12 @@ class OTPService:
 
         # Redis에 저장 (만료 시간 설정)
         import json
-        await self.redis.setex(
-            otp_key,
-            self.otp_expiry_seconds,
-            json.dumps(otp_data)
-        )
+
+        await self.redis.setex(otp_key, self.otp_expiry_seconds, json.dumps(otp_data))
 
         # 시도 횟수 초기화
         await self.redis.setex(
-            attempt_key,
-            self.otp_expiry_seconds,
-            str(self.max_attempts)
+            attempt_key, self.otp_expiry_seconds, str(self.max_attempts)
         )
 
         expires_at = datetime.utcnow() + timedelta(seconds=self.otp_expiry_seconds)
@@ -116,14 +112,11 @@ class OTPService:
         return {
             "otp_code": otp_code,
             "expires_at": expires_at.isoformat(),
-            "attempts_remaining": self.max_attempts
+            "attempts_remaining": self.max_attempts,
         }
 
     async def verify_otp(
-        self,
-        user_id: str,
-        otp_code: str,
-        purpose: str = "transaction"
+        self, user_id: str, otp_code: str, purpose: str = "transaction"
     ) -> Dict[str, any]:
         """
         OTP 검증
@@ -150,7 +143,7 @@ class OTPService:
             return {
                 "valid": False,
                 "message": "OTP가 만료되었거나 존재하지 않습니다",
-                "attempts_remaining": 0
+                "attempts_remaining": 0,
             }
 
         # 시도 횟수 확인
@@ -159,7 +152,7 @@ class OTPService:
             return {
                 "valid": False,
                 "message": "OTP가 만료되었습니다",
-                "attempts_remaining": 0
+                "attempts_remaining": 0,
             }
 
         attempts_remaining = int(attempts_str)
@@ -170,11 +163,12 @@ class OTPService:
             return {
                 "valid": False,
                 "message": "최대 시도 횟수를 초과했습니다. 새로운 OTP를 요청하세요",
-                "attempts_remaining": 0
+                "attempts_remaining": 0,
             }
 
         # OTP 검증
         import json
+
         otp_data = json.loads(otp_data_str)
         stored_code = otp_data.get("code")
 
@@ -190,16 +184,14 @@ class OTPService:
                 "valid": True,
                 "message": "OTP 검증 성공",
                 "attempts_remaining": attempts_remaining,
-                "metadata": metadata
+                "metadata": metadata,
             }
         else:
             # 검증 실패 - 시도 횟수 감소
             attempts_remaining -= 1
             if attempts_remaining > 0:
                 await self.redis.setex(
-                    attempt_key,
-                    self.otp_expiry_seconds,
-                    str(attempts_remaining)
+                    attempt_key, self.otp_expiry_seconds, str(attempts_remaining)
                 )
             else:
                 # 시도 횟수 소진 - OTP 삭제
@@ -208,8 +200,8 @@ class OTPService:
 
             return {
                 "valid": False,
-                "message": f"잘못된 OTP 코드입니다",
-                "attempts_remaining": attempts_remaining
+                "message": "잘못된 OTP 코드입니다",
+                "attempts_remaining": attempts_remaining,
             }
 
     async def cancel_otp(self, user_id: str, purpose: str = "transaction") -> bool:
@@ -232,9 +224,7 @@ class OTPService:
         return result1 > 0 or result2 > 0
 
     async def get_otp_status(
-        self,
-        user_id: str,
-        purpose: str = "transaction"
+        self, user_id: str, purpose: str = "transaction"
     ) -> Optional[Dict[str, any]]:
         """
         현재 OTP 상태 조회
@@ -268,7 +258,7 @@ class OTPService:
         return {
             "exists": True,
             "attempts_remaining": attempts_remaining,
-            "expires_in_seconds": ttl if ttl > 0 else 0
+            "expires_in_seconds": ttl if ttl > 0 else 0,
         }
 
 
@@ -292,6 +282,7 @@ async def get_otp_service(redis_client: aioredis.Redis = None) -> OTPService:
         if redis_client is None:
             # Redis 클라이언트 생성
             from utils.redis_client import get_redis
+
             redis_client = await get_redis()
 
         _otp_service_instance = OTPService(redis_client)
