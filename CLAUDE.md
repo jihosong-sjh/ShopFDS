@@ -152,6 +152,219 @@ npm run format
 
 ## CI/CD Guidelines
 
+### 자주 발생하는 CI 오류 및 빠른 해결법
+
+**주의**: 커밋 전 반드시 아래 명령어들을 실행하여 CI 실패를 예방하세요!
+
+#### 🔥 가장 빈번한 CI 실패 원인 TOP 3
+
+1. **Black 포맷팅 미적용** (전체 CI 실패의 60%)
+2. **Ruff 린팅 오류** (F401 미사용 import, E712 불리언 비교 등)
+3. **의존성 누락** (requirements.txt 미업데이트)
+
+---
+
+#### 💨 빠른 해결: 전체 서비스 한 번에 검증 및 수정
+
+**모든 Python 서비스 자동 포맷팅 + 린팅**:
+```bash
+# 프로젝트 루트에서 실행
+for service in ecommerce/backend fds ml-service admin-dashboard/backend; do
+  echo "=== Checking services/$service ==="
+  cd services/$service
+  black src/
+  ruff check src/ --fix
+  cd ../..
+done
+```
+
+**검증만 하기** (CI와 동일):
+```bash
+for service in ecommerce/backend fds ml-service admin-dashboard/backend; do
+  echo "=== Validating services/$service ==="
+  cd services/$service
+  black --check src/
+  ruff check src/
+  cd ../..
+done
+```
+
+---
+
+#### ⚡ 자주 발생하는 Ruff 오류 패턴 및 자동 수정
+
+**F401: 미사용 import**
+```python
+# ❌ 잘못된 코드
+from uuid import UUID  # 사용하지 않음
+from typing import Optional  # 사용하지 않음
+
+# ✅ 자동 수정
+ruff check src/ --fix
+```
+
+**E712: 불리언 비교**
+```python
+# ❌ 잘못된 코드
+if user.is_active == True:
+    pass
+
+# ✅ 올바른 코드
+if user.is_active:
+    pass
+
+# 자동 수정
+ruff check src/ --fix
+```
+
+**E722: Bare except (보안 위험)**
+```python
+# ❌ 잘못된 코드
+try:
+    risky_operation()
+except:  # 모든 예외를 무시 (위험!)
+    pass
+
+# ✅ 올바른 코드
+try:
+    risky_operation()
+except Exception:  # 명시적으로 Exception 지정
+    pass
+
+# 수동 수정 필요
+```
+
+**F841: 미사용 변수**
+```python
+# ❌ 잘못된 코드
+def process_data():
+    result = expensive_calculation()  # 사용하지 않음
+    return True
+
+# ✅ 올바른 코드
+def process_data():
+    expensive_calculation()  # 반환값이 필요없으면 할당하지 않음
+    return True
+
+# 또는 의도적으로 사용
+def process_data():
+    result = expensive_calculation()
+    logger.info(f"Result: {result}")  # 사용
+    return True
+```
+
+---
+
+#### 🚨 CI 실패 시 긴급 대응 절차
+
+**1단계: 로컬에서 CI 재현**
+```bash
+# CI 실패 로그 확인 (GitHub Actions 탭)
+# 예: "would reformat services/fds/src/engines/cti_connector.py"
+
+# 해당 서비스로 이동
+cd services/fds
+
+# Black 포맷팅 적용
+black src/
+
+# Ruff 자동 수정
+ruff check src/ --fix
+
+# 검증
+black --check src/
+ruff check src/
+```
+
+**2단계: 수동 수정이 필요한 경우**
+```bash
+# Ruff 상세 오류 확인
+ruff check src/ --show-source --show-fixes
+
+# 특정 파일만 수정
+black src/engines/cti_connector.py
+ruff check src/engines/cti_connector.py --fix
+```
+
+**3단계: 커밋 및 재푸시**
+```bash
+git add .
+git commit -m "fix: Black 포맷팅 및 Ruff 린팅 오류 수정"
+git push
+```
+
+---
+
+#### 📋 CI 통과를 위한 최종 체크리스트
+
+커밋 전 **반드시** 확인:
+
+```bash
+# ✅ 1. Black 포맷팅 (모든 Python 파일)
+cd services/ecommerce/backend && black src/
+cd services/fds && black src/
+cd services/ml-service && black src/
+cd services/admin-dashboard/backend && black src/
+
+# ✅ 2. Ruff 린팅 (자동 수정 가능한 오류)
+cd services/ecommerce/backend && ruff check src/ --fix
+cd services/fds && ruff check src/ --fix
+cd services/ml-service && ruff check src/ --fix
+cd services/admin-dashboard/backend && ruff check src/ --fix
+
+# ✅ 3. 최종 검증 (CI와 동일)
+cd services/ecommerce/backend && black --check src/ && ruff check src/
+cd services/fds && black --check src/ && ruff check src/
+cd services/ml-service && black --check src/ && ruff check src/
+cd services/admin-dashboard/backend && black --check src/ && ruff check src/
+
+# ✅ 4. 테스트 실행 (선택사항, 시간 있으면)
+pytest tests/unit -v
+```
+
+---
+
+#### 🛠️ CI 오류 자동 방지 팁
+
+**Pre-commit Hook 설정** (권장):
+```bash
+# .git/hooks/pre-commit 파일 생성
+cat > .git/hooks/pre-commit << 'EOF'
+#!/bin/bash
+echo "Running Black and Ruff checks..."
+
+services=("ecommerce/backend" "fds" "ml-service" "admin-dashboard/backend")
+
+for service in "${services[@]}"; do
+  if [ -d "services/$service/src" ]; then
+    echo "Checking services/$service..."
+    cd "services/$service"
+    black src/
+    ruff check src/ --fix
+    cd ../..
+  fi
+done
+
+echo "✅ Pre-commit checks passed!"
+EOF
+
+chmod +x .git/hooks/pre-commit
+```
+
+**VS Code 설정** (.vscode/settings.json):
+```json
+{
+  "python.formatting.provider": "black",
+  "python.linting.ruffEnabled": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
+}
+```
+
+---
+
 ### CI 실패 방지 체크리스트
 
 코드 커밋 전 반드시 로컬에서 검증하여 CI 실패를 방지합니다.
@@ -501,6 +714,16 @@ async def test_user(self, db_session: AsyncSession):
 - [ ] pytest.ini 설정 확인
 
 ## Recent Changes
+- 2025-11-16 (3): CI/CD Guidelines 대폭 강화 - 자주 발생하는 CI 오류 예방 가이드 추가
+  - "자주 발생하는 CI 오류 및 빠른 해결법" 섹션 신규 추가
+  - 가장 빈번한 CI 실패 원인 TOP 3: Black 포맷팅(60%), Ruff 린팅, 의존성 누락
+  - 전체 서비스 한 번에 검증 및 수정하는 스크립트 제공
+  - 자주 발생하는 Ruff 오류 패턴 및 자동 수정 방법 (F401, E712, E722, F841)
+  - CI 실패 시 긴급 대응 절차 3단계 (재현 → 수정 → 재푸시)
+  - CI 통과를 위한 최종 체크리스트 (Black → Ruff → 검증 → 테스트)
+  - CI 오류 자동 방지 팁: Pre-commit Hook, VS Code 설정
+  - 실제 사례: 이번 커밋에서 43개 파일 Black 포맷팅, 64개 Ruff 오류 수정
+
 - 2025-11-16 (2): Phase 9: 마무리 및 교차 기능 - 문서화 완료 (T141-T143)
   - ML Service main.py 생성: FastAPI 애플리케이션 구조, API 라우터 통합 (training, evaluation, deployment), 포트 8002
   - 통합 API 문서 생성 (docs/api/): 4개 서비스별 상세 API 문서 작성
