@@ -17,7 +17,6 @@ from sqlalchemy import (
     CheckConstraint,
     Uuid,
 )
-from sqlalchemy.dialects.postgresql import ENUM
 import uuid
 
 from .base import Base
@@ -44,9 +43,9 @@ class Product(Base):
     category = Column(String(100), nullable=False, index=True)
     image_url = Column(String(500), nullable=True)
     status = Column(
-        ENUM(ProductStatus, name="product_status_enum", create_type=True),
+        String(50),
         nullable=False,
-        default=ProductStatus.AVAILABLE,
+        default=ProductStatus.AVAILABLE.value,
         index=True,
     )
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -58,6 +57,7 @@ class Product(Base):
     __table_args__ = (
         CheckConstraint("price >= 0", name="check_price_non_negative"),
         CheckConstraint("stock_quantity >= 0", name="check_stock_non_negative"),
+        CheckConstraint("status IN ('available', 'out_of_stock', 'discontinued')", name="check_product_status"),
         Index("idx_products_category", "category"),
         Index("idx_products_status", "status"),
     )
@@ -67,7 +67,7 @@ class Product(Base):
 
     def is_available(self) -> bool:
         """상품이 구매 가능한지 확인"""
-        return self.status == ProductStatus.AVAILABLE and self.stock_quantity > 0
+        return self.status == ProductStatus.AVAILABLE.value and self.stock_quantity > 0
 
     def can_purchase(self, quantity: int) -> bool:
         """지정된 수량만큼 구매 가능한지 확인"""
@@ -84,8 +84,8 @@ class Product(Base):
         self.stock_quantity = new_quantity
 
         # 재고가 0이 되면 자동으로 품절 상태로 변경
-        if self.stock_quantity == 0 and self.status == ProductStatus.AVAILABLE:
-            self.status = ProductStatus.OUT_OF_STOCK
+        if self.stock_quantity == 0 and self.status == ProductStatus.AVAILABLE.value:
+            self.status = ProductStatus.OUT_OF_STOCK.value
         # 재고가 다시 생기면 판매 가능 상태로 복원
-        elif self.stock_quantity > 0 and self.status == ProductStatus.OUT_OF_STOCK:
-            self.status = ProductStatus.AVAILABLE
+        elif self.stock_quantity > 0 and self.status == ProductStatus.OUT_OF_STOCK.value:
+            self.status = ProductStatus.AVAILABLE.value

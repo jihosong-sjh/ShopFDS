@@ -18,7 +18,6 @@ from sqlalchemy import (
     Index,
     Uuid,
 )
-from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship
 import uuid
 
@@ -52,9 +51,9 @@ class Order(Base):
     )
     total_amount = Column(DECIMAL(10, 2), nullable=False)
     status = Column(
-        ENUM(OrderStatus, name="order_status_enum", create_type=True),
+        String(50),
         nullable=False,
-        default=OrderStatus.PENDING,
+        default=OrderStatus.PENDING.value,
         index=True,
     )
 
@@ -80,6 +79,7 @@ class Order(Base):
     # 제약 조건
     __table_args__ = (
         CheckConstraint("total_amount > 0", name="check_total_amount_positive"),
+        CheckConstraint("status IN ('pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled', 'refunded')", name="check_order_status"),
         Index("idx_orders_user_id", "user_id"),
         Index("idx_orders_status", "status"),
         Index("idx_orders_created_at", "created_at"),
@@ -100,37 +100,37 @@ class Order(Base):
     def can_cancel(self) -> bool:
         """주문 취소 가능 여부"""
         return self.status in [
-            OrderStatus.PENDING,
-            OrderStatus.PAID,
-            OrderStatus.PREPARING,
+            OrderStatus.PENDING.value,
+            OrderStatus.PAID.value,
+            OrderStatus.PREPARING.value,
         ]
 
     def mark_as_paid(self):
         """결제 완료로 상태 변경"""
-        if self.status != OrderStatus.PENDING:
+        if self.status != OrderStatus.PENDING.value:
             raise ValueError(f"결제 완료 처리 불가: 현재 상태 {self.status}")
-        self.status = OrderStatus.PAID
+        self.status = OrderStatus.PAID.value
         self.paid_at = datetime.utcnow()
 
     def mark_as_shipped(self):
         """배송 시작으로 상태 변경"""
-        if self.status not in [OrderStatus.PAID, OrderStatus.PREPARING]:
+        if self.status not in [OrderStatus.PAID.value, OrderStatus.PREPARING.value]:
             raise ValueError(f"배송 시작 처리 불가: 현재 상태 {self.status}")
-        self.status = OrderStatus.SHIPPED
+        self.status = OrderStatus.SHIPPED.value
         self.shipped_at = datetime.utcnow()
 
     def mark_as_delivered(self):
         """배송 완료로 상태 변경"""
-        if self.status != OrderStatus.SHIPPED:
+        if self.status != OrderStatus.SHIPPED.value:
             raise ValueError(f"배송 완료 처리 불가: 현재 상태 {self.status}")
-        self.status = OrderStatus.DELIVERED
+        self.status = OrderStatus.DELIVERED.value
         self.delivered_at = datetime.utcnow()
 
     def cancel(self):
         """주문 취소"""
         if not self.can_cancel():
             raise ValueError(f"주문 취소 불가: 현재 상태 {self.status}")
-        self.status = OrderStatus.CANCELLED
+        self.status = OrderStatus.CANCELLED.value
         self.cancelled_at = datetime.utcnow()
 
 

@@ -16,7 +16,6 @@ from sqlalchemy import (
     CheckConstraint,
     Uuid,
 )
-from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship
 import uuid
 
@@ -52,15 +51,15 @@ class Payment(Base):
         nullable=False,
     )
     payment_method = Column(
-        ENUM(PaymentMethod, name="payment_method_enum", create_type=True),
+        String(50),
         nullable=False,
-        default=PaymentMethod.CREDIT_CARD,
+        default=PaymentMethod.CREDIT_CARD.value,
     )
     amount = Column(DECIMAL(10, 2), nullable=False)
     status = Column(
-        ENUM(PaymentStatus, name="payment_status_enum", create_type=True),
+        String(50),
         nullable=False,
-        default=PaymentStatus.PENDING,
+        default=PaymentStatus.PENDING.value,
     )
 
     # 카드 정보 (토큰화된 정보만 저장)
@@ -83,6 +82,8 @@ class Payment(Base):
     # 제약 조건
     __table_args__ = (
         CheckConstraint("amount >= 0", name="check_payment_amount_non_negative"),
+        CheckConstraint("payment_method IN ('credit_card')", name="check_payment_method"),
+        CheckConstraint("status IN ('pending', 'completed', 'failed', 'refunded')", name="check_payment_status"),
     )
 
     def __repr__(self):
@@ -90,27 +91,27 @@ class Payment(Base):
 
     def mark_as_completed(self, transaction_id: str):
         """결제 완료 처리"""
-        if self.status != PaymentStatus.PENDING:
+        if self.status != PaymentStatus.PENDING.value:
             raise ValueError(f"결제 완료 처리 불가: 현재 상태 {self.status}")
 
-        self.status = PaymentStatus.COMPLETED
+        self.status = PaymentStatus.COMPLETED.value
         self.transaction_id = transaction_id
         self.completed_at = datetime.utcnow()
 
     def mark_as_failed(self, reason: str):
         """결제 실패 처리"""
-        if self.status not in [PaymentStatus.PENDING, PaymentStatus.COMPLETED]:
+        if self.status not in [PaymentStatus.PENDING.value, PaymentStatus.COMPLETED.value]:
             raise ValueError(f"결제 실패 처리 불가: 현재 상태 {self.status}")
 
-        self.status = PaymentStatus.FAILED
+        self.status = PaymentStatus.FAILED.value
         self.failed_reason = reason
 
     def mark_as_refunded(self):
         """환불 처리"""
-        if self.status != PaymentStatus.COMPLETED:
+        if self.status != PaymentStatus.COMPLETED.value:
             raise ValueError(f"환불 처리 불가: 현재 상태 {self.status}")
 
-        self.status = PaymentStatus.REFUNDED
+        self.status = PaymentStatus.REFUNDED.value
 
     @staticmethod
     def tokenize_card(card_number: str) -> str:

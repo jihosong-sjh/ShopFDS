@@ -66,8 +66,8 @@ class UserService:
             email=email,
             password_hash=password_hash,
             name=name,
-            role=role,
-            status=UserStatus.ACTIVE,
+            role=role.value,
+            status=UserStatus.ACTIVE.value,
         )
 
         self.db.add(user)
