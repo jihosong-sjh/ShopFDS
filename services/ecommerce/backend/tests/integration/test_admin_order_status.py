@@ -369,7 +369,7 @@ class TestAdminOrderStatus:
 
         print("\n=== 전체 주문 라이프사이클 테스트 통과 ===")
         print(f"주문 번호: {order.order_number}")
-        print(f"최종 상태: {order.status.value}")
+        print(f"최종 상태: {order.status}")
         print(f"생성 시각: {order.created_at.isoformat()}")
         print(f"결제 시각: {order.paid_at.isoformat()}")
         print(f"배송 시작 시각: {order.shipped_at.isoformat()}")

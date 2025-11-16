@@ -185,7 +185,7 @@ class TestAdminProductCRUD:
 
         print("재고 0 -> 품절 상태 전환 성공")
         print(f"재고: {product.stock_quantity}개")
-        print(f"상태: {product.status.value}")
+        print(f"상태: {product.status}")
 
         # 재고를 다시 추가
         product.stock_quantity = 50
@@ -203,7 +203,7 @@ class TestAdminProductCRUD:
 
         print("재고 추가 -> 판매 가능 상태 복원 성공")
         print(f"재고: {product.stock_quantity}개")
-        print(f"상태: {product.status.value}")
+        print(f"상태: {product.status}")
 
     @pytest.mark.asyncio
     async def test_product_delete_soft(
@@ -252,7 +252,7 @@ class TestAdminProductCRUD:
 
         print("논리 삭제 성공")
         print(f"상품 ID: {deleted_product.id}")
-        print(f"상태: {deleted_product.status.value}")
+        print(f"상태: {deleted_product.status}")
         print("데이터베이스에 여전히 존재함 (논리 삭제)")
 
     @pytest.mark.asyncio
