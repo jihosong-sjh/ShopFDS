@@ -12,7 +12,6 @@ psycopg2-binary==2.9.9
 
 # Redis
 redis==5.0.1
-aioredis==2.0.1
 
 # Authentication & Security
 python-jose[cryptography]==3.3.0
@@ -23,7 +22,7 @@ python-multipart==0.0.6
 httpx==0.25.2
 
 # Background Tasks
-celery[redis]==5.3.4
+celery[redis]==5.4.0
 
 # Utilities
 python-dotenv==1.0.0
