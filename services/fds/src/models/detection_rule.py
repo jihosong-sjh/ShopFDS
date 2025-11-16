@@ -12,7 +12,6 @@ import enum
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
-    ForeignKey,
     Index,
     Integer,
     String,
@@ -20,28 +19,29 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.sql import func
 
 from .base import Base, TimestampMixin
 
 
 class RuleType(str, enum.Enum):
     """룰 유형"""
-    VELOCITY = "velocity"              # 단시간 내 반복 거래
-    THRESHOLD = "threshold"            # 금액/빈도 임계값
-    BLACKLIST = "blacklist"            # 블랙리스트 (IP, 이메일, 카드 BIN)
-    LOCATION = "location"              # 지역 불일치
-    TIME_PATTERN = "time_pattern"      # 시간 패턴 (비정상 시간대)
+
+    VELOCITY = "velocity"  # 단시간 내 반복 거래
+    THRESHOLD = "threshold"  # 금액/빈도 임계값
+    BLACKLIST = "blacklist"  # 블랙리스트 (IP, 이메일, 카드 BIN)
+    LOCATION = "location"  # 지역 불일치
+    TIME_PATTERN = "time_pattern"  # 시간 패턴 (비정상 시간대)
     DEVICE_PATTERN = "device_pattern"  # 디바이스 패턴 (동일 계정에서 여러 디바이스)
 
 
 class RulePriority(enum.IntEnum):
     """룰 우선순위 (높을수록 먼저 평가)"""
-    CRITICAL = 100   # 매우 높음 (블랙리스트 등)
-    HIGH = 75        # 높음
-    MEDIUM = 50      # 중간 (기본값)
-    LOW = 25         # 낮음
-    INFO = 0         # 정보성
+
+    CRITICAL = 100  # 매우 높음 (블랙리스트 등)
+    HIGH = 75  # 높음
+    MEDIUM = 50  # 중간 (기본값)
+    LOW = 25  # 낮음
+    INFO = 0  # 정보성
 
 
 class DetectionRule(Base, TimestampMixin):
@@ -236,7 +236,9 @@ class DetectionRule(Base, TimestampMixin):
             "priority": self.priority,
             "created_by": str(self.created_by) if self.created_by else None,
             "times_triggered": self.times_triggered,
-            "last_triggered_at": self.last_triggered_at.isoformat() if self.last_triggered_at else None,
+            "last_triggered_at": self.last_triggered_at.isoformat()
+            if self.last_triggered_at
+            else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

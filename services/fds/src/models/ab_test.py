@@ -10,7 +10,6 @@ from typing import Optional
 from uuid import UUID, uuid4
 import enum
 from sqlalchemy import (
-    Boolean,
     CheckConstraint,
     Enum as SQLEnum,
     Float,
@@ -21,26 +20,27 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.sql import func
 
 from .base import Base, TimestampMixin
 
 
 class ABTestStatus(str, enum.Enum):
     """A/B 테스트 상태"""
-    DRAFT = "draft"              # 초안 (아직 시작 안 됨)
-    RUNNING = "running"          # 진행 중
-    PAUSED = "paused"            # 일시 중지
-    COMPLETED = "completed"      # 완료
-    CANCELLED = "cancelled"      # 취소됨
+
+    DRAFT = "draft"  # 초안 (아직 시작 안 됨)
+    RUNNING = "running"  # 진행 중
+    PAUSED = "paused"  # 일시 중지
+    COMPLETED = "completed"  # 완료
+    CANCELLED = "cancelled"  # 취소됨
 
 
 class ABTestType(str, enum.Enum):
     """A/B 테스트 유형"""
-    RULE = "rule"                # 룰 비교 (기존 룰 vs 새 룰)
-    MODEL = "model"              # ML 모델 비교 (기존 모델 vs 새 모델)
-    THRESHOLD = "threshold"      # 임계값 비교 (위험 점수 기준 변경)
-    HYBRID = "hybrid"            # 복합 테스트
+
+    RULE = "rule"  # 룰 비교 (기존 룰 vs 새 룰)
+    MODEL = "model"  # ML 모델 비교 (기존 모델 vs 새 모델)
+    THRESHOLD = "threshold"  # 임계값 비교 (위험 점수 기준 변경)
+    HYBRID = "hybrid"  # 복합 테스트
 
 
 class ABTest(Base, TimestampMixin):
@@ -294,7 +294,7 @@ class ABTest(Base, TimestampMixin):
         Returns:
             float: 정밀도 (0-1), 계산 불가 시 None
         """
-        if group == 'A':
+        if group == "A":
             tp = self.group_a_true_positives
             fp = self.group_a_false_positives
         else:
@@ -317,7 +317,7 @@ class ABTest(Base, TimestampMixin):
         Returns:
             float: 재현율 (0-1), 계산 불가 시 None
         """
-        if group == 'A':
+        if group == "A":
             tp = self.group_a_true_positives
             fn = self.group_a_false_negatives
         else:
@@ -363,7 +363,7 @@ class ABTest(Base, TimestampMixin):
         Returns:
             float: 오탐률 (0-1), 계산 불가 시 None
         """
-        if group == 'A':
+        if group == "A":
             fp = self.group_a_false_positives
             total = self.group_a_total_transactions
         else:
@@ -392,7 +392,7 @@ class ABTest(Base, TimestampMixin):
             is_false_negative: 미탐 여부
             evaluation_time_ms: 평가 소요 시간 (ms)
         """
-        if group == 'A':
+        if group == "A":
             self.group_a_total_transactions += 1
             if is_true_positive:
                 self.group_a_true_positives += 1
@@ -408,8 +408,9 @@ class ABTest(Base, TimestampMixin):
                 else:
                     n = self.group_a_total_transactions
                     self.group_a_avg_evaluation_time_ms = (
-                        (self.group_a_avg_evaluation_time_ms * (n - 1) + evaluation_time_ms) / n
-                    )
+                        self.group_a_avg_evaluation_time_ms * (n - 1)
+                        + evaluation_time_ms
+                    ) / n
         else:
             self.group_b_total_transactions += 1
             if is_true_positive:
@@ -425,8 +426,9 @@ class ABTest(Base, TimestampMixin):
                 else:
                     n = self.group_b_total_transactions
                     self.group_b_avg_evaluation_time_ms = (
-                        (self.group_b_avg_evaluation_time_ms * (n - 1) + evaluation_time_ms) / n
-                    )
+                        self.group_b_avg_evaluation_time_ms * (n - 1)
+                        + evaluation_time_ms
+                    ) / n
 
     def start(self) -> None:
         """테스트 시작"""
@@ -450,7 +452,9 @@ class ABTest(Base, TimestampMixin):
 
         self.status = ABTestStatus.RUNNING
 
-    def complete(self, winner: Optional[str] = None, confidence: Optional[float] = None) -> None:
+    def complete(
+        self, winner: Optional[str] = None, confidence: Optional[float] = None
+    ) -> None:
         """
         테스트 완료
 
@@ -468,16 +472,16 @@ class ABTest(Base, TimestampMixin):
         if winner is not None:
             self.winner = winner
         else:
-            f1_a = self.calculate_f1_score('A')
-            f1_b = self.calculate_f1_score('B')
+            f1_a = self.calculate_f1_score("A")
+            f1_b = self.calculate_f1_score("B")
 
             if f1_a is not None and f1_b is not None:
                 if abs(f1_a - f1_b) < 0.01:  # 1% 이내 차이면 무승부
-                    self.winner = 'tie'
+                    self.winner = "tie"
                 elif f1_a > f1_b:
-                    self.winner = 'A'
+                    self.winner = "A"
                 else:
-                    self.winner = 'B'
+                    self.winner = "B"
 
         if confidence is not None:
             self.confidence_level = confidence
@@ -517,10 +521,10 @@ class ABTest(Base, TimestampMixin):
                 "false_positives": self.group_a_false_positives,
                 "false_negatives": self.group_a_false_negatives,
                 "avg_evaluation_time_ms": self.group_a_avg_evaluation_time_ms,
-                "precision": self.calculate_precision('A'),
-                "recall": self.calculate_recall('A'),
-                "f1_score": self.calculate_f1_score('A'),
-                "false_positive_rate": self.calculate_false_positive_rate('A'),
+                "precision": self.calculate_precision("A"),
+                "recall": self.calculate_recall("A"),
+                "f1_score": self.calculate_f1_score("A"),
+                "false_positive_rate": self.calculate_false_positive_rate("A"),
             },
             "group_b": {
                 "total_transactions": self.group_b_total_transactions,
@@ -528,10 +532,10 @@ class ABTest(Base, TimestampMixin):
                 "false_positives": self.group_b_false_positives,
                 "false_negatives": self.group_b_false_negatives,
                 "avg_evaluation_time_ms": self.group_b_avg_evaluation_time_ms,
-                "precision": self.calculate_precision('B'),
-                "recall": self.calculate_recall('B'),
-                "f1_score": self.calculate_f1_score('B'),
-                "false_positive_rate": self.calculate_false_positive_rate('B'),
+                "precision": self.calculate_precision("B"),
+                "recall": self.calculate_recall("B"),
+                "f1_score": self.calculate_f1_score("B"),
+                "false_positive_rate": self.calculate_false_positive_rate("B"),
             },
             "winner": self.winner,
             "confidence_level": self.confidence_level,

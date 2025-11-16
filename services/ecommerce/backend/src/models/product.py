@@ -57,7 +57,10 @@ class Product(Base):
     __table_args__ = (
         CheckConstraint("price >= 0", name="check_price_non_negative"),
         CheckConstraint("stock_quantity >= 0", name="check_stock_non_negative"),
-        CheckConstraint("status IN ('available', 'out_of_stock', 'discontinued')", name="check_product_status"),
+        CheckConstraint(
+            "status IN ('available', 'out_of_stock', 'discontinued')",
+            name="check_product_status",
+        ),
         Index("idx_products_category", "category"),
         Index("idx_products_status", "status"),
     )
@@ -87,5 +90,7 @@ class Product(Base):
         if self.stock_quantity == 0 and self.status == ProductStatus.AVAILABLE.value:
             self.status = ProductStatus.OUT_OF_STOCK.value
         # 재고가 다시 생기면 판매 가능 상태로 복원
-        elif self.stock_quantity > 0 and self.status == ProductStatus.OUT_OF_STOCK.value:
+        elif (
+            self.stock_quantity > 0 and self.status == ProductStatus.OUT_OF_STOCK.value
+        ):
             self.status = ProductStatus.AVAILABLE.value

@@ -17,7 +17,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.ml_model import DeploymentStatus
 from src.deployment.version_manager import ModelVersionManager
 from src.deployment.canary_deploy import CanaryDeployment
 from src.deployment.rollback import ModelRollback
@@ -148,7 +147,9 @@ async def deploy_model(
             model_name=ml_model.name,
             version=ml_model.version,
             deployment_status=ml_model.deployment_status.value,
-            deployed_at=ml_model.deployed_at.isoformat() if ml_model.deployed_at else "",
+            deployed_at=ml_model.deployed_at.isoformat()
+            if ml_model.deployed_at
+            else "",
         )
 
     except Exception as e:

@@ -4,10 +4,9 @@
 차단된 고위험 거래를 검토하고 승인/차단 결정을 내리는 API입니다.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Body
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, func
-from datetime import datetime
+from sqlalchemy import select, func
 from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, Field
@@ -18,7 +17,6 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
 from services.fds.src.models.transaction import (
     Transaction,
-    RiskLevel,
     EvaluationStatus,
 )
 from services.fds.src.models.review_queue import (
@@ -37,12 +35,8 @@ router = APIRouter(prefix="/v1/review-queue", tags=["Review Queue"])
 class ReviewDecisionRequest(BaseModel):
     """검토 결정 요청"""
 
-    decision: ReviewDecision = Field(
-        ..., description="검토 결과 (approve/block/escalate)"
-    )
-    notes: Optional[str] = Field(
-        None, description="검토 메모 (최대 1000자)", max_length=1000
-    )
+    decision: ReviewDecision = Field(..., description="검토 결과 (approve/block/escalate)")
+    notes: Optional[str] = Field(None, description="검토 메모 (최대 1000자)", max_length=1000)
     reviewer_id: UUID = Field(..., description="검토 담당자 ID")
 
 
@@ -133,7 +127,9 @@ async def get_review_queue(
                 "assigned_to": str(item.assigned_to) if item.assigned_to else None,
                 "review_notes": item.review_notes,
                 "added_at": item.added_at.isoformat(),
-                "reviewed_at": item.reviewed_at.isoformat() if item.reviewed_at else None,
+                "reviewed_at": item.reviewed_at.isoformat()
+                if item.reviewed_at
+                else None,
                 "transaction": {
                     "order_id": str(transaction.order_id),
                     "user_id": str(transaction.user_id),
@@ -195,9 +191,7 @@ async def approve_or_block_transaction(
 
     # 이미 완료된 검토인지 확인
     if review_queue.status == ReviewStatus.COMPLETED:
-        raise HTTPException(
-            status_code=400, detail="이미 검토가 완료된 항목입니다."
-        )
+        raise HTTPException(status_code=400, detail="이미 검토가 완료된 항목입니다.")
 
     # 거래 정보 조회
     transaction_query = select(Transaction).where(
@@ -231,9 +225,7 @@ async def approve_or_block_transaction(
         await db.refresh(transaction)
     except Exception as e:
         await db.rollback()
-        raise HTTPException(
-            status_code=500, detail=f"검토 결과 저장 실패: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"검토 결과 저장 실패: {str(e)}")
 
     return {
         "review_queue_id": str(review_queue.id),
@@ -297,10 +289,14 @@ async def get_review_queue_detail(
         "transaction_id": str(review_queue.transaction_id),
         "status": review_queue.status.value,
         "decision": review_queue.decision.value if review_queue.decision else None,
-        "assigned_to": str(review_queue.assigned_to) if review_queue.assigned_to else None,
+        "assigned_to": str(review_queue.assigned_to)
+        if review_queue.assigned_to
+        else None,
         "review_notes": review_queue.review_notes,
         "added_at": review_queue.added_at.isoformat(),
-        "reviewed_at": review_queue.reviewed_at.isoformat() if review_queue.reviewed_at else None,
+        "reviewed_at": review_queue.reviewed_at.isoformat()
+        if review_queue.reviewed_at
+        else None,
         "transaction": {
             "id": str(transaction.id),
             "order_id": str(transaction.order_id),

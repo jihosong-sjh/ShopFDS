@@ -55,12 +55,10 @@ class User(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "role IN ('customer', 'admin', 'security_team')",
-            name="check_user_role"
+            "role IN ('customer', 'admin', 'security_team')", name="check_user_role"
         ),
         CheckConstraint(
-            "status IN ('active', 'suspended', 'deleted')",
-            name="check_user_status"
+            "status IN ('active', 'suspended', 'deleted')", name="check_user_status"
         ),
     )
 

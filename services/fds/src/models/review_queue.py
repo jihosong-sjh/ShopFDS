@@ -15,7 +15,7 @@ from sqlalchemy import (
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
 from .base import Base
@@ -23,15 +23,17 @@ from .base import Base
 
 class ReviewStatus(str, enum.Enum):
     """검토 상태"""
-    PENDING = "pending"        # 검토 대기 중
-    IN_REVIEW = "in_review"    # 검토 진행 중
-    COMPLETED = "completed"    # 검토 완료
+
+    PENDING = "pending"  # 검토 대기 중
+    IN_REVIEW = "in_review"  # 검토 진행 중
+    COMPLETED = "completed"  # 검토 완료
 
 
 class ReviewDecision(str, enum.Enum):
     """검토 결과"""
-    APPROVE = "approve"    # 승인 (오탐으로 판단, 거래 허용)
-    BLOCK = "block"        # 차단 유지 (정탐으로 판단, 거래 거부)
+
+    APPROVE = "approve"  # 승인 (오탐으로 판단, 거래 허용)
+    BLOCK = "block"  # 차단 유지 (정탐으로 판단, 거래 거부)
     ESCALATE = "escalate"  # 상위 에스컬레이션 (추가 조사 필요)
 
 

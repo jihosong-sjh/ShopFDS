@@ -8,8 +8,7 @@
 import logging
 import time
 from datetime import datetime
-from typing import List, Tuple, Optional
-from uuid import UUID
+from typing import List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from redis import asyncio as aioredis
@@ -26,10 +25,8 @@ from ..models.schemas import (
 )
 from ..engines.cti_connector import CTIConnector, ThreatLevel
 from ..utils.performance_monitor import (
-    PerformanceMonitor,
     PerformanceMetric,
-    PerformanceContext,
-    get_performance_monitor
+    get_performance_monitor,
 )
 
 logger = logging.getLogger(__name__)
@@ -51,7 +48,7 @@ class MonitoredEvaluationEngine:
         self,
         db: Optional[AsyncSession] = None,
         redis: Optional[aioredis.Redis] = None,
-        enable_monitoring: bool = True
+        enable_monitoring: bool = True,
     ):
         """
         평가 엔진 초기화
@@ -93,13 +90,10 @@ class MonitoredEvaluationEngine:
 
         # 타이머 시작
         rule_engine_start = None
-        ml_engine_start = None
-        cti_check_start = None
 
         try:
             # A/B 테스트 정보
             ab_test_group = None
-            ab_test_name = None
 
             # Phase 7: A/B 테스트 확인
             if self.db:
@@ -107,13 +101,14 @@ class MonitoredEvaluationEngine:
                     from ..services.ab_test_service import ABTestService
 
                     ab_test_service = ABTestService(self.db)
-                    active_test = await ab_test_service.get_active_test(test_type="rule")
+                    active_test = await ab_test_service.get_active_test(
+                        test_type="rule"
+                    )
 
                     if active_test:
                         ab_test_group = ab_test_service.assign_group(
                             active_test, request.transaction_id
                         )
-                        ab_test_name = active_test.name
                 except Exception as e:
                     logger.warning(f"A/B 테스트 처리 중 에러: {e}")
 
@@ -128,15 +123,14 @@ class MonitoredEvaluationEngine:
                 self.perf_monitor.tracker.track(
                     PerformanceMetric.RULE_ENGINE_TIME,
                     rule_engine_time_ms,
-                    str(request.transaction_id)
+                    str(request.transaction_id),
                 )
 
             # 2. ML 엔진 평가 (Phase 8에서 추가 예정)
-            ml_score = None
             ml_engine_time_ms = 0
 
             # 3. CTI 체크 시간 (이미 _evaluate_risk_factors 내에서 추적됨)
-            cti_check_time_ms = getattr(self, '_cti_check_time_ms', 0)
+            cti_check_time_ms = getattr(self, "_cti_check_time_ms", 0)
             if cti_check_time_ms > 0:
                 breakdown["cti_check_time"] = cti_check_time_ms
 
@@ -144,7 +138,7 @@ class MonitoredEvaluationEngine:
                     self.perf_monitor.tracker.track(
                         PerformanceMetric.CTI_CHECK_TIME,
                         cti_check_time_ms,
-                        str(request.transaction_id)
+                        str(request.transaction_id),
                     )
 
             # 4. 위험 점수 산정
@@ -188,9 +182,7 @@ class MonitoredEvaluationEngine:
             # 성능 모니터링에 기록
             if self.perf_monitor:
                 self.perf_monitor.track_evaluation(
-                    evaluation_time_ms,
-                    str(request.transaction_id),
-                    breakdown
+                    evaluation_time_ms, str(request.transaction_id), breakdown
                 )
 
             # 100ms 목표 초과 시 상세 로깅
@@ -207,8 +199,12 @@ class MonitoredEvaluationEngine:
             metadata = EvaluationMetadata(
                 evaluation_time_ms=int(evaluation_time_ms),
                 rule_engine_time_ms=int(rule_engine_time_ms),
-                ml_engine_time_ms=int(ml_engine_time_ms) if ml_engine_time_ms > 0 else None,
-                cti_check_time_ms=int(cti_check_time_ms) if cti_check_time_ms > 0 else None,
+                ml_engine_time_ms=int(ml_engine_time_ms)
+                if ml_engine_time_ms > 0
+                else None,
+                cti_check_time_ms=int(cti_check_time_ms)
+                if cti_check_time_ms > 0
+                else None,
                 timestamp=datetime.utcnow(),
             )
 
@@ -268,7 +264,7 @@ class MonitoredEvaluationEngine:
                 description=f"고액 거래: {amount:,.0f}원",
                 score=15,
                 severity=SeverityEnum.MEDIUM,
-                metadata={"amount": amount, "threshold": 1000000}
+                metadata={"amount": amount, "threshold": 1000000},
             )
         elif amount > 500000:  # 50만원 초과
             return RiskFactor(
@@ -276,7 +272,7 @@ class MonitoredEvaluationEngine:
                 description=f"중액 거래: {amount:,.0f}원",
                 score=5,
                 severity=SeverityEnum.LOW,
-                metadata={"amount": amount}
+                metadata={"amount": amount},
             )
         return None
 
@@ -287,19 +283,23 @@ class MonitoredEvaluationEngine:
 
         try:
             # CTI 체크
-            threat_level, confidence = await self.cti_connector.check_ip_reputation(ip_address)
+            threat_level, confidence = await self.cti_connector.check_ip_reputation(
+                ip_address
+            )
 
             if threat_level in [ThreatLevel.HIGH, ThreatLevel.CRITICAL]:
                 return RiskFactor(
                     factor_type="malicious_ip",
                     description=f"악성 IP 탐지: {ip_address} (위협도: {threat_level.value})",
                     score=30 if threat_level == ThreatLevel.HIGH else 50,
-                    severity=SeverityEnum.HIGH if threat_level == ThreatLevel.HIGH else SeverityEnum.CRITICAL,
+                    severity=SeverityEnum.HIGH
+                    if threat_level == ThreatLevel.HIGH
+                    else SeverityEnum.CRITICAL,
                     metadata={
                         "ip_address": ip_address,
                         "threat_level": threat_level.value,
-                        "confidence": confidence
-                    }
+                        "confidence": confidence,
+                    },
                 )
         except Exception as e:
             logger.error(f"CTI IP 체크 실패: {e}")
@@ -338,7 +338,7 @@ class MonitoredEvaluationEngine:
         decision: DecisionEnum,
         risk_level: RiskLevelEnum,
         risk_score: int,
-        risk_factors: List[RiskFactor]
+        risk_factors: List[RiskFactor],
     ) -> RecommendedAction:
         """권장 조치 생성"""
         if decision == DecisionEnum.BLOCK:
@@ -346,28 +346,21 @@ class MonitoredEvaluationEngine:
                 action="block_transaction",
                 reason="고위험 거래로 판단되어 자동 차단되었습니다.",
                 requires_manual_review=True,
-                suggested_next_steps=[
-                    "보안팀 검토 큐에 추가",
-                    "사용자에게 차단 알림 발송",
-                    "추가 본인 인증 요청"
-                ]
+                suggested_next_steps=["보안팀 검토 큐에 추가", "사용자에게 차단 알림 발송", "추가 본인 인증 요청"],
             )
         elif decision == DecisionEnum.ADDITIONAL_AUTH_REQUIRED:
             return RecommendedAction(
                 action="request_otp",
                 reason="중간 위험도 거래로 추가 인증이 필요합니다.",
                 requires_manual_review=False,
-                suggested_next_steps=[
-                    "OTP 발송",
-                    "생체 인증 요청"
-                ]
+                suggested_next_steps=["OTP 발송", "생체 인증 요청"],
             )
         else:
             return RecommendedAction(
                 action="approve",
                 reason="정상 거래로 판단되었습니다.",
                 requires_manual_review=False,
-                suggested_next_steps=[]
+                suggested_next_steps=[],
             )
 
     def get_performance_summary(self) -> str:

@@ -82,8 +82,13 @@ class Payment(Base):
     # 제약 조건
     __table_args__ = (
         CheckConstraint("amount >= 0", name="check_payment_amount_non_negative"),
-        CheckConstraint("payment_method IN ('credit_card')", name="check_payment_method"),
-        CheckConstraint("status IN ('pending', 'completed', 'failed', 'refunded')", name="check_payment_status"),
+        CheckConstraint(
+            "payment_method IN ('credit_card')", name="check_payment_method"
+        ),
+        CheckConstraint(
+            "status IN ('pending', 'completed', 'failed', 'refunded')",
+            name="check_payment_status",
+        ),
     )
 
     def __repr__(self):
@@ -100,7 +105,10 @@ class Payment(Base):
 
     def mark_as_failed(self, reason: str):
         """결제 실패 처리"""
-        if self.status not in [PaymentStatus.PENDING.value, PaymentStatus.COMPLETED.value]:
+        if self.status not in [
+            PaymentStatus.PENDING.value,
+            PaymentStatus.COMPLETED.value,
+        ]:
             raise ValueError(f"결제 실패 처리 불가: 현재 상태 {self.status}")
 
         self.status = PaymentStatus.FAILED.value

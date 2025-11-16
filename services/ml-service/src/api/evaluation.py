@@ -15,7 +15,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.ml_model import MLModel, DeploymentStatus
+from src.models.ml_model import DeploymentStatus
 from src.deployment.version_manager import ModelVersionManager
 
 router = APIRouter(prefix="/v1/ml/models", tags=["ML Evaluation"])
@@ -149,7 +149,9 @@ async def list_models(
 
         result = []
         for model in models:
-            training_period = f"{model.training_data_start} to {model.training_data_end}"
+            training_period = (
+                f"{model.training_data_start} to {model.training_data_end}"
+            )
 
             result.append(
                 ModelDetail(

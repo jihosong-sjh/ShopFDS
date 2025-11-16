@@ -5,8 +5,7 @@
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
-from datetime import datetime
+from typing import Dict, List, Optional, Any
 from pathlib import Path
 
 import numpy as np
@@ -24,13 +23,12 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
 )
-from sqlalchemy.orm import Session
 
 # 프로젝트 내부 모듈
 import sys
+
 sys.path.append(str(Path(__file__).parent.parent))
 
-from models.ml_model import MLModel, get_production_model
 
 logger = logging.getLogger(__name__)
 
@@ -182,10 +180,7 @@ class ModelEvaluator:
             f"- 오탐율: {self.metrics['false_positive_rate']*100:.2f}% "
             f"(정상 거래 {self.metrics['false_positives']}개를 사기로 오판)"
         )
-        print(
-            f"- 정밀도: {self.metrics['precision']*100:.2f}% "
-            f"(사기로 판정한 것 중 실제 사기 비율)"
-        )
+        print(f"- 정밀도: {self.metrics['precision']*100:.2f}% " f"(사기로 판정한 것 중 실제 사기 비율)")
 
     def plot_confusion_matrix(
         self, save_path: Optional[Path] = None, show: bool = True
@@ -243,13 +238,19 @@ class ModelEvaluator:
         roc_auc = roc_auc_score(y_true, y_proba)
 
         plt.figure(figsize=(8, 6))
-        plt.plot(fpr, tpr, color="darkorange", lw=2, label=f"ROC curve (AUC = {roc_auc:.4f})")
+        plt.plot(
+            fpr, tpr, color="darkorange", lw=2, label=f"ROC curve (AUC = {roc_auc:.4f})"
+        )
         plt.plot([0, 1], [0, 1], color="navy", lw=2, linestyle="--", label="Random")
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.05])
         plt.xlabel("False Positive Rate", fontsize=12)
         plt.ylabel("True Positive Rate (Recall)", fontsize=12)
-        plt.title("Receiver Operating Characteristic (ROC) Curve", fontsize=16, fontweight="bold")
+        plt.title(
+            "Receiver Operating Characteristic (ROC) Curve",
+            fontsize=16,
+            fontweight="bold",
+        )
         plt.legend(loc="lower right")
         plt.grid(alpha=0.3)
         plt.tight_layout()
@@ -339,7 +340,9 @@ def evaluate_model(
         # ROC Curve (확률 예측이 있는 경우)
         if y_proba is not None:
             roc_path = output_dir / "roc_curve.png" if output_dir else None
-            evaluator.plot_roc_curve(y_true, y_proba, save_path=roc_path, show=show_plots)
+            evaluator.plot_roc_curve(
+                y_true, y_proba, save_path=roc_path, show=show_plots
+            )
 
             pr_path = output_dir / "precision_recall_curve.png" if output_dir else None
             evaluator.plot_precision_recall_curve(
@@ -387,10 +390,12 @@ def compare_models(
             y_true, y_pred, y_proba, print_report=False, plot_charts=False
         )
 
-        results.append({
-            "Model": name,
-            **metrics,
-        })
+        results.append(
+            {
+                "Model": name,
+                **metrics,
+            }
+        )
 
     df_comparison = pd.DataFrame(results).sort_values(metric, ascending=False)
 

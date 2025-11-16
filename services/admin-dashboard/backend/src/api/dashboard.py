@@ -8,7 +8,6 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from datetime import datetime, timedelta
-from typing import Optional
 import sys
 import os
 
@@ -65,21 +64,15 @@ async def get_dashboard_stats(
     # 1. 거래 요약 통계
     transaction_summary_query = select(
         func.count(Transaction.id).label("total"),
-        func.count(
-            Transaction.id
-        ).filter(Transaction.evaluation_status == EvaluationStatus.APPROVED).label(
-            "approved"
-        ),
-        func.count(
-            Transaction.id
-        ).filter(Transaction.evaluation_status == EvaluationStatus.BLOCKED).label(
-            "blocked"
-        ),
-        func.count(
-            Transaction.id
-        ).filter(
-            Transaction.evaluation_status == EvaluationStatus.MANUAL_REVIEW
-        ).label("manual_review"),
+        func.count(Transaction.id)
+        .filter(Transaction.evaluation_status == EvaluationStatus.APPROVED)
+        .label("approved"),
+        func.count(Transaction.id)
+        .filter(Transaction.evaluation_status == EvaluationStatus.BLOCKED)
+        .label("blocked"),
+        func.count(Transaction.id)
+        .filter(Transaction.evaluation_status == EvaluationStatus.MANUAL_REVIEW)
+        .label("manual_review"),
     ).where(Transaction.created_at >= start_time)
 
     transaction_summary_result = await db.execute(transaction_summary_query)
@@ -116,15 +109,15 @@ async def get_dashboard_stats(
     # 3. 검토 큐 요약
     review_queue_summary_query = select(
         func.count(ReviewQueue.id).label("total"),
-        func.count(
-            ReviewQueue.id
-        ).filter(ReviewQueue.status == ReviewStatus.PENDING).label("pending"),
-        func.count(
-            ReviewQueue.id
-        ).filter(ReviewQueue.status == ReviewStatus.IN_REVIEW).label("in_review"),
-        func.count(
-            ReviewQueue.id
-        ).filter(ReviewQueue.status == ReviewStatus.COMPLETED).label("completed"),
+        func.count(ReviewQueue.id)
+        .filter(ReviewQueue.status == ReviewStatus.PENDING)
+        .label("pending"),
+        func.count(ReviewQueue.id)
+        .filter(ReviewQueue.status == ReviewStatus.IN_REVIEW)
+        .label("in_review"),
+        func.count(ReviewQueue.id)
+        .filter(ReviewQueue.status == ReviewStatus.COMPLETED)
+        .label("completed"),
     ).where(ReviewQueue.added_at >= start_time)
 
     review_queue_summary_result = await db.execute(review_queue_summary_query)
@@ -184,8 +177,6 @@ async def get_dashboard_stats(
         "risk_distribution": risk_distribution,
         "review_queue_summary": review_queue_summary,
         "avg_evaluation_time_ms": avg_evaluation_time_ms,
-        "performance_status": (
-            "good" if avg_evaluation_time_ms <= 100 else "degraded"
-        ),
+        "performance_status": ("good" if avg_evaluation_time_ms <= 100 else "degraded"),
         "recent_alerts": recent_alerts,
     }

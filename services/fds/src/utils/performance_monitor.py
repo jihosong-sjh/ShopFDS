@@ -9,7 +9,7 @@ import logging
 import statistics
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from collections import deque
 from enum import Enum
 
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class PerformanceMetric(str, Enum):
     """성능 지표 타입"""
+
     EVALUATION_TIME = "evaluation_time"  # FDS 전체 평가 시간
     RULE_ENGINE_TIME = "rule_engine_time"  # 룰 엔진 실행 시간
     ML_ENGINE_TIME = "ml_engine_time"  # ML 엔진 실행 시간
@@ -29,6 +30,7 @@ class PerformanceMetric(str, Enum):
 @dataclass
 class PerformanceSnapshot:
     """성능 측정 스냅샷"""
+
     metric_type: PerformanceMetric
     value_ms: float
     timestamp: datetime = field(default_factory=datetime.now)
@@ -50,8 +52,7 @@ class PerformanceTracker:
         """
         self.window_size = window_size
         self.snapshots: Dict[PerformanceMetric, deque] = {
-            metric: deque(maxlen=window_size)
-            for metric in PerformanceMetric
+            metric: deque(maxlen=window_size) for metric in PerformanceMetric
         }
         self.total_measurements: Dict[PerformanceMetric, int] = {
             metric: 0 for metric in PerformanceMetric
@@ -62,7 +63,7 @@ class PerformanceTracker:
         metric_type: PerformanceMetric,
         value_ms: float,
         transaction_id: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ):
         """
         성능 지표 기록
@@ -77,7 +78,7 @@ class PerformanceTracker:
             metric_type=metric_type,
             value_ms=value_ms,
             transaction_id=transaction_id,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self.snapshots[metric_type].append(snapshot)
@@ -112,7 +113,7 @@ class PerformanceTracker:
                 "p99": 0.0,
                 "min": 0.0,
                 "max": 0.0,
-                "total_measurements": self.total_measurements[metric_type]
+                "total_measurements": self.total_measurements[metric_type],
             }
 
         sorted_values = sorted(values)
@@ -127,21 +128,15 @@ class PerformanceTracker:
             "p99": self._percentile(sorted_values, 99),
             "min": min(sorted_values),
             "max": max(sorted_values),
-            "total_measurements": self.total_measurements[metric_type]
+            "total_measurements": self.total_measurements[metric_type],
         }
 
     def get_all_stats(self) -> Dict[str, Dict[str, float]]:
         """모든 지표의 통계 조회"""
-        return {
-            metric.value: self.get_stats(metric)
-            for metric in PerformanceMetric
-        }
+        return {metric.value: self.get_stats(metric) for metric in PerformanceMetric}
 
     def check_target_compliance(
-        self,
-        metric_type: PerformanceMetric,
-        target_ms: float,
-        percentile: int = 95
+        self, metric_type: PerformanceMetric, target_ms: float, percentile: int = 95
     ) -> Dict[str, Any]:
         """
         목표 성능 준수 여부 확인
@@ -157,11 +152,7 @@ class PerformanceTracker:
         stats = self.get_stats(metric_type)
 
         if stats["count"] == 0:
-            return {
-                "compliant": None,
-                "message": "측정 데이터 없음",
-                "stats": stats
-            }
+            return {"compliant": None, "message": "측정 데이터 없음", "stats": stats}
 
         percentile_key = f"p{percentile}"
         actual_value = stats[percentile_key]
@@ -176,17 +167,14 @@ class PerformanceTracker:
             "margin_percent": ((target_ms - actual_value) / target_ms * 100),
             "message": (
                 f"목표 달성: P{percentile}={actual_value:.2f}ms <= {target_ms}ms"
-                if compliant else
-                f"목표 미달: P{percentile}={actual_value:.2f}ms > {target_ms}ms"
+                if compliant
+                else f"목표 미달: P{percentile}={actual_value:.2f}ms > {target_ms}ms"
             ),
-            "stats": stats
+            "stats": stats,
         }
 
     def get_slow_transactions(
-        self,
-        metric_type: PerformanceMetric,
-        threshold_ms: float = 100,
-        limit: int = 10
+        self, metric_type: PerformanceMetric, threshold_ms: float = 100, limit: int = 10
     ) -> List[PerformanceSnapshot]:
         """
         느린 거래 조회
@@ -200,8 +188,7 @@ class PerformanceTracker:
             느린 거래 스냅샷 리스트
         """
         slow_snapshots = [
-            s for s in self.snapshots[metric_type]
-            if s.value_ms > threshold_ms
+            s for s in self.snapshots[metric_type] if s.value_ms > threshold_ms
         ]
 
         # 시간 내림차순 정렬
@@ -253,7 +240,7 @@ class PerformanceMonitor:
         self,
         evaluation_time_ms: float,
         transaction_id: Optional[str] = None,
-        breakdown: Optional[Dict[str, float]] = None
+        breakdown: Optional[Dict[str, float]] = None,
     ):
         """
         FDS 평가 성능 추적
@@ -268,7 +255,7 @@ class PerformanceMonitor:
             PerformanceMetric.EVALUATION_TIME,
             evaluation_time_ms,
             transaction_id,
-            metadata=breakdown or {}
+            metadata=breakdown or {},
         )
 
         # 세부 시간 기록
@@ -276,21 +263,15 @@ class PerformanceMonitor:
             for key, value_ms in breakdown.items():
                 if key == "rule_engine_time":
                     self.tracker.track(
-                        PerformanceMetric.RULE_ENGINE_TIME,
-                        value_ms,
-                        transaction_id
+                        PerformanceMetric.RULE_ENGINE_TIME, value_ms, transaction_id
                     )
                 elif key == "ml_engine_time":
                     self.tracker.track(
-                        PerformanceMetric.ML_ENGINE_TIME,
-                        value_ms,
-                        transaction_id
+                        PerformanceMetric.ML_ENGINE_TIME, value_ms, transaction_id
                     )
                 elif key == "cti_check_time":
                     self.tracker.track(
-                        PerformanceMetric.CTI_CHECK_TIME,
-                        value_ms,
-                        transaction_id
+                        PerformanceMetric.CTI_CHECK_TIME, value_ms, transaction_id
                     )
 
         # 성능 임계값 확인 및 알림
@@ -309,7 +290,7 @@ class PerformanceMonitor:
         return self.tracker.check_target_compliance(
             PerformanceMetric.EVALUATION_TIME,
             target_ms=self.FDS_TARGET_MS,
-            percentile=95
+            percentile=95,
         )
 
     def get_performance_report(self) -> str:
@@ -334,23 +315,25 @@ class PerformanceMonitor:
 
         eval_stats = all_stats[PerformanceMetric.EVALUATION_TIME.value]
         if eval_stats["count"] > 0:
-            lines.extend([
-                f"  평균: {eval_stats['mean']:.2f}ms",
-                f"  중앙값: {eval_stats['median']:.2f}ms",
-                f"  P95: {eval_stats['p95']:.2f}ms",
-                f"  P99: {eval_stats['p99']:.2f}ms",
-                f"  최소: {eval_stats['min']:.2f}ms",
-                f"  최대: {eval_stats['max']:.2f}ms",
-                f"  측정 횟수: {eval_stats['count']}회 (전체: {eval_stats['total_measurements']}회)",
-                ""
-            ])
+            lines.extend(
+                [
+                    f"  평균: {eval_stats['mean']:.2f}ms",
+                    f"  중앙값: {eval_stats['median']:.2f}ms",
+                    f"  P95: {eval_stats['p95']:.2f}ms",
+                    f"  P99: {eval_stats['p99']:.2f}ms",
+                    f"  최소: {eval_stats['min']:.2f}ms",
+                    f"  최대: {eval_stats['max']:.2f}ms",
+                    f"  측정 횟수: {eval_stats['count']}회 (전체: {eval_stats['total_measurements']}회)",
+                    "",
+                ]
+            )
 
         # 세부 시간 분해
         lines.append("[ 세부 시간 분해 ]")
         for metric in [
             PerformanceMetric.RULE_ENGINE_TIME,
             PerformanceMetric.ML_ENGINE_TIME,
-            PerformanceMetric.CTI_CHECK_TIME
+            PerformanceMetric.CTI_CHECK_TIME,
         ]:
             stats = all_stats[metric.value]
             if stats["count"] > 0:
@@ -377,7 +360,7 @@ class PerformanceMonitor:
         return self.tracker.get_slow_transactions(
             PerformanceMetric.EVALUATION_TIME,
             threshold_ms=self.FDS_TARGET_MS,
-            limit=limit
+            limit=limit,
         )
 
     def register_alert_callback(self, callback: callable):
@@ -411,13 +394,15 @@ class PerformanceMonitor:
 
         eval_stats = self.tracker.get_stats(PerformanceMetric.EVALUATION_TIME)
         if eval_stats["count"] > 0:
-            lines.extend([
-                f"fds_evaluation_time_seconds{{quantile=\"0.5\"}} {eval_stats['p50'] / 1000}",
-                f"fds_evaluation_time_seconds{{quantile=\"0.95\"}} {eval_stats['p95'] / 1000}",
-                f"fds_evaluation_time_seconds{{quantile=\"0.99\"}} {eval_stats['p99'] / 1000}",
-                f"fds_evaluation_time_seconds_sum {eval_stats['mean'] * eval_stats['count'] / 1000}",
-                f"fds_evaluation_time_seconds_count {eval_stats['total_measurements']}",
-            ])
+            lines.extend(
+                [
+                    f"fds_evaluation_time_seconds{{quantile=\"0.5\"}} {eval_stats['p50'] / 1000}",
+                    f"fds_evaluation_time_seconds{{quantile=\"0.95\"}} {eval_stats['p95'] / 1000}",
+                    f"fds_evaluation_time_seconds{{quantile=\"0.99\"}} {eval_stats['p99'] / 1000}",
+                    f"fds_evaluation_time_seconds_sum {eval_stats['mean'] * eval_stats['count'] / 1000}",
+                    f"fds_evaluation_time_seconds_count {eval_stats['total_measurements']}",
+                ]
+            )
 
         return "\n".join(lines)
 
@@ -443,6 +428,7 @@ def track_performance(metric_type: PerformanceMetric):
         async def evaluate_transaction(request):
             ...
     """
+
     def decorator(func):
         async def wrapper(*args, **kwargs):
             start_time = time.time()
@@ -453,7 +439,9 @@ def track_performance(metric_type: PerformanceMetric):
                 elapsed_ms = (time.time() - start_time) * 1000
                 monitor = get_performance_monitor()
                 monitor.tracker.track(metric_type, elapsed_ms)
+
         return wrapper
+
     return decorator
 
 
@@ -485,9 +473,7 @@ class PerformanceContext:
         if self.track_to_monitor:
             monitor = get_performance_monitor()
             monitor.track_evaluation(
-                self.elapsed_ms,
-                transaction_id=None,
-                breakdown=self.breakdown
+                self.elapsed_ms, transaction_id=None, breakdown=self.breakdown
             )
 
         logger.debug(f"{self.name} 완료: {self.elapsed_ms:.2f}ms")

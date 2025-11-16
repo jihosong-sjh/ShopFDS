@@ -280,7 +280,9 @@ class ModelRollback:
                     ),
                     "metrics": {
                         "accuracy": float(model.accuracy) if model.accuracy else None,
-                        "precision": float(model.precision) if model.precision else None,
+                        "precision": float(model.precision)
+                        if model.precision
+                        else None,
                         "recall": float(model.recall) if model.recall else None,
                         "f1_score": float(model.f1_score) if model.f1_score else None,
                     },
@@ -288,9 +290,7 @@ class ModelRollback:
             )
 
         # 최신순 정렬
-        candidates.sort(
-            key=lambda x: x["deployed_at"] or x["trained_at"], reverse=True
-        )
+        candidates.sort(key=lambda x: x["deployed_at"] or x["trained_at"], reverse=True)
 
         return candidates[:limit]
 
@@ -381,7 +381,9 @@ class ModelRollback:
         self, model_type: Optional[str] = None
     ) -> Optional[MLModel]:
         """프로덕션 모델 조회"""
-        query = select(MLModel).where(MLModel.deployment_status == DeploymentStatus.PRODUCTION)
+        query = select(MLModel).where(
+            MLModel.deployment_status == DeploymentStatus.PRODUCTION
+        )
         if model_type:
             query = query.where(MLModel.model_type == model_type)
 

@@ -23,7 +23,7 @@ fds_service_path = os.path.abspath(
 if fds_service_path not in sys.path:
     sys.path.insert(0, fds_service_path)
 
-from models.detection_rule import DetectionRule, RuleType, RulePriority
+from models.detection_rule import DetectionRule, RuleType
 from src.database import get_db
 
 import logging
@@ -43,18 +43,14 @@ class RuleCondition(BaseModel):
     window_seconds: Optional[int] = Field(
         None, description="시간 윈도우 (초)", ge=1, le=86400
     )
-    max_transactions: Optional[int] = Field(
-        None, description="최대 거래 횟수", ge=1, le=100
-    )
+    max_transactions: Optional[int] = Field(None, description="최대 거래 횟수", ge=1, le=100)
     scope: Optional[str] = Field(
         None, description="적용 범위 (ip_address, user_id, card_bin)"
     )
 
     # Threshold 룰
     field: Optional[str] = Field(None, description="비교할 필드 (amount 등)")
-    operator: Optional[str] = Field(
-        None, description="비교 연산자 (gt, gte, lt, lte, eq)"
-    )
+    operator: Optional[str] = Field(None, description="비교 연산자 (gt, gte, lt, lte, eq)")
     value: Optional[float] = Field(None, description="임계값")
 
     # Blacklist 룰
@@ -83,13 +79,9 @@ class RuleCreateRequest(BaseModel):
     description: Optional[str] = Field(None, description="룰 설명")
     rule_type: str = Field(..., description="룰 유형")
     condition: dict = Field(..., description="룰 조건 (JSON 형식)")
-    risk_score_weight: int = Field(
-        50, description="위험 점수 가중치 (0-100)", ge=0, le=100
-    )
+    risk_score_weight: int = Field(50, description="위험 점수 가중치 (0-100)", ge=0, le=100)
     is_active: bool = Field(True, description="활성화 여부")
-    priority: int = Field(
-        50, description="우선순위 (0-100, 높을수록 먼저 평가)", ge=0, le=100
-    )
+    priority: int = Field(50, description="우선순위 (0-100, 높을수록 먼저 평가)", ge=0, le=100)
 
     @validator("rule_type")
     def validate_rule_type(cls, v):
@@ -112,9 +104,7 @@ class RuleUpdateRequest(BaseModel):
         None, description="위험 점수 가중치 (0-100)", ge=0, le=100
     )
     is_active: Optional[bool] = Field(None, description="활성화 여부")
-    priority: Optional[int] = Field(
-        None, description="우선순위 (0-100)", ge=0, le=100
-    )
+    priority: Optional[int] = Field(None, description="우선순위 (0-100)", ge=0, le=100)
 
 
 class RuleResponse(BaseModel):
@@ -392,9 +382,7 @@ async def update_rule(
         )
 
 
-@router.patch(
-    "/{rule_id}/toggle", response_model=RuleResponse, summary="룰 활성화/비활성화 토글"
-)
+@router.patch("/{rule_id}/toggle", response_model=RuleResponse, summary="룰 활성화/비활성화 토글")
 async def toggle_rule(
     rule_id: UUID,
     db: AsyncSession = Depends(get_db),

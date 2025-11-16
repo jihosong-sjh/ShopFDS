@@ -70,7 +70,9 @@ app = FastAPI(
 
 
 # CORS 미들웨어 설정
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:8000,http://localhost:8001,http://localhost:3000").split(",")
+CORS_ORIGINS = os.getenv(
+    "CORS_ORIGINS", "http://localhost:8000,http://localhost:8001,http://localhost:3000"
+).split(",")
 
 app.add_middleware(
     CORSMiddleware,

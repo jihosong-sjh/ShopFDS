@@ -79,7 +79,10 @@ class Order(Base):
     # 제약 조건
     __table_args__ = (
         CheckConstraint("total_amount > 0", name="check_total_amount_positive"),
-        CheckConstraint("status IN ('pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled', 'refunded')", name="check_order_status"),
+        CheckConstraint(
+            "status IN ('pending', 'paid', 'preparing', 'shipped', 'delivered', 'cancelled', 'refunded')",
+            name="check_order_status",
+        ),
         Index("idx_orders_user_id", "user_id"),
         Index("idx_orders_status", "status"),
         Index("idx_orders_created_at", "created_at"),

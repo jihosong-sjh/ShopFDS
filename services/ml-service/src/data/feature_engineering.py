@@ -5,11 +5,10 @@ FDS 거래 데이터로부터 ML 모델 학습에 유용한 특성(Feature)을 �
 """
 
 import logging
-from typing import List, Dict, Optional
-from datetime import datetime, timedelta
+from typing import List
+from datetime import timedelta
 import pandas as pd
 import numpy as np
-from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -154,9 +153,9 @@ class FeatureEngine:
 
             # 사용자별 이전 거래 이후 경과 시간 (초)
             df = df.sort_values(["user_id", "created_at"])
-            df["time_since_last_transaction"] = df.groupby("user_id")[
-                "created_at"
-            ].diff().dt.total_seconds().fillna(0)
+            df["time_since_last_transaction"] = (
+                df.groupby("user_id")["created_at"].diff().dt.total_seconds().fillna(0)
+            )
 
         logger.debug("시간 특성 생성 완료")
 
@@ -222,9 +221,7 @@ class FeatureEngine:
             )
 
             # 최근 1시간 거래 금액 총합 (사용자별)
-            df["amount_sum_last_1h"] = self._sum_recent_amounts(
-                df, "user_id", hours=1
-            )
+            df["amount_sum_last_1h"] = self._sum_recent_amounts(df, "user_id", hours=1)
 
             # 최근 1시간 거래 횟수 (IP별)
             df["ip_transactions_last_1h"] = self._count_recent_transactions(
@@ -361,19 +358,29 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     # 샘플 데이터 생성
-    sample_data = pd.DataFrame({
-        "user_id": ["user1", "user1", "user2", "user1", "user3"],
-        "amount": [100, 200, 50000, 150, 300],
-        "ip_address": ["192.168.1.1", "192.168.1.1", "10.0.0.1", "192.168.1.2", "10.0.0.1"],
-        "device_type": ["mobile", "desktop", "mobile", "mobile", "desktop"],
-        "created_at": pd.to_datetime([
-            "2025-01-01 10:00:00",
-            "2025-01-01 10:30:00",
-            "2025-01-01 02:00:00",
-            "2025-01-01 14:00:00",
-            "2025-01-01 20:15:00",
-        ]),
-    })
+    sample_data = pd.DataFrame(
+        {
+            "user_id": ["user1", "user1", "user2", "user1", "user3"],
+            "amount": [100, 200, 50000, 150, 300],
+            "ip_address": [
+                "192.168.1.1",
+                "192.168.1.1",
+                "10.0.0.1",
+                "192.168.1.2",
+                "10.0.0.1",
+            ],
+            "device_type": ["mobile", "desktop", "mobile", "mobile", "desktop"],
+            "created_at": pd.to_datetime(
+                [
+                    "2025-01-01 10:00:00",
+                    "2025-01-01 10:30:00",
+                    "2025-01-01 02:00:00",
+                    "2025-01-01 14:00:00",
+                    "2025-01-01 20:15:00",
+                ]
+            ),
+        }
+    )
 
     # Feature Engineering
     df_with_features = create_features(sample_data)

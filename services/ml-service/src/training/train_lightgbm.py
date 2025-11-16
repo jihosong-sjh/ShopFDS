@@ -19,12 +19,12 @@ from sklearn.metrics import (
     confusion_matrix,
     precision_recall_fscore_support,
     roc_auc_score,
-    roc_curve,
 )
 from sqlalchemy.orm import Session
 
 # 프로젝트 내부 모듈
 import sys
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from data.preprocessing import (
@@ -114,9 +114,7 @@ class LightGBMTrainer:
         Returns:
             학습 메트릭
         """
-        logger.info(
-            f"LightGBM 학습 시작: {len(X_train)}개 샘플, {X_train.shape[1]}개 특성"
-        )
+        logger.info(f"LightGBM 학습 시작: {len(X_train)}개 샘플, {X_train.shape[1]}개 특성")
 
         # 특성 컬럼 저장
         self.feature_columns = X_train.columns.tolist()
@@ -178,9 +176,7 @@ class LightGBMTrainer:
             raise ValueError("모델이 학습되지 않았습니다. train()을 먼저 호출하세요.")
 
         # 확률 예측
-        probabilities = self.model.predict(
-            X, num_iteration=self.best_iteration
-        )
+        probabilities = self.model.predict(X, num_iteration=self.best_iteration)
 
         # 임계값 적용하여 레이블 예측
         predictions = (probabilities >= threshold).astype(int)
@@ -268,10 +264,12 @@ class LightGBMTrainer:
         importance = self.model.feature_importance(importance_type="gain")
         feature_names = self.feature_columns
 
-        df_importance = pd.DataFrame({
-            "feature": feature_names,
-            "importance": importance,
-        }).sort_values("importance", ascending=False)
+        df_importance = pd.DataFrame(
+            {
+                "feature": feature_names,
+                "importance": importance,
+            }
+        ).sort_values("importance", ascending=False)
 
         return df_importance.head(top_n)
 
@@ -419,9 +417,7 @@ def train_lightgbm(
         class_weight="balanced",
     )
     trainer.preprocessor = preprocessor
-    train_metrics = trainer.train(
-        X_train, y_train, X_val, y_val, early_stopping_rounds=50
-    )
+    trainer.train(X_train, y_train, X_val, y_val, early_stopping_rounds=50)
 
     # 7. 모델 평가
     logger.info("Step 7/7: 모델 평가")

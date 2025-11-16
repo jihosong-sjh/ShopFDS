@@ -5,8 +5,7 @@ Redis 연결 풀 관리 (FDS Service)
 Velocity Check, CTI 캐싱 등에 사용됩니다.
 """
 
-from typing import Optional, Any
-import json
+from typing import Optional
 import os
 from redis import asyncio as aioredis
 from redis.asyncio import ConnectionPool

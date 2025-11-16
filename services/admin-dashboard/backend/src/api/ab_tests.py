@@ -7,7 +7,6 @@ A/B 테스트를 설정하고 결과를 조회할 수 있는 API를 제공합니
 
 from typing import List, Optional
 from uuid import UUID
-from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field, validator
 from sqlalchemy import select, func
@@ -448,7 +447,9 @@ async def update_ab_test_status(
             elif request.action == "resume":
                 test.resume()
             elif request.action == "complete":
-                test.complete(winner=request.winner, confidence=request.confidence_level)
+                test.complete(
+                    winner=request.winner, confidence=request.confidence_level
+                )
             elif request.action == "cancel":
                 test.cancel()
 
@@ -519,10 +520,10 @@ async def get_ab_test_results(
             false_positives=test.group_a_false_positives,
             false_negatives=test.group_a_false_negatives,
             avg_evaluation_time_ms=test.group_a_avg_evaluation_time_ms,
-            precision=test.calculate_precision('A'),
-            recall=test.calculate_recall('A'),
-            f1_score=test.calculate_f1_score('A'),
-            false_positive_rate=test.calculate_false_positive_rate('A'),
+            precision=test.calculate_precision("A"),
+            recall=test.calculate_recall("A"),
+            f1_score=test.calculate_f1_score("A"),
+            false_positive_rate=test.calculate_false_positive_rate("A"),
         )
 
         group_b_metrics = ABTestGroupMetrics(
@@ -531,21 +532,26 @@ async def get_ab_test_results(
             false_positives=test.group_b_false_positives,
             false_negatives=test.group_b_false_negatives,
             avg_evaluation_time_ms=test.group_b_avg_evaluation_time_ms,
-            precision=test.calculate_precision('B'),
-            recall=test.calculate_recall('B'),
-            f1_score=test.calculate_f1_score('B'),
-            false_positive_rate=test.calculate_false_positive_rate('B'),
+            precision=test.calculate_precision("B"),
+            recall=test.calculate_recall("B"),
+            f1_score=test.calculate_f1_score("B"),
+            false_positive_rate=test.calculate_false_positive_rate("B"),
         )
 
         # 비교 분석
         comparison = {}
 
         # F1 스코어 비교
-        if group_a_metrics.f1_score is not None and group_b_metrics.f1_score is not None:
+        if (
+            group_a_metrics.f1_score is not None
+            and group_b_metrics.f1_score is not None
+        ):
             f1_diff = group_b_metrics.f1_score - group_a_metrics.f1_score
             comparison["f1_score_difference"] = f1_diff
             comparison["f1_score_improvement_percentage"] = (
-                (f1_diff / group_a_metrics.f1_score * 100) if group_a_metrics.f1_score > 0 else None
+                (f1_diff / group_a_metrics.f1_score * 100)
+                if group_a_metrics.f1_score > 0
+                else None
             )
 
         # 오탐률 비교
@@ -553,7 +559,10 @@ async def get_ab_test_results(
             group_a_metrics.false_positive_rate is not None
             and group_b_metrics.false_positive_rate is not None
         ):
-            fpr_diff = group_b_metrics.false_positive_rate - group_a_metrics.false_positive_rate
+            fpr_diff = (
+                group_b_metrics.false_positive_rate
+                - group_a_metrics.false_positive_rate
+            )
             comparison["fpr_difference"] = fpr_diff
             comparison["fpr_reduction_percentage"] = (
                 (-fpr_diff / group_a_metrics.false_positive_rate * 100)
@@ -566,7 +575,10 @@ async def get_ab_test_results(
             group_a_metrics.avg_evaluation_time_ms is not None
             and group_b_metrics.avg_evaluation_time_ms is not None
         ):
-            time_diff = group_b_metrics.avg_evaluation_time_ms - group_a_metrics.avg_evaluation_time_ms
+            time_diff = (
+                group_b_metrics.avg_evaluation_time_ms
+                - group_a_metrics.avg_evaluation_time_ms
+            )
             comparison["evaluation_time_difference_ms"] = time_diff
             comparison["evaluation_time_change_percentage"] = (
                 (time_diff / group_a_metrics.avg_evaluation_time_ms * 100)
@@ -603,7 +615,9 @@ async def get_ab_test_results(
         )
 
 
-@router.delete("/{test_id}", status_code=status.HTTP_204_NO_CONTENT, summary="A/B 테스트 삭제")
+@router.delete(
+    "/{test_id}", status_code=status.HTTP_204_NO_CONTENT, summary="A/B 테스트 삭제"
+)
 async def delete_ab_test(
     test_id: UUID,
     db: AsyncSession = Depends(get_db),
@@ -712,7 +726,9 @@ def _generate_recommendation(
                 group_a.avg_evaluation_time_ms is not None
                 and group_b.avg_evaluation_time_ms is not None
             ):
-                time_diff = group_b.avg_evaluation_time_ms - group_a.avg_evaluation_time_ms
+                time_diff = (
+                    group_b.avg_evaluation_time_ms - group_a.avg_evaluation_time_ms
+                )
                 if time_diff < -10:  # B가 10ms 이상 빠름
                     return (
                         f"그룹 B 권장: 성능 지표는 유사하지만 평가 시간이 "
@@ -733,9 +749,6 @@ def _generate_recommendation(
                 f"새로운 설정으로 전환을 권장합니다."
             )
         else:  # A가 우수
-            return (
-                f"그룹 A 권장: F1 스코어가 {abs(f1_diff):.4f} 더 높습니다. "
-                f"기존 설정 유지를 권장합니다."
-            )
+            return f"그룹 A 권장: F1 스코어가 {abs(f1_diff):.4f} 더 높습니다. " f"기존 설정 유지를 권장합니다."
 
     return "데이터 부족: 정확한 비교를 위해 더 많은 데이터가 필요합니다."

@@ -99,7 +99,7 @@ class PasswordHasher:
             if len(parts) >= 3:
                 current_cost = int(parts[2])
                 return current_cost < 12
-        except:
+        except Exception:
             pass
         return False
 
