@@ -47,8 +47,6 @@ ENV PATH=/root/.local/bin:$PATH
 
 # 애플리케이션 코드 복사
 COPY src/ ./src/
-COPY alembic/ ./alembic/
-COPY alembic.ini .
 
 # 비-root 사용자 생성 (보안)
 RUN useradd -m -u 1000 appuser && \
