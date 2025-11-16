@@ -39,7 +39,7 @@ export const StockManagement: React.FC = () => {
 
   // 재고 업데이트 뮤테이션
   const updateStockMutation = useMutation({
-    mutationFn: ({ productId, data }: { productId: string; data: { stock_quantity: number; operation: string } }) =>
+    mutationFn: ({ productId, data }: { productId: string; data: { stock_quantity: number; operation: "set" | "increment" | "decrement" } }) =>
       adminApi.updateStock(productId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: publicQueryKeys.products.all });
