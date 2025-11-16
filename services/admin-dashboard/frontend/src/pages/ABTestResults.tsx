@@ -10,8 +10,6 @@ import { abTestsApi } from "../services/api";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,

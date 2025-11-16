@@ -27,11 +27,11 @@ const RISK_COLORS = {
   high: "#ef4444", // red-500
 };
 
-const STATUS_COLORS = {
-  approved: "#10b981", // green-500
-  blocked: "#ef4444", // red-500
-  manual_review: "#f59e0b", // amber-500
-};
+// const STATUS_COLORS = {
+//   approved: "#10b981", // green-500
+//   blocked: "#ef4444", // red-500
+//   manual_review: "#f59e0b", // amber-500
+// };
 
 const Dashboard = () => {
   const [timeRange, setTimeRange] = useState<"1h" | "24h" | "7d" | "30d">(

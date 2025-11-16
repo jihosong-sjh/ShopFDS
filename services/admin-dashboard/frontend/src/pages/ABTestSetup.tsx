@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { abTestsApi, rulesApi } from "../services/api";
+import { abTestsApi } from "../services/api";
 
 interface ABTest {
   id: string;

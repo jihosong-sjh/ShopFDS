@@ -190,7 +190,7 @@ const MLModelManagement: React.FC = () => {
     setError(null);
 
     try {
-      const response = await mlModelsApi.deploy({
+      await mlModelsApi.deploy({
         model_id: selectedModel.id,
         target_environment: deployForm.target_environment,
       });
