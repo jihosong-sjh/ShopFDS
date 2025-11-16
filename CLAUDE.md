@@ -150,6 +150,213 @@ npm run format
 - **API 엔드포인트**: `/kebab-case`
 - **데이터베이스**: `snake_case`
 
+## CI/CD Guidelines
+
+### CI 실패 방지 체크리스트
+
+코드 커밋 전 반드시 로컬에서 검증하여 CI 실패를 방지합니다.
+
+#### 1. Python 코드 스타일 검증 (Black + Ruff)
+
+**문제**: Black 포맷팅 미적용으로 CI 실패 (가장 빈번한 실패 원인)
+
+**로컬 검증**:
+```bash
+# 각 서비스 디렉토리에서 실행
+cd services/ecommerce/backend
+black --check src/  # 포맷팅 필요 여부 확인
+ruff check src/     # 린팅 에러 확인
+
+cd services/fds
+black --check src/
+ruff check src/
+
+cd services/ml-service
+black --check src/
+ruff check src/
+
+cd services/admin-dashboard/backend
+black --check src/
+ruff check src/
+```
+
+**수정 방법**:
+```bash
+# 자동 포맷팅 적용
+black src/
+
+# Ruff 자동 수정 (가능한 경우)
+ruff check src/ --fix
+```
+
+**CI 체크 통과 조건**:
+- `black --check src/` 실행 시 "All done! ... files would be left unchanged" 메시지
+- `ruff check src/` 실행 시 에러 없음
+
+#### 2. TypeScript/ESLint 검증
+
+**문제**: TypeScript 타입 에러, ESLint 경고로 CI 실패
+
+**로컬 검증**:
+```bash
+# 각 프론트엔드 디렉토리에서 실행
+cd services/ecommerce/frontend
+npm run lint        # ESLint 검사
+npm run type-check  # TypeScript 타입 검사 (있는 경우)
+npm run build       # 빌드로 타입 에러 확인
+
+cd services/admin-dashboard/frontend
+npm run lint
+npm run build
+```
+
+**주요 체크 포인트**:
+- `any` 타입 사용 금지 (명시적 타입 지정)
+- 미사용 변수/import 제거
+- Props 타입 정의 (interface 또는 type)
+- null/undefined 체크
+
+#### 3. Python 의존성 관리
+
+**문제**: requirements.txt 버전 충돌, 누락된 패키지로 CI 실패
+
+**로컬 검증**:
+```bash
+# 가상환경에서 의존성 설치 테스트
+cd services/ecommerce/backend
+pip install -r requirements.txt  # 충돌 없이 설치되는지 확인
+
+# 새 패키지 추가 시 버전 고정
+pip freeze | grep 패키지명 >> requirements.txt
+```
+
+**주의사항**:
+- 새 패키지 import 시 requirements.txt에 추가 필수
+- 버전 충돌 발생 시 호환 버전 명시 (예: `celery>=5.4.0,<6.0.0`)
+- aiosqlite, pytest-asyncio 등 테스트 의존성 누락 주의
+
+**최근 해결 사례**:
+- `aiosqlite` 누락 → CI 통합 테스트 실패
+- `celery`/`redis` 버전 충돌 → celery 5.4.0으로 업그레이드
+- `aioredis` 제거 → redis 5.0+ 내장 async 지원 사용
+
+#### 4. 데이터베이스 호환성 (UUID/SQLite)
+
+**문제**: PostgreSQL UUID 타입이 SQLite CI 환경에서 실패
+
+**해결 방법**:
+```python
+# SQLAlchemy 모델에서 UUID 타입 정의 시
+from sqlalchemy import Uuid  # 올바른 import
+from sqlalchemy.dialects.postgresql import UUID  # 잘못된 import (SQLite 비호환)
+
+# CORRECT: SQLite 호환 UUID
+id = Column(Uuid, primary_key=True, default=uuid.uuid4)
+
+# WRONG: PostgreSQL 전용 UUID
+id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+```
+
+**CI 환경 차이**:
+- 로컬: PostgreSQL 15+
+- CI: SQLite (In-Memory, 빠른 테스트용)
+- 두 환경 모두 호환되는 타입 사용 필수
+
+#### 5. 테스트 완성도
+
+**문제**: 테스트 플레이스홀더, 누락된 테스트로 CI 실패
+
+**로컬 검증**:
+```bash
+# 각 서비스에서 테스트 실행
+cd services/ecommerce/backend
+pytest tests/unit -v
+pytest tests/integration -v
+
+cd services/fds
+pytest tests/unit -v
+pytest tests/integration -v
+pytest tests/performance -v  # 성능 테스트
+```
+
+**주의사항**:
+- `pass`만 있는 테스트 함수 금지
+- `pytest.skip()` 사용 시 명확한 이유 명시
+- 새 기능 추가 시 테스트 함께 작성
+- 통합 테스트는 외부 의존성 모킹 필수 (Redis, FDS API 등)
+
+#### 6. 커밋 전 최종 체크리스트
+
+```bash
+# Python 서비스 (ecommerce/backend, fds, ml-service, admin-dashboard/backend)
+cd services/{service_name}
+black src/                    # 1. 포맷팅 적용
+ruff check src/ --fix         # 2. 린팅 에러 수정
+pytest tests/ -v              # 3. 테스트 실행
+pip check                     # 4. 의존성 충돌 확인
+
+# TypeScript 프론트엔드 (ecommerce/frontend, admin-dashboard/frontend)
+cd services/{service_name}/frontend
+npm run lint                  # 1. ESLint 검사
+npm run build                 # 2. 빌드 성공 확인
+npm test                      # 3. 테스트 실행 (있는 경우)
+```
+
+#### 7. GitHub Actions CI 워크플로우 이해
+
+**.github/workflows/ci.yml** 실행 단계:
+1. **Lint**: Black (--check), Ruff, ESLint
+2. **Test**: pytest (unit, integration, performance)
+3. **Build**: Docker 이미지 빌드
+4. **Deploy**: 성공 시 자동 배포 (main 브랜치)
+
+**실패 시 확인 사항**:
+- Actions 탭에서 실패 로그 확인
+- 로컬에서 동일 명령어 재현
+- requirements.txt, package.json 버전 확인
+- pytest.ini, .eslintrc 설정 확인
+
+#### 8. 빠른 CI 디버깅 팁
+
+**Black 포맷팅 차이 확인**:
+```bash
+black --diff src/  # 변경될 내용 미리보기
+```
+
+**Ruff 상세 에러 보기**:
+```bash
+ruff check src/ --show-source --show-fixes
+```
+
+**pytest 실패 원인 상세 로그**:
+```bash
+pytest tests/ -vv --tb=long
+```
+
+**의존성 트리 확인**:
+```bash
+pip install pipdeptree
+pipdeptree -p celery  # celery 의존성 트리 확인
+```
+
+### CI 성공률 향상 전략
+
+1. **Pre-commit Hook 설정** (선택사항):
+   - Black, Ruff 자동 실행
+   - 포맷팅되지 않은 코드 커밋 방지
+
+2. **로컬 환경 CI 복제**:
+   - Docker Compose로 PostgreSQL, Redis 실행
+   - CI와 동일한 Python/Node 버전 사용
+
+3. **작은 단위로 자주 커밋**:
+   - 큰 변경사항은 여러 커밋으로 분할
+   - 각 커밋마다 로컬 검증
+
+4. **CI 실패 시 즉시 수정**:
+   - 후속 커밋 전에 CI 통과 확인
+   - 다른 개발자의 작업 차단 방지
+
 ## 핵심 원칙
 
 1. **보안 우선**: 결제 정보 토큰화, 비밀번호 bcrypt 해싱, 민감 데이터 로그 금지
@@ -294,6 +501,14 @@ async def test_user(self, db_session: AsyncSession):
 - [ ] pytest.ini 설정 확인
 
 ## Recent Changes
+- 2025-11-16: CI/CD Guidelines 추가
+  - CI 실패 방지 체크리스트: Black/Ruff, TypeScript/ESLint, 의존성 관리, 데이터베이스 호환성, 테스트 완성도
+  - 커밋 전 최종 체크리스트: Python/TypeScript 서비스별 검증 절차
+  - GitHub Actions CI 워크플로우 이해: Lint → Test → Build → Deploy 단계
+  - 빠른 CI 디버깅 팁: Black diff, Ruff 상세 에러, pytest 로그, 의존성 트리 확인
+  - CI 성공률 향상 전략: Pre-commit Hook, 로컬 환경 CI 복제, 작은 단위 커밋
+  - 최근 CI 실패 해결 사례: Black 포맷팅, UUID/SQLite 호환성, aiosqlite 의존성, Celery/Redis 충돌
+
 - 2025-11-14 (10): Phase 9: 마무리 및 교차 기능 - 배포 및 인프라 완료 (T137-T140)
   - 각 서비스별 Dockerfile 작성: Multi-stage build로 이미지 크기 최적화, 보안 강화 (비-root 사용자), Health check 포함
   - Kubernetes 매니페스트 작성: 프로덕션 배포용 K8s 리소스 (Namespace, ConfigMap, Secrets, Deployments, Services, HPA, Ingress)
