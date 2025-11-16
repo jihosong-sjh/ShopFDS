@@ -47,7 +47,9 @@ def init_sentry(
         dsn = os.getenv("SENTRY_DSN")
 
     if not dsn:
-        logging.info("Sentry DSN이 설정되지 않았습니다. Sentry 모니터링이 비활성화됩니다.")
+        logging.info(
+            "Sentry DSN이 설정되지 않았습니다. Sentry 모니터링이 비활성화됩니다."
+        )
         return
 
     # 환경별 샘플링 비율 자동 조정
@@ -318,7 +320,9 @@ def start_transaction(name: str, op: str = "http.server"):
     return sentry_sdk.start_transaction(name=name, op=op)
 
 
-def add_breadcrumb(message: str, category: str = "default", level: str = "info", data: dict = None):
+def add_breadcrumb(
+    message: str, category: str = "default", level: str = "info", data: dict = None
+):
     """
     Breadcrumb 추가 (이벤트 발생 경로 추적)
 

@@ -3,6 +3,7 @@
 
 장바구니 CRUD 관련 REST API
 """
+
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -18,8 +19,10 @@ router = APIRouter(prefix="/v1/cart", tags=["장바구니"])
 
 # Request/Response 스키마
 
+
 class AddToCartRequest(BaseModel):
     """장바구니 추가 요청"""
+
     product_id: str
     quantity: int = Field(1, ge=1, description="수량")
 
@@ -27,18 +30,20 @@ class AddToCartRequest(BaseModel):
         json_schema_extra = {
             "example": {
                 "product_id": "550e8400-e29b-41d4-a716-446655440000",
-                "quantity": 2
+                "quantity": 2,
             }
         }
 
 
 class UpdateCartItemRequest(BaseModel):
     """장바구니 수량 변경 요청"""
+
     quantity: int = Field(..., ge=1, description="수량")
 
 
 class CartItemResponse(BaseModel):
     """장바구니 항목 응답"""
+
     cart_item_id: str
     product_id: str
     product_name: str
@@ -51,6 +56,7 @@ class CartItemResponse(BaseModel):
 
 class CartSummaryResponse(BaseModel):
     """장바구니 요약 응답"""
+
     cart_id: str
     total_amount: float
     total_items: int
@@ -58,6 +64,7 @@ class CartSummaryResponse(BaseModel):
 
 
 # API 엔드포인트
+
 
 @router.get("", response_model=CartSummaryResponse)
 async def get_cart(
@@ -82,7 +89,7 @@ async def get_cart(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"장바구니 조회 중 오류 발생: {str(e)}"
+            detail=f"장바구니 조회 중 오류 발생: {str(e)}",
         )
 
 
@@ -104,30 +111,22 @@ async def add_to_cart(
     try:
         cart_service = CartService(db)
         cart_item = await cart_service.add_item(
-            user_id=user_id,
-            product_id=request.product_id,
-            quantity=request.quantity
+            user_id=user_id, product_id=request.product_id, quantity=request.quantity
         )
 
         return {
             "message": "장바구니에 추가되었습니다",
-            "cart_item_id": str(cart_item.id)
+            "cart_item_id": str(cart_item.id),
         }
 
     except ResourceNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"장바구니 추가 중 오류 발생: {str(e)}"
+            detail=f"장바구니 추가 중 오류 발생: {str(e)}",
         )
 
 
@@ -149,31 +148,23 @@ async def update_cart_item(
     try:
         cart_service = CartService(db)
         cart_item = await cart_service.update_item_quantity(
-            user_id=user_id,
-            cart_item_id=cart_item_id,
-            quantity=request.quantity
+            user_id=user_id, cart_item_id=cart_item_id, quantity=request.quantity
         )
 
         return {
             "message": "수량이 변경되었습니다",
             "cart_item_id": str(cart_item.id),
-            "quantity": cart_item.quantity
+            "quantity": cart_item.quantity,
         }
 
     except ResourceNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"수량 변경 중 오류 발생: {str(e)}"
+            detail=f"수량 변경 중 오류 발생: {str(e)}",
         )
 
 
@@ -198,14 +189,11 @@ async def remove_from_cart(
         return None
 
     except ResourceNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"장바구니 항목 삭제 중 오류 발생: {str(e)}"
+            detail=f"장바구니 항목 삭제 중 오류 발생: {str(e)}",
         )
 
 
@@ -231,5 +219,5 @@ async def clear_cart(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"장바구니 비우기 중 오류 발생: {str(e)}"
+            detail=f"장바구니 비우기 중 오류 발생: {str(e)}",
         )

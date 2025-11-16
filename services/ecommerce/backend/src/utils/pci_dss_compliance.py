@@ -11,7 +11,7 @@ PCI-DSS (Payment Card Industry Data Security Standard) 요구사항:
 
 import re
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -22,10 +22,10 @@ class PCIDSSCompliance:
 
     # 민감 데이터 패턴 (정규식) - 데이터 전체 문자열에서만 검사
     SENSITIVE_PATTERNS = {
-        "card_number": r'\b\d{13,19}\b',  # 신용카드 번호 (13-19자리)
-        "card_expiry": r'\b\d{2}[/-]\d{2,4}\b',  # 만료일 (MM/YY, MM/YYYY)
-        "ssn": r'\b\d{3}-\d{2}-\d{4}\b',  # 주민등록번호 형식
-        "password": r'(password|passwd|pwd)\s*[=:]\s*[\S]+',  # 비밀번호
+        "card_number": r"\b\d{13,19}\b",  # 신용카드 번호 (13-19자리)
+        "card_expiry": r"\b\d{2}[/-]\d{2,4}\b",  # 만료일 (MM/YY, MM/YYYY)
+        "ssn": r"\b\d{3}-\d{2}-\d{4}\b",  # 주민등록번호 형식
+        "password": r"(password|passwd|pwd)\s*[=:]\s*[\S]+",  # 비밀번호
     }
 
     # 허용되지 않는 카드 데이터 필드
@@ -89,14 +89,13 @@ class PCIDSSCompliance:
                 )
         else:
             warnings.append(
-                "card_token 필드가 없습니다 - "
-                "결제 정보는 반드시 토큰화되어야 합니다"
+                "card_token 필드가 없습니다 - " "결제 정보는 반드시 토큰화되어야 합니다"
             )
 
         # 4. 카드 마지막 4자리 검증
         if "card_last_four" in data:
             last_four = data["card_last_four"]
-            if not re.match(r'^\d{4}$', str(last_four)):
+            if not re.match(r"^\d{4}$", str(last_four)):
                 violations.append(
                     f"card_last_four 형식 오류: {last_four} - "
                     "정확히 4자리 숫자여야 합니다"
@@ -124,7 +123,7 @@ class PCIDSSCompliance:
             return False
 
         # 연속된 숫자 13자 이상 포함 시 실제 카드 번호일 가능성
-        if re.search(r'\d{13,}', token):
+        if re.search(r"\d{13,}", token):
             return False
 
         return True
@@ -150,12 +149,29 @@ class PCIDSSCompliance:
                 is_sensitive = False
 
                 # 완전 일치 민감 키워드
-                sensitive_keywords = ["password", "passwd", "pwd", "secret", "token", "cvv", "cvc", "pin", "ssn"]
-                if any(key_lower == s or key_lower.endswith("_" + s) for s in sensitive_keywords):
+                sensitive_keywords = [
+                    "password",
+                    "passwd",
+                    "pwd",
+                    "secret",
+                    "token",
+                    "cvv",
+                    "cvc",
+                    "pin",
+                    "ssn",
+                ]
+                if any(
+                    key_lower == s or key_lower.endswith("_" + s)
+                    for s in sensitive_keywords
+                ):
                     is_sensitive = True
 
                 # 카드 관련 (안전한 필드 제외)
-                if "card" in key_lower and key_lower not in ["card_last_four", "card_brand", "card_type"]:
+                if "card" in key_lower and key_lower not in [
+                    "card_last_four",
+                    "card_brand",
+                    "card_type",
+                ]:
                     is_sensitive = True
 
                 if is_sensitive:
@@ -173,18 +189,14 @@ class PCIDSSCompliance:
             sanitized = data
 
             # 카드 번호 패턴만 마스킹 (13-19자리)
-            sanitized = re.sub(
-                r'\b\d{13,19}\b',
-                mask_char * 12,
-                sanitized
-            )
+            sanitized = re.sub(r"\b\d{13,19}\b", mask_char * 12, sanitized)
 
             # CVV: 123 형식만 마스킹
             sanitized = re.sub(
-                r'(cvv|cvc)[:\s]*\d{3,4}\b',
-                lambda m: m.group(0).split(':')[0] + ': ' + (mask_char * 3),
+                r"(cvv|cvc)[:\s]*\d{3,4}\b",
+                lambda m: m.group(0).split(":")[0] + ": " + (mask_char * 3),
                 sanitized,
-                flags=re.IGNORECASE
+                flags=re.IGNORECASE,
             )
 
             return sanitized
@@ -208,15 +220,15 @@ class PCIDSSCompliance:
                     "requirement": "1. 카드 데이터 저장 금지",
                     "status": "구현됨",
                     "description": "모든 카드 데이터는 토큰화되어 저장됩니다. "
-                                   "Payment 모델은 card_token만 저장하며, "
-                                   "실제 카드 번호는 저장하지 않습니다.",
+                    "Payment 모델은 card_token만 저장하며, "
+                    "실제 카드 번호는 저장하지 않습니다.",
                     "implementation": "services/ecommerce/backend/src/models/payment.py",
                 },
                 {
                     "requirement": "2. 민감 데이터 로그 금지",
                     "status": "구현됨",
                     "description": "로깅 미들웨어에서 자동으로 민감 정보를 마스킹합니다. "
-                                   "카드 번호, 비밀번호, CVV 등은 로그에 기록되지 않습니다.",
+                    "카드 번호, 비밀번호, CVV 등은 로그에 기록되지 않습니다.",
                     "implementation": "services/ecommerce/backend/src/utils/logging.py",
                 },
                 {
@@ -229,21 +241,21 @@ class PCIDSSCompliance:
                     "requirement": "4. 저장된 데이터 암호화",
                     "status": "부분 구현",
                     "description": "토큰화로 카드 데이터 보호. "
-                                   "추가: 데이터베이스 컬럼 레벨 암호화 권장",
+                    "추가: 데이터베이스 컬럼 레벨 암호화 권장",
                     "implementation": "PostgreSQL pgcrypto 확장 사용 권장",
                 },
                 {
                     "requirement": "5. 접근 제어",
                     "status": "구현됨",
                     "description": "RBAC(역할 기반 접근 제어) 구현. "
-                                   "관리자만 민감 데이터 접근 가능",
+                    "관리자만 민감 데이터 접근 가능",
                     "implementation": "services/ecommerce/backend/src/middleware/authorization.py",
                 },
                 {
                     "requirement": "6. 감사 로그",
                     "status": "구현됨",
                     "description": "모든 결제 거래는 Transaction 테이블에 기록되며, "
-                                   "사용자 행동은 UserBehaviorLog에 저장됩니다.",
+                    "사용자 행동은 UserBehaviorLog에 저장됩니다.",
                     "implementation": "services/fds/src/models/transaction.py",
                 },
             ],
@@ -328,5 +340,5 @@ if __name__ == "__main__":
     report = PCIDSSCompliance.generate_compliance_report()
     print(f"버전: {report['pci_dss_version']}")
     print(f"검사 항목 수: {len(report['compliance_checks'])}")
-    for check in report['compliance_checks']:
+    for check in report["compliance_checks"]:
         print(f"- {check['requirement']}: {check['status']}")

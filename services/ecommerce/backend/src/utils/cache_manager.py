@@ -9,13 +9,12 @@ import json
 import logging
 import functools
 import hashlib
-from typing import Any, Callable, Optional, List, Dict, TypeVar, Union
-from datetime import timedelta
+from typing import Any, Callable, Optional, List, Dict, TypeVar
 from redis import asyncio as aioredis
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class CacheKeyBuilder:
@@ -32,7 +31,7 @@ class CacheKeyBuilder:
         min_price: Optional[float] = None,
         max_price: Optional[float] = None,
         limit: int = 20,
-        offset: int = 0
+        offset: int = 0,
     ) -> str:
         """
         상품 목록 캐시 키 생성
@@ -183,7 +182,7 @@ class CacheManager:
         value: Any,
         ttl: Optional[int] = None,
         nx: bool = False,
-        xx: bool = False
+        xx: bool = False,
     ) -> bool:
         """
         캐시에 값 저장
@@ -203,13 +202,7 @@ class CacheManager:
 
         try:
             serialized = json.dumps(value, default=str)
-            result = await self.redis.set(
-                key,
-                serialized,
-                ex=ttl,
-                nx=nx,
-                xx=xx
-            )
+            result = await self.redis.set(key, serialized, ex=ttl, nx=nx, xx=xx)
             if result:
                 logger.debug(f"캐시 SET: {key} (TTL: {ttl}s)")
             return bool(result)
@@ -292,7 +285,9 @@ class CacheManager:
             logger.error(f"TTL 조회 실패: {key} - {e}")
             return None
 
-    async def increment(self, key: str, amount: int = 1, ttl: Optional[int] = None) -> int:
+    async def increment(
+        self, key: str, amount: int = 1, ttl: Optional[int] = None
+    ) -> int:
         """
         캐시 값 증가 (카운터)
 
@@ -317,10 +312,7 @@ class CacheManager:
             return 0
 
     async def get_or_set(
-        self,
-        key: str,
-        fetch_func: Callable,
-        ttl: Optional[int] = None
+        self, key: str, fetch_func: Callable, ttl: Optional[int] = None
     ) -> Any:
         """
         캐시에서 조회하고, 없으면 fetch_func 실행 후 저장
@@ -360,7 +352,7 @@ class CacheManager:
             f"order:user:{user_id}:*",
             f"session:user:{user_id}",
             f"otp:*:{user_id}",
-            f"fds:velocity:user:{user_id}"
+            f"fds:velocity:user:{user_id}",
         ]
 
         for pattern in patterns:
@@ -397,8 +389,7 @@ class CacheManager:
                 "keyspace_hits": info.get("keyspace_hits", 0),
                 "keyspace_misses": info.get("keyspace_misses", 0),
                 "hit_rate": self._calculate_hit_rate(
-                    info.get("keyspace_hits", 0),
-                    info.get("keyspace_misses", 0)
+                    info.get("keyspace_hits", 0), info.get("keyspace_misses", 0)
                 ),
                 "total_keys": await self.redis.dbsize(),
             }
@@ -414,9 +405,7 @@ class CacheManager:
 
 
 def cache_result(
-    key_builder: Callable,
-    ttl: Optional[int] = None,
-    cache_none: bool = False
+    key_builder: Callable, ttl: Optional[int] = None, cache_none: bool = False
 ):
     """
     함수 결과를 캐싱하는 데코레이터
@@ -434,14 +423,15 @@ def cache_result(
         async def get_product(product_id: str):
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             # self가 첫 번째 인자인 경우 (클래스 메서드)
-            if args and hasattr(args[0], '__dict__'):
+            if args and hasattr(args[0], "__dict__"):
                 self_obj = args[0]
                 # CacheManager를 찾기
-                cache_manager = getattr(self_obj, 'cache_manager', None)
+                cache_manager = getattr(self_obj, "cache_manager", None)
                 if not cache_manager:
                     # 캐시 매니저가 없으면 원본 함수 실행
                     return await func(*args, **kwargs)
@@ -466,6 +456,7 @@ def cache_result(
             return result
 
         return wrapper
+
     return decorator
 
 
@@ -479,7 +470,9 @@ class CacheWarmup:
     def __init__(self, cache_manager: CacheManager):
         self.cache_manager = cache_manager
 
-    async def warmup_popular_products(self, product_ids: List[str], fetch_func: Callable):
+    async def warmup_popular_products(
+        self, product_ids: List[str], fetch_func: Callable
+    ):
         """
         인기 상품을 미리 캐시에 로드
 
@@ -495,9 +488,7 @@ class CacheWarmup:
                 product_data = await fetch_func(product_id)
                 if product_data:
                     await self.cache_manager.set(
-                        cache_key,
-                        product_data,
-                        ttl=CacheManager.LONG_TTL
+                        cache_key, product_data, ttl=CacheManager.LONG_TTL
                     )
             except Exception as e:
                 logger.error(f"상품 캐시 워밍업 실패: {product_id} - {e}")
@@ -520,9 +511,7 @@ class CacheWarmup:
                 products = await fetch_func(category)
                 if products:
                     await self.cache_manager.set(
-                        cache_key,
-                        products,
-                        ttl=CacheManager.MEDIUM_TTL
+                        cache_key, products, ttl=CacheManager.MEDIUM_TTL
                     )
             except Exception as e:
                 logger.error(f"카테고리 캐시 워밍업 실패: {category} - {e}")

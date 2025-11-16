@@ -3,13 +3,18 @@
 
 결제 처리 및 토큰화 등 결제 관련 비즈니스 로직
 """
+
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from src.models.payment import Payment, PaymentStatus, PaymentMethod
 from src.models.order import Order, OrderStatus
-from src.utils.exceptions import ResourceNotFoundError, BusinessLogicError, ValidationError
+from src.utils.exceptions import (
+    ResourceNotFoundError,
+    BusinessLogicError,
+    ValidationError,
+)
 
 
 class PaymentService:
@@ -37,16 +42,14 @@ class PaymentService:
         payment = result.scalars().first()
 
         if not payment:
-            raise ResourceNotFoundError(f"결제 정보를 찾을 수 없습니다: order_id={order_id}")
+            raise ResourceNotFoundError(
+                f"결제 정보를 찾을 수 없습니다: order_id={order_id}"
+            )
 
         return payment
 
     async def process_payment(
-        self,
-        order_id: str,
-        card_number: str,
-        card_expiry: str,
-        card_cvv: str
+        self, order_id: str, card_number: str, card_expiry: str, card_cvv: str
     ) -> Payment:
         """
         결제 처리
@@ -67,9 +70,7 @@ class PaymentService:
             BusinessLogicError: 결제 처리 실패
         """
         # 주문 조회
-        result = await self.db.execute(
-            select(Order).where(Order.id == order_id)
-        )
+        result = await self.db.execute(select(Order).where(Order.id == order_id))
         order = result.scalars().first()
 
         if not order:
@@ -79,7 +80,7 @@ class PaymentService:
             raise BusinessLogicError(f"결제 가능한 상태가 아닙니다: {order.status}")
 
         # 카드 번호 검증 (기본 검증)
-        card_digits = ''.join(filter(str.isdigit, card_number))
+        card_digits = "".join(filter(str.isdigit, card_number))
         if len(card_digits) < 13 or len(card_digits) > 19:
             raise ValidationError("유효하지 않은 카드 번호입니다")
 
@@ -94,7 +95,7 @@ class PaymentService:
             amount=order.total_amount,
             status=PaymentStatus.PENDING,
             card_token=card_token,
-            card_last_four=card_last_four
+            card_last_four=card_last_four,
         )
 
         self.db.add(payment)
@@ -106,7 +107,7 @@ class PaymentService:
                 card_token=card_token,
                 amount=float(order.total_amount),
                 card_expiry=card_expiry,
-                card_cvv=card_cvv
+                card_cvv=card_cvv,
             )
 
             # 결제 성공
@@ -124,7 +125,9 @@ class PaymentService:
             await self.db.commit()
             raise BusinessLogicError(f"결제 처리 실패: {str(e)}")
 
-    async def refund_payment(self, payment_id: str, reason: Optional[str] = None) -> Payment:
+    async def refund_payment(
+        self, payment_id: str, reason: Optional[str] = None
+    ) -> Payment:
         """
         결제 환불
 
@@ -139,9 +142,7 @@ class PaymentService:
             ResourceNotFoundError: 결제를 찾을 수 없는 경우
             BusinessLogicError: 환불 불가능한 상태
         """
-        result = await self.db.execute(
-            select(Payment).where(Payment.id == payment_id)
-        )
+        result = await self.db.execute(select(Payment).where(Payment.id == payment_id))
         payment = result.scalars().first()
 
         if not payment:
@@ -153,8 +154,7 @@ class PaymentService:
         # 결제 게이트웨이 환불 호출 (시뮬레이션)
         try:
             await self._call_payment_gateway_refund(
-                transaction_id=payment.transaction_id,
-                amount=float(payment.amount)
+                transaction_id=payment.transaction_id, amount=float(payment.amount)
             )
 
             # 환불 성공
@@ -186,9 +186,7 @@ class PaymentService:
         Returns:
             dict: 결제 상태 정보
         """
-        result = await self.db.execute(
-            select(Payment).where(Payment.id == payment_id)
-        )
+        result = await self.db.execute(select(Payment).where(Payment.id == payment_id))
         payment = result.scalars().first()
 
         if not payment:
@@ -202,18 +200,18 @@ class PaymentService:
             "payment_method": payment.payment_method,
             "card_last_four": payment.card_last_four,
             "transaction_id": payment.transaction_id,
-            "created_at": payment.created_at.isoformat() if payment.created_at else None,
-            "completed_at": payment.completed_at.isoformat() if payment.completed_at else None
+            "created_at": (
+                payment.created_at.isoformat() if payment.created_at else None
+            ),
+            "completed_at": (
+                payment.completed_at.isoformat() if payment.completed_at else None
+            ),
         }
 
     # 내부 메서드 (결제 게이트웨이 연동 시뮬레이션)
 
     async def _call_payment_gateway(
-        self,
-        card_token: str,
-        amount: float,
-        card_expiry: str,
-        card_cvv: str
+        self, card_token: str, amount: float, card_expiry: str, card_cvv: str
     ) -> str:
         """
         결제 게이트웨이 호출 (시뮬레이션)
@@ -233,9 +231,7 @@ class PaymentService:
         return transaction_id
 
     async def _call_payment_gateway_refund(
-        self,
-        transaction_id: str,
-        amount: float
+        self, transaction_id: str, amount: float
     ) -> bool:
         """
         결제 게이트웨이 환불 호출 (시뮬레이션)
@@ -256,7 +252,7 @@ class PaymentService:
         Returns:
             str: 마스킹된 카드 번호 (예: ****-****-****-1234)
         """
-        card_digits = ''.join(filter(str.isdigit, card_number))
+        card_digits = "".join(filter(str.isdigit, card_number))
         if len(card_digits) < 4:
             return "****"
 

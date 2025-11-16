@@ -17,7 +17,7 @@ OWASP Top 10 (2021):
 import re
 import html
 import secrets
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -202,7 +202,9 @@ class OWASPSecurityChecker:
             return {
                 "safe": is_safe,
                 "vulnerability": "Server-Side Request Forgery (SSRF)",
-                "detected_issue": f"내부 호스트 접근 시도: {hostname}" if is_blacklisted else None,
+                "detected_issue": (
+                    f"내부 호스트 접근 시도: {hostname}" if is_blacklisted else None
+                ),
                 "recommendation": "외부 URL만 허용하고 내부 IP 범위 차단",
             }
         except Exception as e:
@@ -274,59 +276,78 @@ class OWASPSecurityChecker:
                 sql_result = cls.check_sql_injection(value)
                 if not sql_result["safe"]:
                     results["overall_safe"] = False
-                    results["checks"].append({
-                        "field": key,
-                        "vulnerability": sql_result["vulnerability"],
-                        "detected": sql_result["detected_patterns"],
-                        "recommendation": sql_result["recommendation"],
-                    })
+                    results["checks"].append(
+                        {
+                            "field": key,
+                            "vulnerability": sql_result["vulnerability"],
+                            "detected": sql_result["detected_patterns"],
+                            "recommendation": sql_result["recommendation"],
+                        }
+                    )
 
                 # XSS 검사
                 xss_result = cls.check_xss(value)
                 if not xss_result["safe"]:
                     results["overall_safe"] = False
-                    results["checks"].append({
-                        "field": key,
-                        "vulnerability": xss_result["vulnerability"],
-                        "detected": xss_result["detected_patterns"],
-                        "recommendation": xss_result["recommendation"],
-                    })
+                    results["checks"].append(
+                        {
+                            "field": key,
+                            "vulnerability": xss_result["vulnerability"],
+                            "detected": xss_result["detected_patterns"],
+                            "recommendation": xss_result["recommendation"],
+                        }
+                    )
 
                 # Command Injection 검사 (특정 필드만)
-                if any(keyword in key.lower() for keyword in ["command", "cmd", "exec", "shell"]):
+                if any(
+                    keyword in key.lower()
+                    for keyword in ["command", "cmd", "exec", "shell"]
+                ):
                     cmd_result = cls.check_command_injection(value)
                     if not cmd_result["safe"]:
                         results["overall_safe"] = False
-                        results["checks"].append({
-                            "field": key,
-                            "vulnerability": cmd_result["vulnerability"],
-                            "detected": cmd_result["detected_patterns"],
-                            "recommendation": cmd_result["recommendation"],
-                        })
+                        results["checks"].append(
+                            {
+                                "field": key,
+                                "vulnerability": cmd_result["vulnerability"],
+                                "detected": cmd_result["detected_patterns"],
+                                "recommendation": cmd_result["recommendation"],
+                            }
+                        )
 
                 # Path Traversal 검사 (파일 경로 필드)
-                if any(keyword in key.lower() for keyword in ["path", "file", "filename", "dir", "folder"]):
+                if any(
+                    keyword in key.lower()
+                    for keyword in ["path", "file", "filename", "dir", "folder"]
+                ):
                     path_result = cls.check_path_traversal(value)
                     if not path_result["safe"]:
                         results["overall_safe"] = False
-                        results["checks"].append({
-                            "field": key,
-                            "vulnerability": path_result["vulnerability"],
-                            "detected": path_result["detected_patterns"],
-                            "recommendation": path_result["recommendation"],
-                        })
+                        results["checks"].append(
+                            {
+                                "field": key,
+                                "vulnerability": path_result["vulnerability"],
+                                "detected": path_result["detected_patterns"],
+                                "recommendation": path_result["recommendation"],
+                            }
+                        )
 
                 # SSRF 검사 (URL 필드)
-                if any(keyword in key.lower() for keyword in ["url", "link", "href", "callback"]):
+                if any(
+                    keyword in key.lower()
+                    for keyword in ["url", "link", "href", "callback"]
+                ):
                     ssrf_result = cls.check_ssrf(value)
                     if not ssrf_result["safe"]:
                         results["overall_safe"] = False
-                        results["checks"].append({
-                            "field": key,
-                            "vulnerability": ssrf_result["vulnerability"],
-                            "detected": ssrf_result["detected_issue"],
-                            "recommendation": ssrf_result["recommendation"],
-                        })
+                        results["checks"].append(
+                            {
+                                "field": key,
+                                "vulnerability": ssrf_result["vulnerability"],
+                                "detected": ssrf_result["detected_issue"],
+                                "recommendation": ssrf_result["recommendation"],
+                            }
+                        )
 
         return results
 
@@ -468,7 +489,7 @@ if __name__ == "__main__":
     comprehensive_result = OWASPSecurityChecker.comprehensive_security_check(test_data)
     print(f"전체 안전 여부: {comprehensive_result['overall_safe']}")
     print(f"발견된 취약점 수: {len(comprehensive_result['checks'])}")
-    for check in comprehensive_result['checks']:
+    for check in comprehensive_result["checks"]:
         print(f"- {check['field']}: {check['vulnerability']}")
 
     # 6. 보안 리포트 생성
@@ -476,5 +497,5 @@ if __name__ == "__main__":
     report = OWASPSecurityChecker.generate_security_report()
     print(f"버전: {report['owasp_version']}")
     print(f"보안 통제 수: {len(report['security_controls'])}")
-    for control in report['security_controls']:
+    for control in report["security_controls"]:
         print(f"- {control['id']} {control['category']}: {control['status']}")

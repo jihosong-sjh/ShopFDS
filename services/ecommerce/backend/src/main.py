@@ -11,14 +11,24 @@ from fastapi.responses import JSONResponse
 import uvicorn
 import os
 
-from src.models.base import init_db, close_db
+from src.models.base import close_db
 from src.utils.logging import setup_logging, get_logger
 from src.utils.exceptions import (
     AppException,
     ValidationException,
-    NotFoundException,
-    UnauthorizedException,
 )
+
+# API 라우터
+from src.api.auth import router as auth_router
+from src.api.products import router as products_router
+from src.api.cart import router as cart_router
+from src.api.orders import router as orders_router
+
+# Admin API 라우터
+from src.api.admin.products import router as admin_products_router
+from src.api.admin.orders import router as admin_orders_router
+from src.api.admin.users import router as admin_users_router
+from src.api.admin.dashboard import router as admin_dashboard_router
 
 # 로깅 설정
 setup_logging()
@@ -151,17 +161,6 @@ async def health_check():
 
 
 # API 라우터 등록
-from src.api.auth import router as auth_router
-from src.api.products import router as products_router
-from src.api.cart import router as cart_router
-from src.api.orders import router as orders_router
-
-# Admin API 라우터
-from src.api.admin.products import router as admin_products_router
-from src.api.admin.orders import router as admin_orders_router
-from src.api.admin.users import router as admin_users_router
-from src.api.admin.dashboard import router as admin_dashboard_router
-
 app.include_router(auth_router)
 app.include_router(products_router)
 app.include_router(cart_router)

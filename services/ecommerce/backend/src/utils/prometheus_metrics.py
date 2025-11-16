@@ -275,7 +275,7 @@ def track_transaction_duration(transaction_type: str):
                     type=transaction_type
                 ).observe(duration)
                 return result
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
                 transaction_processing_duration_seconds.labels(
                     type=transaction_type
@@ -304,7 +304,7 @@ def track_database_query(operation: str):
                     duration
                 )
                 return result
-            except Exception as e:
+            except Exception:
                 database_errors_total.labels(error_type="query").inc()
                 raise
 

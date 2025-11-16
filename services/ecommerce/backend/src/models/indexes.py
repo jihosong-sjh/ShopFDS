@@ -90,7 +90,9 @@ class IndexManager:
             Index("idx_transactions_user_id", "user_id"),
             Index("idx_transactions_ip_address", "ip_address", postgresql_using="hash"),
             Index("idx_transactions_risk_level", "risk_level"),
-            Index("idx_transactions_created_at", "created_at", postgresql_using="brin"),  # 시계열 데이터에 최적
+            Index(
+                "idx_transactions_created_at", "created_at", postgresql_using="brin"
+            ),  # 시계열 데이터에 최적
             # 복합 인덱스: 사용자 + 생성일 (사용자 거래 패턴 분석)
             Index("idx_transactions_user_created", "user_id", "created_at"),
             # GiST 인덱스: IP 주소 범위 검색 (선택 사항)

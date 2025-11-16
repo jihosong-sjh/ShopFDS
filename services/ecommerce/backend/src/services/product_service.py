@@ -3,6 +3,7 @@
 
 상품 목록 조회, 검색, 상세 조회 등 상품 관련 비즈니스 로직
 """
+
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_
@@ -26,7 +27,7 @@ class ProductService:
         max_price: Optional[float] = None,
         status: Optional[ProductStatus] = None,
         limit: int = 20,
-        offset: int = 0
+        offset: int = 0,
     ) -> tuple[List[Product], int]:
         """
         상품 목록 조회 (필터링 및 페이지네이션 지원)
@@ -57,7 +58,7 @@ class ProductService:
             filters.append(
                 or_(
                     Product.name.ilike(search_pattern),
-                    Product.description.ilike(search_pattern)
+                    Product.description.ilike(search_pattern),
                 )
             )
 
@@ -106,9 +107,7 @@ class ProductService:
         Raises:
             ResourceNotFoundError: 상품을 찾을 수 없는 경우
         """
-        result = await self.db.execute(
-            select(Product).where(Product.id == product_id)
-        )
+        result = await self.db.execute(select(Product).where(Product.id == product_id))
         product = result.scalars().first()
 
         if not product:
@@ -128,13 +127,13 @@ class ProductService:
             List[Product]: 검색된 상품 목록
         """
         products, _ = await self.get_product_list(
-            search_query=query,
-            limit=limit,
-            offset=0
+            search_query=query, limit=limit, offset=0
         )
         return products
 
-    async def get_products_by_category(self, category: str, limit: int = 20) -> List[Product]:
+    async def get_products_by_category(
+        self, category: str, limit: int = 20
+    ) -> List[Product]:
         """
         카테고리별 상품 조회
 
@@ -146,9 +145,7 @@ class ProductService:
             List[Product]: 상품 목록
         """
         products, _ = await self.get_product_list(
-            category=category,
-            limit=limit,
-            offset=0
+            category=category, limit=limit, offset=0
         )
         return products
 
@@ -211,7 +208,7 @@ class ProductService:
         category: str,
         stock_quantity: int,
         description: Optional[str] = None,
-        image_url: Optional[str] = None
+        image_url: Optional[str] = None,
     ) -> Product:
         """
         새 상품 등록 (관리자 전용)
@@ -243,7 +240,11 @@ class ProductService:
             stock_quantity=stock_quantity,
             description=description,
             image_url=image_url,
-            status=ProductStatus.AVAILABLE if stock_quantity > 0 else ProductStatus.OUT_OF_STOCK
+            status=(
+                ProductStatus.AVAILABLE
+                if stock_quantity > 0
+                else ProductStatus.OUT_OF_STOCK
+            ),
         )
 
         self.db.add(product)
@@ -259,7 +260,7 @@ class ProductService:
         price: Optional[float] = None,
         category: Optional[str] = None,
         description: Optional[str] = None,
-        image_url: Optional[str] = None
+        image_url: Optional[str] = None,
     ) -> Product:
         """
         상품 정보 수정 (관리자 전용)

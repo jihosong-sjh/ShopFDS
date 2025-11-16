@@ -3,7 +3,8 @@
 
 회원가입, 로그인, 프로필 조회 등 사용자 관련 비즈니스 로직
 """
-from datetime import datetime, timedelta
+
+from datetime import datetime
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -11,8 +12,17 @@ from sqlalchemy.exc import IntegrityError
 
 from src.models.user import User, UserRole, UserStatus
 from src.models.cart import Cart
-from src.utils.security import hash_password, verify_password, create_access_token, create_refresh_token
-from src.utils.exceptions import AuthenticationError, ResourceNotFoundError, ValidationError
+from src.utils.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+)
+from src.utils.exceptions import (
+    AuthenticationError,
+    ResourceNotFoundError,
+    ValidationError,
+)
 
 
 class UserService:
@@ -22,11 +32,7 @@ class UserService:
         self.db = db
 
     async def register(
-        self,
-        email: str,
-        password: str,
-        name: str,
-        role: UserRole = UserRole.CUSTOMER
+        self, email: str, password: str, name: str, role: UserRole = UserRole.CUSTOMER
     ) -> tuple[User, dict]:
         """
         새 사용자 회원가입
@@ -61,7 +67,7 @@ class UserService:
             password_hash=password_hash,
             name=name,
             role=role,
-            status=UserStatus.ACTIVE
+            status=UserStatus.ACTIVE,
         )
 
         self.db.add(user)
@@ -80,9 +86,11 @@ class UserService:
 
         # JWT 토큰 생성
         tokens = {
-            "access_token": create_access_token({"sub": str(user.id), "email": user.email, "role": user.role}),
+            "access_token": create_access_token(
+                {"sub": str(user.id), "email": user.email, "role": user.role}
+            ),
             "refresh_token": create_refresh_token({"sub": str(user.id)}),
-            "token_type": "bearer"
+            "token_type": "bearer",
         }
 
         return user, tokens
@@ -138,9 +146,11 @@ class UserService:
 
         # JWT 토큰 생성
         tokens = {
-            "access_token": create_access_token({"sub": str(user.id), "email": user.email, "role": user.role}),
+            "access_token": create_access_token(
+                {"sub": str(user.id), "email": user.email, "role": user.role}
+            ),
             "refresh_token": create_refresh_token({"sub": str(user.id)}),
-            "token_type": "bearer"
+            "token_type": "bearer",
         }
 
         return user, tokens
@@ -164,7 +174,9 @@ class UserService:
 
         return user
 
-    async def update_user_profile(self, user_id: str, name: Optional[str] = None) -> User:
+    async def update_user_profile(
+        self, user_id: str, name: Optional[str] = None
+    ) -> User:
         """
         사용자 프로필 업데이트
 
@@ -185,7 +197,9 @@ class UserService:
 
         return user
 
-    async def change_password(self, user_id: str, current_password: str, new_password: str) -> bool:
+    async def change_password(
+        self, user_id: str, current_password: str, new_password: str
+    ) -> bool:
         """
         비밀번호 변경
 
@@ -219,14 +233,10 @@ class UserService:
 
     async def _get_user_by_email(self, email: str) -> Optional[User]:
         """이메일로 사용자 조회 (내부 메서드)"""
-        result = await self.db.execute(
-            select(User).where(User.email == email)
-        )
+        result = await self.db.execute(select(User).where(User.email == email))
         return result.scalars().first()
 
     async def _get_user_by_id(self, user_id: str) -> Optional[User]:
         """ID로 사용자 조회 (내부 메서드)"""
-        result = await self.db.execute(
-            select(User).where(User.id == user_id)
-        )
+        result = await self.db.execute(select(User).where(User.id == user_id))
         return result.scalars().first()

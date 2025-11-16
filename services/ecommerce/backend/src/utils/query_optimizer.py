@@ -9,10 +9,10 @@ import time
 import functools
 from typing import Any, Callable, List, Optional, Dict
 from contextlib import asynccontextmanager
-from sqlalchemy import event, text
+from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import selectinload, joinedload, contains_eager
+from sqlalchemy.orm import selectinload, joinedload
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,12 @@ class QueryPerformanceMonitor:
         self.slow_query_threshold_ms = slow_query_threshold_ms
         self.query_stats: Dict[str, Dict[str, Any]] = {}
 
-    def track_query(self, query_name: str, execution_time_ms: float, query_text: Optional[str] = None):
+    def track_query(
+        self,
+        query_name: str,
+        execution_time_ms: float,
+        query_text: Optional[str] = None,
+    ):
         """
         쿼리 실행 시간 추적
 
@@ -46,9 +51,9 @@ class QueryPerformanceMonitor:
                 "count": 0,
                 "total_time_ms": 0.0,
                 "max_time_ms": 0.0,
-                "min_time_ms": float('inf'),
+                "min_time_ms": float("inf"),
                 "slow_queries": 0,
-                "query_text": query_text
+                "query_text": query_text,
             }
 
         stats = self.query_stats[query_name]
@@ -81,9 +86,7 @@ class QueryPerformanceMonitor:
 
         lines = ["=== 쿼리 성능 통계 ==="]
         for query_name, stats in sorted(
-            self.query_stats.items(),
-            key=lambda x: x[1]["total_time_ms"],
-            reverse=True
+            self.query_stats.items(), key=lambda x: x[1]["total_time_ms"], reverse=True
         ):
             avg_time = stats["total_time_ms"] / stats["count"]
             lines.append(
@@ -114,6 +117,7 @@ def monitor_query(query_name: str):
         async def get_user_orders(user_id: str):
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
@@ -124,7 +128,9 @@ def monitor_query(query_name: str):
             finally:
                 execution_time_ms = (time.time() - start_time) * 1000
                 _query_monitor.track_query(query_name, execution_time_ms)
+
         return wrapper
+
     return decorator
 
 
@@ -195,9 +201,7 @@ class QueryOptimizationHelper:
 
     @staticmethod
     async def batch_load_relationships(
-        db: AsyncSession,
-        entities: List[Any],
-        relationship_attr: str
+        db: AsyncSession, entities: List[Any], relationship_attr: str
     ) -> List[Any]:
         """
         이미 로드된 엔티티의 관계를 배치로 로드
@@ -246,15 +250,20 @@ def setup_query_logging(engine: Engine, log_queries: bool = True):
         log_queries: 모든 쿼리 로깅 여부 (개발 환경에서만 권장)
     """
     if log_queries:
+
         @event.listens_for(engine.sync_engine, "before_cursor_execute", retval=True)
-        def receive_before_cursor_execute(conn, cursor, statement, params, context, executemany):
-            conn.info.setdefault('query_start_time', []).append(time.time())
+        def receive_before_cursor_execute(
+            conn, cursor, statement, params, context, executemany
+        ):
+            conn.info.setdefault("query_start_time", []).append(time.time())
             logger.debug(f"쿼리 실행: {statement[:200]}...")
             return statement, params
 
         @event.listens_for(engine.sync_engine, "after_cursor_execute")
-        def receive_after_cursor_execute(conn, cursor, statement, params, context, executemany):
-            total_time = time.time() - conn.info['query_start_time'].pop()
+        def receive_after_cursor_execute(
+            conn, cursor, statement, params, context, executemany
+        ):
+            total_time = time.time() - conn.info["query_start_time"].pop()
             logger.debug(f"쿼리 완료: {total_time * 1000:.2f}ms")
 
 
@@ -364,8 +373,7 @@ class OptimizedQueryPatterns:
         from src.models.order import Order
 
         return lambda query: query.options(
-            selectinload(User.orders)
-            .selectinload(Order.items)
+            selectinload(User.orders).selectinload(Order.items)
         )
 
     @staticmethod
@@ -374,9 +382,8 @@ class OptimizedQueryPatterns:
         주문과 모든 관련 정보를 함께 조회하는 최적화된 패턴
         """
         from src.models.order import Order, OrderItem
-        from src.models.payment import Payment
 
         return lambda query: query.options(
             selectinload(Order.items).selectinload(OrderItem.product),
-            selectinload(Order.payment)
+            selectinload(Order.payment),
         )

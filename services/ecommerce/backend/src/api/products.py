@@ -3,9 +3,10 @@
 
 상품 목록 조회, 검색, 상세 조회 등 상품 관련 REST API
 """
+
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.base import get_db
@@ -19,8 +20,10 @@ router = APIRouter(prefix="/v1/products", tags=["상품"])
 
 # Response 스키마
 
+
 class ProductResponse(BaseModel):
     """상품 정보 응답"""
+
     id: str
     name: str
     description: Optional[str]
@@ -46,12 +49,13 @@ class ProductResponse(BaseModel):
             category=product.category,
             image_url=product.image_url,
             status=product.status,
-            is_available=product.is_available()
+            is_available=product.is_available(),
         )
 
 
 class ProductListResponse(BaseModel):
     """상품 목록 응답"""
+
     products: List[ProductResponse]
     total_count: int
     page: int
@@ -59,6 +63,7 @@ class ProductListResponse(BaseModel):
 
 
 # API 엔드포인트
+
 
 @router.get("", response_model=ProductListResponse)
 async def get_products(
@@ -68,7 +73,7 @@ async def get_products(
     max_price: Optional[float] = Query(None, ge=0, description="최대 가격"),
     page: int = Query(1, ge=1, description="페이지 번호"),
     page_size: int = Query(20, ge=1, le=100, description="페이지 크기"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     상품 목록 조회
@@ -87,20 +92,20 @@ async def get_products(
             max_price=max_price,
             status=ProductStatus.AVAILABLE,
             limit=page_size,
-            offset=offset
+            offset=offset,
         )
 
         return ProductListResponse(
             products=[ProductResponse.from_product(p) for p in products],
             total_count=total_count,
             page=page,
-            page_size=page_size
+            page_size=page_size,
         )
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"상품 목록 조회 중 오류 발생: {str(e)}"
+            detail=f"상품 목록 조회 중 오류 발생: {str(e)}",
         )
 
 
@@ -108,7 +113,7 @@ async def get_products(
 async def search_products(
     q: str = Query(..., min_length=1, description="검색어"),
     limit: int = Query(20, ge=1, le=100, description="최대 결과 개수"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     상품 검색
@@ -124,7 +129,7 @@ async def search_products(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"상품 검색 중 오류 발생: {str(e)}"
+            detail=f"상품 검색 중 오류 발생: {str(e)}",
         )
 
 
@@ -144,14 +149,14 @@ async def get_categories(db: AsyncSession = Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"카테고리 목록 조회 중 오류 발생: {str(e)}"
+            detail=f"카테고리 목록 조회 중 오류 발생: {str(e)}",
         )
 
 
 @router.get("/featured", response_model=List[ProductResponse])
 async def get_featured_products(
     limit: int = Query(10, ge=1, le=50, description="최대 결과 개수"),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     추천 상품 조회
@@ -167,15 +172,12 @@ async def get_featured_products(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"추천 상품 조회 중 오류 발생: {str(e)}"
+            detail=f"추천 상품 조회 중 오류 발생: {str(e)}",
         )
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
-async def get_product(
-    product_id: str,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
     """
     상품 상세 조회
 
@@ -188,12 +190,9 @@ async def get_product(
         return ProductResponse.from_product(product)
 
     except ResourceNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"상품 조회 중 오류 발생: {str(e)}"
+            detail=f"상품 조회 중 오류 발생: {str(e)}",
         )
