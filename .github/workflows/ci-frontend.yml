@@ -2,7 +2,6 @@ name: CI - Frontend Services
 
 on:
   push:
-    branches: [ main, develop ]
     paths:
       - 'services/ecommerce/frontend/**'
       - 'services/admin-dashboard/frontend/**'
