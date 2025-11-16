@@ -8,15 +8,12 @@ ML 기반 이상 탐지 엔진
 - 실시간 특징 추출 및 예측
 """
 
-import asyncio
 import hashlib
 import pickle
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 from datetime import datetime
-from pathlib import Path
 
 import numpy as np
-from sklearn.ensemble import IsolationForest
 
 
 class MLEngine:
@@ -231,14 +228,10 @@ class MLEngine:
             features["amount_deviation_ratio"] = 0.0
 
         # 계정 생성 후 경과 시간 (일)
-        features["account_age_days"] = float(
-            user_behavior.get("account_age_days", 0)
-        )
+        features["account_age_days"] = float(user_behavior.get("account_age_days", 0))
 
         # 로그인 빈도 (30일)
-        features["login_count_30d"] = float(
-            user_behavior.get("login_count_30d", 0)
-        )
+        features["login_count_30d"] = float(user_behavior.get("login_count_30d", 0))
 
         # 시간대 특징 (UTC 기준)
         current_hour = datetime.utcnow().hour

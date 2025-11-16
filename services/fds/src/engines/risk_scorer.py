@@ -5,7 +5,6 @@
 """
 
 from typing import List, Dict, Any, Optional
-from decimal import Decimal
 
 from ..models import RiskFactor, FactorType, FactorSeverity, RiskLevel
 from .rule_engine import RuleEvaluationResult
@@ -20,13 +19,13 @@ class RiskScoreConfig:
 
     # 요인 유형별 기본 가중치
     DEFAULT_WEIGHTS = {
-        FactorType.VELOCITY_CHECK: 1.0,       # 단시간 내 반복 거래
-        FactorType.AMOUNT_THRESHOLD: 0.8,     # 비정상적 고액 거래
-        FactorType.LOCATION_MISMATCH: 0.9,    # 지역 불일치
-        FactorType.SUSPICIOUS_IP: 1.2,        # 악성 IP (CTI)
-        FactorType.SUSPICIOUS_TIME: 0.6,      # 비정상 시간대
-        FactorType.ML_ANOMALY: 1.1,           # ML 이상 탐지
-        FactorType.STOLEN_CARD: 1.5,          # 도난 카드
+        FactorType.VELOCITY_CHECK: 1.0,  # 단시간 내 반복 거래
+        FactorType.AMOUNT_THRESHOLD: 0.8,  # 비정상적 고액 거래
+        FactorType.LOCATION_MISMATCH: 0.9,  # 지역 불일치
+        FactorType.SUSPICIOUS_IP: 1.2,  # 악성 IP (CTI)
+        FactorType.SUSPICIOUS_TIME: 0.6,  # 비정상 시간대
+        FactorType.ML_ANOMALY: 1.1,  # ML 이상 탐지
+        FactorType.STOLEN_CARD: 1.5,  # 도난 카드
     }
 
     # 심각도별 가중치 배율
@@ -40,9 +39,9 @@ class RiskScoreConfig:
 
     # 위험 수준 임계값
     RISK_LEVEL_THRESHOLDS = {
-        RiskLevel.LOW: (0, 30),        # 0-30: 저위험 (자동 승인)
-        RiskLevel.MEDIUM: (40, 70),    # 40-70: 중위험 (추가 인증)
-        RiskLevel.HIGH: (80, 100),     # 80-100: 고위험 (자동 차단)
+        RiskLevel.LOW: (0, 30),  # 0-30: 저위험 (자동 승인)
+        RiskLevel.MEDIUM: (40, 70),  # 40-70: 중위험 (추가 인증)
+        RiskLevel.HIGH: (80, 100),  # 80-100: 고위험 (자동 차단)
     }
 
     # 31-39, 71-79는 경계 구간 (보수적으로 상위 등급으로 분류)
@@ -264,7 +263,9 @@ class RiskScorer:
 
         return mapping.get(rule_type, FactorType.VELOCITY_CHECK)
 
-    def get_recommended_action(self, risk_score: int, risk_level: RiskLevel) -> Dict[str, Any]:
+    def get_recommended_action(
+        self, risk_score: int, risk_level: RiskLevel
+    ) -> Dict[str, Any]:
         """
         위험 점수와 위험 수준에 따른 권장 조치 결정
 

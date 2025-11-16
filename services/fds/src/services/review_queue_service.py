@@ -36,9 +36,7 @@ class ReviewQueueService:
         """
         self.db = db
 
-    async def add_to_review_queue(
-        self, transaction_id: UUID
-    ) -> Optional[ReviewQueue]:
+    async def add_to_review_queue(self, transaction_id: UUID) -> Optional[ReviewQueue]:
         """
         고위험 거래를 검토 큐에 자동 추가
 
@@ -63,9 +61,7 @@ class ReviewQueueService:
 
             # 2. 이미 검토 큐에 있는지 확인
             result = await self.db.execute(
-                select(ReviewQueue).where(
-                    ReviewQueue.transaction_id == transaction_id
-                )
+                select(ReviewQueue).where(ReviewQueue.transaction_id == transaction_id)
             )
             existing_queue = result.scalar_one_or_none()
 
@@ -113,9 +109,7 @@ class ReviewQueueService:
             )
             raise
 
-    async def assign_reviewer(
-        self, queue_id: UUID, reviewer_id: UUID
-    ) -> ReviewQueue:
+    async def assign_reviewer(self, queue_id: UUID, reviewer_id: UUID) -> ReviewQueue:
         """
         검토 담당자 할당
 
@@ -142,9 +136,7 @@ class ReviewQueueService:
         await self.db.commit()
         await self.db.refresh(review_queue)
 
-        logger.info(
-            f"검토 담당자 할당: queue_id={queue_id}, reviewer_id={reviewer_id}"
-        )
+        logger.info(f"검토 담당자 할당: queue_id={queue_id}, reviewer_id={reviewer_id}")
 
         return review_queue
 
@@ -225,9 +217,7 @@ class ReviewQueueService:
         Returns:
             list[ReviewQueue]: 검토 진행 중인 항목 목록
         """
-        query = select(ReviewQueue).where(
-            ReviewQueue.status == ReviewStatus.IN_REVIEW
-        )
+        query = select(ReviewQueue).where(ReviewQueue.status == ReviewStatus.IN_REVIEW)
 
         if reviewer_id:
             query = query.where(ReviewQueue.assigned_to == reviewer_id)
@@ -250,8 +240,6 @@ class ReviewQueueService:
             Optional[ReviewQueue]: 검토 큐 엔트리 (없으면 None)
         """
         result = await self.db.execute(
-            select(ReviewQueue).where(
-                ReviewQueue.transaction_id == transaction_id
-            )
+            select(ReviewQueue).where(ReviewQueue.transaction_id == transaction_id)
         )
         return result.scalar_one_or_none()

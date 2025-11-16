@@ -9,12 +9,12 @@
 """
 
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional, Dict, Any, Tuple
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select
 
 from src.models.ml_model import MLModel, DeploymentStatus
 
@@ -90,9 +90,7 @@ class CanaryDeployment:
             "config": self._canary_config,
         }
 
-    async def route_traffic(
-        self, transaction_id: str
-    ) -> Tuple[str, MLModel]:
+    async def route_traffic(self, transaction_id: str) -> Tuple[str, MLModel]:
         """
         트래픽을 카나리 또는 프로덕션 모델로 라우팅
 
@@ -114,7 +112,9 @@ class CanaryDeployment:
 
         if is_canary:
             # 카나리 모델 사용
-            canary_model = await self._get_model(UUID(self._canary_config["canary_model_id"]))
+            canary_model = await self._get_model(
+                UUID(self._canary_config["canary_model_id"])
+            )
             return "canary", canary_model
         else:
             # 프로덕션 모델 사용
@@ -159,7 +159,8 @@ class CanaryDeployment:
 
         # 성공률 계산
         canary_success_rate = (
-            self._canary_config["canary_successes"] / self._canary_config["canary_requests"]
+            self._canary_config["canary_successes"]
+            / self._canary_config["canary_requests"]
             if self._canary_config["canary_requests"] > 0
             else 0.0
         )
@@ -178,7 +179,9 @@ class CanaryDeployment:
             "status": self._canary_config["status"],
             "traffic_percentage": self._canary_config["traffic_percentage"],
             "elapsed_minutes": round(elapsed_minutes, 2),
-            "monitoring_window_minutes": self._canary_config["monitoring_window_minutes"],
+            "monitoring_window_minutes": self._canary_config[
+                "monitoring_window_minutes"
+            ],
             "canary": {
                 "requests": self._canary_config["canary_requests"],
                 "successes": self._canary_config["canary_successes"],
@@ -196,9 +199,7 @@ class CanaryDeployment:
             ),
         }
 
-    async def increase_traffic(
-        self, new_percentage: int
-    ) -> Dict[str, Any]:
+    async def increase_traffic(self, new_percentage: int) -> Dict[str, Any]:
         """
         카나리 트래픽 비율 증가
 
@@ -244,9 +245,7 @@ class CanaryDeployment:
 
         # 기존 프로덕션 모델을 은퇴 상태로 변경
         await self.db_session.execute(
-            select(MLModel)
-            .where(MLModel.id == production_model_id)
-            .with_for_update()
+            select(MLModel).where(MLModel.id == production_model_id).with_for_update()
         )
         production_model = await self._get_model(production_model_id)
         production_model.deployment_status = DeploymentStatus.RETIRED
@@ -368,7 +367,9 @@ class CanaryDeployment:
         self, model_type: Optional[str] = None
     ) -> Optional[MLModel]:
         """프로덕션 모델 조회"""
-        query = select(MLModel).where(MLModel.deployment_status == DeploymentStatus.PRODUCTION)
+        query = select(MLModel).where(
+            MLModel.deployment_status == DeploymentStatus.PRODUCTION
+        )
         if model_type:
             query = query.where(MLModel.model_type == model_type)
 

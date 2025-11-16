@@ -5,8 +5,8 @@ FDS 거래 데이터를 ML 모델 학습에 적합한 형태로 변환
 """
 
 import logging
-from typing import List, Dict, Optional, Tuple
-from datetime import datetime, timedelta
+from typing import Dict, Optional, Tuple
+from datetime import datetime
 import pandas as pd
 import numpy as np
 from sqlalchemy.orm import Session
@@ -96,7 +96,9 @@ class DataPreprocessor:
             if df[col].isnull().any():
                 median_value = df[col].median()
                 df[col].fillna(median_value, inplace=True)
-                logger.debug(f"컬럼 '{col}': 결측치 {df[col].isnull().sum()}개 → 중앙값 {median_value}로 대체")
+                logger.debug(
+                    f"컬럼 '{col}': 결측치 {df[col].isnull().sum()}개 → 중앙값 {median_value}로 대체"
+                )
 
         # 범주형 컬럼 결측치 → 'unknown'
         categorical_columns = df.select_dtypes(include=["object", "category"]).columns
@@ -127,7 +129,10 @@ class DataPreprocessor:
         numeric_columns = [col for col in numeric_columns if col != "is_fraud"]
 
         # Z-score 계산
-        z_scores = np.abs((df[numeric_columns] - df[numeric_columns].mean()) / df[numeric_columns].std())
+        z_scores = np.abs(
+            (df[numeric_columns] - df[numeric_columns].mean())
+            / df[numeric_columns].std()
+        )
 
         # 임계값 초과하는 행 제거
         outlier_mask = (z_scores < z_threshold).all(axis=1)
@@ -136,7 +141,9 @@ class DataPreprocessor:
 
         removed_count = original_len - len(df)
         if removed_count > 0:
-            logger.info(f"이상치 제거: {removed_count}개 샘플 ({removed_count/original_len*100:.2f}%)")
+            logger.info(
+                f"이상치 제거: {removed_count}개 샘플 ({removed_count/original_len*100:.2f}%)"
+            )
 
         return df
 
@@ -301,19 +308,13 @@ def split_train_test(
         stratify=y if stratify and len(y.unique()) > 1 else None,
     )
 
-    logger.info(
-        f"데이터 분할 완료: Train={len(X_train)}개, Test={len(X_test)}개"
-    )
+    logger.info(f"데이터 분할 완료: Train={len(X_train)}개, Test={len(X_test)}개")
 
     if len(y_train) > 0:
         fraud_train = y_train.sum()
         fraud_test = y_test.sum()
-        logger.info(
-            f"Train - 사기: {fraud_train}개 ({fraud_train/len(y_train)*100:.2f}%)"
-        )
-        logger.info(
-            f"Test - 사기: {fraud_test}개 ({fraud_test/len(y_test)*100:.2f}%)"
-        )
+        logger.info(f"Train - 사기: {fraud_train}개 ({fraud_train/len(y_train)*100:.2f}%)")
+        logger.info(f"Test - 사기: {fraud_test}개 ({fraud_test/len(y_test)*100:.2f}%)")
 
     return X_train, X_test, y_train, y_test
 
@@ -368,7 +369,9 @@ def handle_imbalanced_data(
         f"정상={new_normal_count}, 사기={new_fraud_count}, 비율={new_fraud_count/new_normal_count:.4f}"
     )
 
-    return pd.DataFrame(X_resampled, columns=X.columns), pd.Series(y_resampled, name=y.name)
+    return pd.DataFrame(X_resampled, columns=X.columns), pd.Series(
+        y_resampled, name=y.name
+    )
 
 
 if __name__ == "__main__":
@@ -376,19 +379,23 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     # 샘플 데이터 생성
-    sample_data = pd.DataFrame({
-        "amount": [100, 200, 50000, 150, 300],
-        "risk_score": [10, 25, 95, 15, 30],
-        "device_type": ["mobile", "desktop", "mobile", "tablet", "desktop"],
-        "created_at": pd.to_datetime([
-            "2025-01-01 10:00:00",
-            "2025-01-02 14:30:00",
-            "2025-01-03 02:00:00",
-            "2025-01-04 16:45:00",
-            "2025-01-05 20:15:00",
-        ]),
-        "is_fraud": [0, 0, 1, 0, 0],
-    })
+    sample_data = pd.DataFrame(
+        {
+            "amount": [100, 200, 50000, 150, 300],
+            "risk_score": [10, 25, 95, 15, 30],
+            "device_type": ["mobile", "desktop", "mobile", "tablet", "desktop"],
+            "created_at": pd.to_datetime(
+                [
+                    "2025-01-01 10:00:00",
+                    "2025-01-02 14:30:00",
+                    "2025-01-03 02:00:00",
+                    "2025-01-04 16:45:00",
+                    "2025-01-05 20:15:00",
+                ]
+            ),
+            "is_fraud": [0, 0, 1, 0, 0],
+        }
+    )
 
     # 전처리
     preprocessor = DataPreprocessor()

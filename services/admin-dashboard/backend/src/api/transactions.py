@@ -7,7 +7,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, func
-from datetime import datetime
 from uuid import UUID
 from typing import Optional
 import sys
@@ -57,9 +56,7 @@ async def get_transaction_detail(
     transaction = transaction_result.scalar_one_or_none()
 
     if not transaction:
-        raise HTTPException(
-            status_code=404, detail=f"거래를 찾을 수 없습니다: {transaction_id}"
-        )
+        raise HTTPException(status_code=404, detail=f"거래를 찾을 수 없습니다: {transaction_id}")
 
     # 위험 요인 조회
     risk_factors_query = select(RiskFactor).where(
@@ -158,9 +155,7 @@ async def get_transaction_detail(
 async def list_transactions(
     user_id: Optional[UUID] = Query(None, description="사용자 ID 필터"),
     risk_level: Optional[RiskLevel] = Query(None, description="위험 수준 필터"),
-    evaluation_status: Optional[EvaluationStatus] = Query(
-        None, description="평가 상태 필터"
-    ),
+    evaluation_status: Optional[EvaluationStatus] = Query(None, description="평가 상태 필터"),
     limit: int = Query(50, ge=1, le=100, description="최대 결과 수"),
     offset: int = Query(0, ge=0, description="오프셋"),
     db: AsyncSession = Depends(get_db),
@@ -240,8 +235,6 @@ async def list_transactions(
         "filters": {
             "user_id": str(user_id) if user_id else None,
             "risk_level": risk_level.value if risk_level else None,
-            "evaluation_status": evaluation_status.value
-            if evaluation_status
-            else None,
+            "evaluation_status": evaluation_status.value if evaluation_status else None,
         },
     }

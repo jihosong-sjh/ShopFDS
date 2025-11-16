@@ -8,20 +8,18 @@ from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from sqlalchemy import (
     Column,
-    String,
     DateTime,
     Numeric,
     Text,
-    ForeignKey,
     Enum as SQLEnum,
     CheckConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy.orm import validates
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -138,9 +136,7 @@ class FraudCase(Base):
             # confirmed나 false_positive에서는 더 이상 상태 변경 불가
             if old_status in [CaseStatus.CONFIRMED, CaseStatus.FALSE_POSITIVE]:
                 if new_status != old_status:
-                    raise ValueError(
-                        f"상태 '{old_status.value}'에서는 더 이상 변경할 수 없습니다"
-                    )
+                    raise ValueError(f"상태 '{old_status.value}'에서는 더 이상 변경할 수 없습니다")
 
         return new_status
 
@@ -176,7 +172,9 @@ class FraudCase(Base):
             "fraud_type": self.fraud_type.value,
             "status": self.status.value,
             "detected_at": self.detected_at.isoformat(),
-            "confirmed_at": self.confirmed_at.isoformat() if self.confirmed_at else None,
+            "confirmed_at": self.confirmed_at.isoformat()
+            if self.confirmed_at
+            else None,
             "loss_amount": float(self.loss_amount),
             "notes": self.notes,
         }
@@ -192,7 +190,9 @@ class FraudCase(Base):
             "transaction_id": str(self.transaction_id),
             "user_id": str(self.user_id),
             "is_fraud": self.status == CaseStatus.CONFIRMED,  # 레이블
-            "fraud_type": self.fraud_type.value if self.status == CaseStatus.CONFIRMED else None,
+            "fraud_type": self.fraud_type.value
+            if self.status == CaseStatus.CONFIRMED
+            else None,
             "loss_amount": float(self.loss_amount),
             "detected_at": self.detected_at.isoformat(),
         }
@@ -217,9 +217,11 @@ def get_confirmed_fraud_cases(db_session, limit: Optional[int] = None):
     Returns:
         확정된 FraudCase 리스트
     """
-    query = db_session.query(FraudCase).filter(
-        FraudCase.status == CaseStatus.CONFIRMED
-    ).order_by(FraudCase.confirmed_at.desc())
+    query = (
+        db_session.query(FraudCase)
+        .filter(FraudCase.status == CaseStatus.CONFIRMED)
+        .order_by(FraudCase.confirmed_at.desc())
+    )
 
     if limit:
         query = query.limit(limit)

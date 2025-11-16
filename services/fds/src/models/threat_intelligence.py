@@ -25,24 +25,27 @@ from .base import Base, TimestampMixin
 
 class ThreatType(str, enum.Enum):
     """위협 유형"""
-    IP = "ip"                    # IP 주소
+
+    IP = "ip"  # IP 주소
     EMAIL_DOMAIN = "email_domain"  # 이메일 도메인
-    CARD_BIN = "card_bin"        # 카드 BIN (처음 6자리)
+    CARD_BIN = "card_bin"  # 카드 BIN (처음 6자리)
 
 
 class ThreatLevel(str, enum.Enum):
     """위협 수준"""
-    LOW = "low"        # 낮음 (의심 수준)
+
+    LOW = "low"  # 낮음 (의심 수준)
     MEDIUM = "medium"  # 중간 (주의 필요)
-    HIGH = "high"      # 높음 (자동 차단 대상)
+    HIGH = "high"  # 높음 (자동 차단 대상)
 
 
 class ThreatSource(str, enum.Enum):
     """위협 정보 출처"""
-    ABUSEIPDB = "abuseipdb"      # AbuseIPDB API
-    INTERNAL = "internal"         # 내부 보안팀 등록
-    VIRUSTOTAL = "virustotal"    # VirusTotal (향후 확장)
-    MANUAL = "manual"            # 수동 등록
+
+    ABUSEIPDB = "abuseipdb"  # AbuseIPDB API
+    INTERNAL = "internal"  # 내부 보안팀 등록
+    VIRUSTOTAL = "virustotal"  # VirusTotal (향후 확장)
+    MANUAL = "manual"  # 수동 등록
 
 
 class ThreatIntelligence(Base, TimestampMixin):
@@ -216,13 +219,17 @@ class ThreatIntelligence(Base, TimestampMixin):
             "threat_level": self.threat_level.value,
             "source": self.source.value,
             "description": self.description,
-            "registered_at": self.registered_at.isoformat() if self.registered_at else None,
+            "registered_at": self.registered_at.isoformat()
+            if self.registered_at
+            else None,
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
             "is_active": self.is_active,
             "is_expired": self.is_expired,
             "metadata": self.threat_metadata,
             "times_blocked": self.times_blocked,
-            "last_blocked_at": self.last_blocked_at.isoformat() if self.last_blocked_at else None,
+            "last_blocked_at": self.last_blocked_at.isoformat()
+            if self.last_blocked_at
+            else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

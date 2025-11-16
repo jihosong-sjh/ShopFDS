@@ -7,7 +7,7 @@ Isolation Forest 학습 스크립트
 
 import logging
 import pickle
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -23,6 +23,7 @@ from sqlalchemy.orm import Session
 
 # 프로젝트 내부 모듈
 import sys
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from data.preprocessing import DataPreprocessor, load_training_data, split_train_test
@@ -84,7 +85,9 @@ class IsolationForestTrainer:
         Returns:
             학습 메트릭
         """
-        logger.info(f"Isolation Forest 학습 시작: {len(X_train)}개 샘플, {X_train.shape[1]}개 특성")
+        logger.info(
+            f"Isolation Forest 학습 시작: {len(X_train)}개 샘플, {X_train.shape[1]}개 특성"
+        )
 
         # 특성 컬럼 저장
         self.feature_columns = X_train.columns.tolist()
@@ -100,9 +103,7 @@ class IsolationForestTrainer:
         anomaly_count = (predictions == -1).sum()
         anomaly_ratio = anomaly_count / len(predictions)
 
-        logger.info(
-            f"학습 완료: 이상치 {anomaly_count}개 ({anomaly_ratio*100:.2f}%)"
-        )
+        logger.info(f"학습 완료: 이상치 {anomaly_count}개 ({anomaly_ratio*100:.2f}%)")
 
         return {
             "anomaly_count": int(anomaly_count),
@@ -128,9 +129,7 @@ class IsolationForestTrainer:
 
         return predictions, scores
 
-    def evaluate(
-        self, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Dict[str, float]:
+    def evaluate(self, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, float]:
         """
         모델 평가
 
@@ -162,7 +161,9 @@ class IsolationForestTrainer:
         detection_rate = recall  # 실제 사기 중 탐지 비율
         false_positive_rate = fp / (fp + tn) if (fp + tn) > 0 else 0
 
-        logger.info(f"평가 완료: Precision={precision:.4f}, Recall={recall:.4f}, F1={f1:.4f}")
+        logger.info(
+            f"평가 완료: Precision={precision:.4f}, Recall={recall:.4f}, F1={f1:.4f}"
+        )
         logger.info(f"탐지율={detection_rate:.4f}, 오탐율={false_positive_rate:.4f}")
 
         # Classification Report
@@ -298,7 +299,7 @@ def train_isolation_forest(
         n_estimators=n_estimators,
     )
     trainer.preprocessor = preprocessor
-    train_metrics = trainer.train(X_train, y_train)
+    trainer.train(X_train, y_train)
 
     # 6. 모델 평가
     logger.info("Step 6/6: 모델 평가")

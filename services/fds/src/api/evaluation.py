@@ -5,7 +5,6 @@ FDS 평가 API 엔드포인트
 """
 
 import logging
-from uuid import UUID
 from fastapi import APIRouter, HTTPException, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
@@ -16,7 +15,6 @@ from ..models.schemas import (
     FDSEvaluationResponse,
     FDSErrorResponse,
 )
-from ..engines.evaluation_engine import evaluation_engine
 from ..services.review_queue_service import ReviewQueueService
 
 # 로거 설정
@@ -156,7 +154,9 @@ async def evaluate_transaction(
 
                 if review_queue:
                     # 검토 큐 ID를 응답에 포함
-                    evaluation_result.recommended_action.review_queue_id = str(review_queue.id)
+                    evaluation_result.recommended_action.review_queue_id = str(
+                        review_queue.id
+                    )
 
                     logger.info(
                         f"고위험 거래를 검토 큐에 추가: transaction_id={transaction.id}, "

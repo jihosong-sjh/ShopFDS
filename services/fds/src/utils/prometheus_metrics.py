@@ -257,7 +257,10 @@ additional_auth_required = Counter(
 fds_errors_total = Counter(
     "fds_errors_total",
     "FDS 에러 수",
-    ["error_type", "severity"],  # timeout, ml_failure, cti_timeout / warning, error, critical
+    [
+        "error_type",
+        "severity",
+    ],  # timeout, ml_failure, cti_timeout / warning, error, critical
     registry=registry,
 )
 
@@ -284,6 +287,7 @@ database_query_duration_seconds = Histogram(
     buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.1),
     registry=registry,
 )
+
 
 # ===========================
 # 데코레이터 유틸리티
@@ -318,9 +322,11 @@ def track_fds_evaluation():
                     fds_sla_violations_total.inc()
 
                 return result
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
-                fds_errors_total.labels(error_type="evaluation_error", severity="error").inc()
+                fds_errors_total.labels(
+                    error_type="evaluation_error", severity="error"
+                ).inc()
                 raise
             finally:
                 fds_evaluations_in_progress.dec()
@@ -354,7 +360,7 @@ def track_engine_duration(engine_name: str):
                 )
 
                 return result
-            except Exception as e:
+            except Exception:
                 fds_errors_total.labels(
                     error_type=f"{engine_name}_error", severity="error"
                 ).inc()

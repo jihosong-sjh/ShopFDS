@@ -8,18 +8,15 @@ ML 모델 학습 API
 import asyncio
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
-from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select
 
-from src.models.ml_model import MLModel, DeploymentStatus
-from src.models.fraud_case import FraudCase
+from src.models.ml_model import MLModel
 from src.training.train_isolation_forest import train_isolation_forest
 from src.training.train_lightgbm import train_lightgbm
-from src.evaluation.evaluate import evaluate_model
 from src.deployment.version_manager import ModelVersionManager
 
 router = APIRouter(prefix="/v1/ml", tags=["ML Training"])
@@ -391,9 +388,7 @@ async def get_training_history(
     """
     # 최근 학습된 모델 조회 (trained_at 기준 내림차순)
     result = await db_session.execute(
-        select(MLModel)
-        .order_by(MLModel.trained_at.desc())
-        .limit(limit)
+        select(MLModel).order_by(MLModel.trained_at.desc()).limit(limit)
     )
     models = result.scalars().all()
 

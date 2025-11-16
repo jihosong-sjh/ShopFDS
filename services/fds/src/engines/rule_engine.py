@@ -12,10 +12,9 @@ FDS의 핵심 컴포넌트로, 데이터베이스에 저장된 탐지 룰을 로
 """
 
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
-import asyncio
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -109,7 +108,9 @@ class RuleEngine:
         self._cache_timestamp: Optional[datetime] = None
         self._cache_ttl_seconds = 300  # 5분마다 룰 재로드
 
-    async def load_active_rules(self, force_reload: bool = False) -> List[DetectionRule]:
+    async def load_active_rules(
+        self, force_reload: bool = False
+    ) -> List[DetectionRule]:
         """
         활성화된 룰을 데이터베이스에서 로드
 
@@ -134,7 +135,7 @@ class RuleEngine:
         # 데이터베이스에서 활성화된 룰 조회
         query = (
             select(DetectionRule)
-            .where(DetectionRule.is_active == True)
+            .where(DetectionRule.is_active)
             .order_by(DetectionRule.priority.desc(), DetectionRule.created_at)
         )
 
@@ -389,7 +390,11 @@ class RuleEngine:
             "max_distance_km": 100
         }
         """
-        from utils.geolocation import calculate_distance_km, parse_geolocation, get_region_name
+        from utils.geolocation import (
+            calculate_distance_km,
+            parse_geolocation,
+            get_region_name,
+        )
 
         condition = rule.condition
         max_distance_km = condition.get("max_distance_km", 100)
@@ -576,7 +581,9 @@ class RuleEngine:
                 RuleType.TIME_PATTERN: FactorType.SUSPICIOUS_TIME,
             }
 
-            factor_type = factor_type_map.get(result.rule_type, FactorType.VELOCITY_CHECK)
+            factor_type = factor_type_map.get(
+                result.rule_type, FactorType.VELOCITY_CHECK
+            )
 
             risk_factor = RiskFactor(
                 transaction_id=transaction_id,

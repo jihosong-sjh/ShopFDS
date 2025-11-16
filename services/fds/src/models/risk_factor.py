@@ -19,7 +19,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
 from .base import Base
@@ -27,21 +27,23 @@ from .base import Base
 
 class FactorType(str, enum.Enum):
     """위험 요인 유형"""
-    VELOCITY_CHECK = "velocity_check"          # 단시간 내 반복 거래
-    AMOUNT_THRESHOLD = "amount_threshold"      # 비정상적 고액 거래
-    LOCATION_MISMATCH = "location_mismatch"    # 지역 불일치 (등록 주소 vs IP 위치)
-    SUSPICIOUS_IP = "suspicious_ip"            # 악성 IP (CTI 블랙리스트)
-    SUSPICIOUS_TIME = "suspicious_time"        # 비정상 시간대 거래
-    ML_ANOMALY = "ml_anomaly"                  # ML 모델이 탐지한 이상 패턴
-    STOLEN_CARD = "stolen_card"                # 도난 카드 정보 (CTI)
+
+    VELOCITY_CHECK = "velocity_check"  # 단시간 내 반복 거래
+    AMOUNT_THRESHOLD = "amount_threshold"  # 비정상적 고액 거래
+    LOCATION_MISMATCH = "location_mismatch"  # 지역 불일치 (등록 주소 vs IP 위치)
+    SUSPICIOUS_IP = "suspicious_ip"  # 악성 IP (CTI 블랙리스트)
+    SUSPICIOUS_TIME = "suspicious_time"  # 비정상 시간대 거래
+    ML_ANOMALY = "ml_anomaly"  # ML 모델이 탐지한 이상 패턴
+    STOLEN_CARD = "stolen_card"  # 도난 카드 정보 (CTI)
 
 
 class FactorSeverity(str, enum.Enum):
     """위험 요인 심각도"""
-    INFO = "info"        # 정보성 (위험하지 않음)
-    LOW = "low"          # 낮음 (주의 필요)
-    MEDIUM = "medium"    # 중간 (경고)
-    HIGH = "high"        # 높음 (위험)
+
+    INFO = "info"  # 정보성 (위험하지 않음)
+    LOW = "low"  # 낮음 (주의 필요)
+    MEDIUM = "medium"  # 중간 (경고)
+    HIGH = "high"  # 높음 (위험)
     CRITICAL = "critical"  # 매우 높음 (즉시 차단)
 
 

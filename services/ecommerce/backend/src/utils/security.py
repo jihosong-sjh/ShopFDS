@@ -6,14 +6,12 @@
 
 from datetime import datetime, timedelta
 from typing import Optional
-from passlib.context import CryptContext
+import bcrypt
 from jose import JWTError, jwt
 import secrets
 import os
-
-
-# bcrypt 해싱 컨텍스트
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import hashlib
+import base64
 
 # JWT 설정
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production-INSECURE")
@@ -34,6 +32,8 @@ class PasswordHasher:
         """
         비밀번호를 bcrypt로 해시화
 
+        bcrypt의 72바이트 제한을 우회하기 위해 먼저 SHA256으로 해싱합니다.
+
         Args:
             password: 평문 비밀번호
 
@@ -44,7 +44,15 @@ class PasswordHasher:
             >>> hashed = PasswordHasher.hash_password("SecurePass123!")
             >>> print(hashed)  # $2b$12$...
         """
-        return pwd_context.hash(password)
+        # bcrypt의 72바이트 제한을 우회하기 위해 먼저 SHA256으로 해싱
+        # SHA256은 항상 32바이트를 생성하므로 bcrypt 제한 내에 있음
+        sha256_hash = hashlib.sha256(password.encode("utf-8")).digest()
+        # Base64 인코딩하여 bcrypt에 전달 (44자)
+        b64_hash = base64.b64encode(sha256_hash).decode("utf-8")
+        # bcrypt 직접 사용 (passlib 호환성 문제 회피)
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(b64_hash.encode("utf-8"), salt)
+        return hashed.decode("utf-8")
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -65,7 +73,11 @@ class PasswordHasher:
             >>> PasswordHasher.verify_password("WrongPassword", hashed)
             False
         """
-        return pwd_context.verify(plain_password, hashed_password)
+        # 동일한 SHA256 해싱 적용 후 검증
+        sha256_hash = hashlib.sha256(plain_password.encode("utf-8")).digest()
+        b64_hash = base64.b64encode(sha256_hash).decode("utf-8")
+        # bcrypt 직접 사용하여 검증
+        return bcrypt.checkpw(b64_hash.encode("utf-8"), hashed_password.encode("utf-8"))
 
     @staticmethod
     def needs_update(hashed_password: str) -> bool:
@@ -80,7 +92,16 @@ class PasswordHasher:
         Returns:
             bool: 업데이트 필요 여부
         """
-        return pwd_context.needs_update(hashed_password)
+        # 기본 cost factor는 12
+        # bcrypt 해시 형식: $2b$12$...
+        try:
+            parts = hashed_password.split("$")
+            if len(parts) >= 3:
+                current_cost = int(parts[2])
+                return current_cost < 12
+        except Exception:
+            pass
+        return False
 
 
 class JWTManager:

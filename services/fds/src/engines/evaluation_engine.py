@@ -7,7 +7,7 @@ FDS 평가 엔진
 import logging
 import time
 from datetime import datetime
-from typing import List, Tuple, Optional
+from typing import List, Optional
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -158,7 +158,9 @@ class EvaluationEngine:
             evaluation_time_ms=evaluation_time_ms,
             rule_engine_time_ms=evaluation_time_ms - self._cti_check_time_ms,
             ml_engine_time_ms=None,  # Phase 6에서 추가 예정
-            cti_check_time_ms=self._cti_check_time_ms if self._cti_check_time_ms > 0 else None,
+            cti_check_time_ms=self._cti_check_time_ms
+            if self._cti_check_time_ms > 0
+            else None,
             timestamp=datetime.utcnow(),
         )
 
@@ -207,7 +209,9 @@ class EvaluationEngine:
             risk_factors.append(velocity_risk)
 
         # 기본 위험 요인: 디바이스 유형 확인
-        device_risk = await self._check_device_risk(request.device_fingerprint.device_type)
+        device_risk = await self._check_device_risk(
+            request.device_fingerprint.device_type
+        )
         if device_risk:
             risk_factors.append(device_risk)
 
@@ -301,7 +305,7 @@ class EvaluationEngine:
                         or f"악성 IP 탐지 ({cti_result.source.value if cti_result.source else 'unknown'})",
                         severity=severity,
                     )
-            except Exception as e:
+            except Exception:
                 # CTI 체크 실패 시 fallback (기존 로직 사용)
                 pass
 
@@ -368,7 +372,8 @@ class EvaluationEngine:
 
         # 최근 5분 내 거래 횟수 확인
         recent_transactions = [
-            t for t in self._transaction_cache[cache_key]
+            t
+            for t in self._transaction_cache[cache_key]
             if current_time - t < 300  # 5분 = 300초
         ]
 

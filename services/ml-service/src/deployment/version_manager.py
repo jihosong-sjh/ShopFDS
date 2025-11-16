@@ -92,7 +92,9 @@ class ModelVersionManager:
                 mlflow.set_tags(tags)
             mlflow.set_tag("version", version)
             mlflow.set_tag("model_type", model_type)
-            mlflow.set_tag("training_period", f"{training_data_start} to {training_data_end}")
+            mlflow.set_tag(
+                "training_period", f"{training_data_start} to {training_data_end}"
+            )
 
             # 모델 저장 (MLflow Model Registry에 등록)
             if model_type in ["isolation_forest", "random_forest"]:
@@ -109,7 +111,9 @@ class ModelVersionManager:
                 )
             else:
                 # 기타 모델은 pickle로 저장
-                model_path = Path(self.artifact_location) / f"{model_name}-{version}.pkl"
+                model_path = (
+                    Path(self.artifact_location) / f"{model_name}-{version}.pkl"
+                )
                 with open(model_path, "wb") as f:
                     pickle.dump(model, f)
                 mlflow.log_artifact(str(model_path), "model")
@@ -125,7 +129,9 @@ class ModelVersionManager:
             name=model_name,
             version=version,
             model_type=model_type,
-            training_data_start=datetime.strptime(training_data_start, "%Y-%m-%d").date(),
+            training_data_start=datetime.strptime(
+                training_data_start, "%Y-%m-%d"
+            ).date(),
             training_data_end=datetime.strptime(training_data_end, "%Y-%m-%d").date(),
             trained_at=datetime.utcnow(),
             accuracy=metrics.get("accuracy"),
@@ -175,14 +181,16 @@ class ModelVersionManager:
             # 버전 지정 없으면 최신 버전 사용
             query = (
                 query.where(MLModel.name == model_name)
-                .where(MLModel.deployment_status == (deployment_status or DeploymentStatus.PRODUCTION))
+                .where(
+                    MLModel.deployment_status
+                    == (deployment_status or DeploymentStatus.PRODUCTION)
+                )
                 .order_by(MLModel.trained_at.desc())
             )
         elif deployment_status:
-            query = (
-                query.where(MLModel.deployment_status == deployment_status)
-                .order_by(MLModel.trained_at.desc())
-            )
+            query = query.where(
+                MLModel.deployment_status == deployment_status
+            ).order_by(MLModel.trained_at.desc())
         else:
             raise ValueError("model_id, model_name, 또는 deployment_status 중 하나는 필수입니다")
 
@@ -237,7 +245,9 @@ class ModelVersionManager:
         await self.db_session.commit()
 
         # 업데이트된 모델 조회
-        result = await self.db_session.execute(select(MLModel).where(MLModel.id == model_id))
+        result = await self.db_session.execute(
+            select(MLModel).where(MLModel.id == model_id)
+        )
         return result.scalars().first()
 
     async def promote_to_production(self, model_id: UUID) -> MLModel:
@@ -270,7 +280,9 @@ class ModelVersionManager:
         await self.db_session.commit()
 
         # 업데이트된 모델 조회
-        result = await self.db_session.execute(select(MLModel).where(MLModel.id == model_id))
+        result = await self.db_session.execute(
+            select(MLModel).where(MLModel.id == model_id)
+        )
         return result.scalars().first()
 
     async def retire_model(self, model_id: UUID) -> MLModel:
@@ -291,7 +303,9 @@ class ModelVersionManager:
 
         await self.db_session.commit()
 
-        result = await self.db_session.execute(select(MLModel).where(MLModel.id == model_id))
+        result = await self.db_session.execute(
+            select(MLModel).where(MLModel.id == model_id)
+        )
         return result.scalars().first()
 
     async def list_models(
@@ -321,7 +335,9 @@ class ModelVersionManager:
         result = await self.db_session.execute(query)
         return result.scalars().all()
 
-    async def get_production_model(self, model_type: Optional[str] = None) -> Optional[MLModel]:
+    async def get_production_model(
+        self, model_type: Optional[str] = None
+    ) -> Optional[MLModel]:
         """
         현재 프로덕션 모델 조회
 
@@ -331,7 +347,9 @@ class ModelVersionManager:
         Returns:
             Optional[MLModel]: 프로덕션 모델 또는 None
         """
-        query = select(MLModel).where(MLModel.deployment_status == DeploymentStatus.PRODUCTION)
+        query = select(MLModel).where(
+            MLModel.deployment_status == DeploymentStatus.PRODUCTION
+        )
 
         if model_type:
             query = query.where(MLModel.model_type == model_type)

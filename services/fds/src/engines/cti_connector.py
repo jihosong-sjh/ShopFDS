@@ -12,12 +12,8 @@ CTI 커넥터 (Cyber Threat Intelligence Connector)
 """
 
 from typing import Optional, Dict, Any
-from datetime import datetime, timedelta
-from decimal import Decimal
-import asyncio
 import json
 import os
-from enum import Enum
 
 import httpx
 from redis import asyncio as aioredis
@@ -34,6 +30,7 @@ from ..models import (
 
 class CTIConfig:
     """CTI 설정"""
+
     # AbuseIPDB API
     ABUSEIPDB_API_KEY = os.getenv("ABUSEIPDB_API_KEY", "")
     ABUSEIPDB_API_URL = "https://api.abuseipdb.com/api/v2/check"
@@ -231,7 +228,7 @@ class CTIConnector:
         stmt = select(ThreatIntelligence).where(
             ThreatIntelligence.threat_type == threat_type,
             ThreatIntelligence.value == value,
-            ThreatIntelligence.is_active == True,
+            ThreatIntelligence.is_active,
         )
         result = await self.db.execute(stmt)
         threat = result.scalar_one_or_none()
@@ -465,7 +462,7 @@ class CTIConnector:
                 ThreatIntelligence.threat_level,
                 func.count(ThreatIntelligence.id).label("count"),
             )
-            .where(ThreatIntelligence.is_active == True)
+            .where(ThreatIntelligence.is_active)
             .group_by(ThreatIntelligence.threat_type, ThreatIntelligence.threat_level)
         )
 

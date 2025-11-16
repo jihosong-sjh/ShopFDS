@@ -8,9 +8,7 @@ from typing import Optional, Dict, Any, Tuple
 import math
 
 
-def calculate_distance_km(
-    lat1: float, lon1: float, lat2: float, lon2: float
-) -> float:
+def calculate_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """
     두 지점 간의 거리를 계산 (Haversine 공식 사용)
 
@@ -52,7 +50,9 @@ def calculate_distance_km(
     return distance
 
 
-def parse_geolocation(geolocation: Optional[Dict[str, Any]]) -> Optional[Tuple[float, float]]:
+def parse_geolocation(
+    geolocation: Optional[Dict[str, Any]]
+) -> Optional[Tuple[float, float]]:
     """
     지리적 위치 딕셔너리에서 위도/경도 추출
 

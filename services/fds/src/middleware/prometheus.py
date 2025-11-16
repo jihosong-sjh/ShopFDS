@@ -7,7 +7,6 @@ FastAPI 애플리케이션에 Prometheus 메트릭 수집을 자동으로 적용
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
-import time
 from typing import Callable
 
 from src.utils.prometheus_metrics import fds_errors_total

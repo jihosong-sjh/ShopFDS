@@ -6,8 +6,7 @@
 
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import Column, String, DateTime, Integer, Uuid
-from sqlalchemy.dialects.postgresql import ENUM
+from sqlalchemy import Column, String, DateTime, Integer, Uuid, CheckConstraint
 from sqlalchemy.orm import relationship
 import uuid
 
@@ -40,19 +39,28 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     name = Column(String(100), nullable=False)
     role = Column(
-        ENUM(UserRole, name="user_role_enum", create_type=True),
+        String(50),
         nullable=False,
-        default=UserRole.CUSTOMER,
+        default=UserRole.CUSTOMER.value,
     )
     status = Column(
-        ENUM(UserStatus, name="user_status_enum", create_type=True),
+        String(50),
         nullable=False,
-        default=UserStatus.ACTIVE,
+        default=UserStatus.ACTIVE.value,
         index=True,
     )
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     last_login_at = Column(DateTime, nullable=True)
     failed_login_attempts = Column(Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        CheckConstraint(
+            "role IN ('customer', 'admin', 'security_team')", name="check_user_role"
+        ),
+        CheckConstraint(
+            "status IN ('active', 'suspended', 'deleted')", name="check_user_status"
+        ),
+    )
 
     # 관계
     orders = relationship("Order", back_populates="user", lazy="dynamic")

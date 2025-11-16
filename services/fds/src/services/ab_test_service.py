@@ -68,9 +68,7 @@ class ABTestService:
             logger.error(f"A/B 테스트 조회 실패: {e}", exc_info=True)
             return None
 
-    def assign_group(
-        self, test: ABTest, transaction_id: UUID
-    ) -> str:
+    def assign_group(self, test: ABTest, transaction_id: UUID) -> str:
         """
         거래를 A/B 그룹 중 하나에 할당합니다.
 

@@ -4,11 +4,10 @@ MLModel: ML 모델 메타데이터
 FDS에서 사용하는 기계학습 모델의 버전, 성능 지표, 배포 상태를 관리
 """
 
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 from enum import Enum
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from sqlalchemy import (
     Column,
@@ -61,7 +60,9 @@ class MLModel(Base):
 
     # 기본 정보
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    name = Column(String(255), nullable=False, comment="모델 이름 (예: IsolationForest-v1.2)")
+    name = Column(
+        String(255), nullable=False, comment="모델 이름 (예: IsolationForest-v1.2)"
+    )
     version = Column(String(50), nullable=False, comment="Semantic Versioning (1.2.0)")
     model_type = Column(
         SQLEnum(ModelType, name="model_type_enum"),
@@ -127,9 +128,7 @@ class MLModel(Base):
             "precision >= 0 AND precision <= 1", name="check_precision_range"
         ),
         CheckConstraint("recall >= 0 AND recall <= 1", name="check_recall_range"),
-        CheckConstraint(
-            "f1_score >= 0 AND f1_score <= 1", name="check_f1_score_range"
-        ),
+        CheckConstraint("f1_score >= 0 AND f1_score <= 1", name="check_f1_score_range"),
     )
 
     @validates("version")
@@ -231,9 +230,7 @@ def compare_models(model_a: MLModel, model_b: MLModel) -> dict:
                 "model_a": val_a_float,
                 "model_b": val_b_float,
                 "improvement_percent": round(improvement, 2),
-                "better_model": (
-                    "model_b" if val_b_float > val_a_float else "model_a"
-                ),
+                "better_model": ("model_b" if val_b_float > val_a_float else "model_a"),
             }
         else:
             comparison["metrics"][metric] = {

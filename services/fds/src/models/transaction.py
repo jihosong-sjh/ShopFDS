@@ -14,13 +14,12 @@ from sqlalchemy import (
     CheckConstraint,
     Index,
     Integer,
-    String,
     Text,
     Numeric,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import INET, JSONB, UUID as PGUUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
 from .base import Base
@@ -28,6 +27,7 @@ from .base import Base
 
 class DeviceType(str, enum.Enum):
     """디바이스 유형"""
+
     DESKTOP = "desktop"
     MOBILE = "mobile"
     TABLET = "tablet"
@@ -36,16 +36,18 @@ class DeviceType(str, enum.Enum):
 
 class RiskLevel(str, enum.Enum):
     """위험 수준"""
-    LOW = "low"          # 위험 점수 0-30: 자동 승인
-    MEDIUM = "medium"    # 위험 점수 40-70: 추가 인증 요구
-    HIGH = "high"        # 위험 점수 80-100: 자동 차단
+
+    LOW = "low"  # 위험 점수 0-30: 자동 승인
+    MEDIUM = "medium"  # 위험 점수 40-70: 추가 인증 요구
+    HIGH = "high"  # 위험 점수 80-100: 자동 차단
 
 
 class EvaluationStatus(str, enum.Enum):
     """평가 상태"""
-    EVALUATING = "evaluating"        # 평가 중
-    APPROVED = "approved"            # 승인됨
-    BLOCKED = "blocked"              # 차단됨
+
+    EVALUATING = "evaluating"  # 평가 중
+    APPROVED = "approved"  # 승인됨
+    BLOCKED = "blocked"  # 차단됨
     MANUAL_REVIEW = "manual_review"  # 수동 검토 필요
 
 
@@ -171,7 +173,11 @@ class Transaction(Base):
             name="ck_transactions_evaluation_time_positive",
         ),
         # 복합 인덱스
-        Index("ix_transactions_created_at_desc", "created_at", postgresql_ops={"created_at": "DESC"}),
+        Index(
+            "ix_transactions_created_at_desc",
+            "created_at",
+            postgresql_ops={"created_at": "DESC"},
+        ),
         Index("ix_transactions_user_id_created_at", "user_id", "created_at"),
     )
 
