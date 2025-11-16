@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { adminApi, adminQueryKeys } from '../../services/admin-api';
+import type { Order } from '../../services/api';
 
 export const OrderManagement: React.FC = () => {
   const queryClient = useQueryClient();
@@ -42,8 +43,9 @@ export const OrderManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.orders.all });
       alert('주문 상태가 성공적으로 업데이트되었습니다.');
     },
-    onError: (error: any) => {
-      alert(`주문 상태 업데이트 실패: ${error.response?.data?.detail || error.message}`);
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      alert(`주문 상태 업데이트 실패: ${err.response?.data?.detail || err.message}`);
     },
   });
 
@@ -239,7 +241,7 @@ export const OrderManagement: React.FC = () => {
 
 // 주문 행 컴포넌트
 interface OrderRowProps {
-  order: any;
+  order: Order;
   onStatusChange: (orderId: string, newStatus: string) => void;
   isUpdating: boolean;
   orderStatuses: Array<{ value: string; label: string }>;

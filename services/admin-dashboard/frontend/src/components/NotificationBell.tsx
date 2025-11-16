@@ -70,6 +70,7 @@ const NotificationBell = () => {
   }, []);
 
   // WebSocket 연결 함수
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const connectWebSocket = () => {
     try {
       const ws = new WebSocket(WS_URL);

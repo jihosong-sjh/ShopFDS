@@ -96,8 +96,9 @@ const ModelComparison: React.FC = () => {
     try {
       const data = await mlModelsApi.getList({ limit: 100 });
       setModels(data);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "모델 목록 조회 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "모델 목록 조회 실패");
       console.error("모델 목록 조회 오류:", err);
     } finally {
       setLoading(false);
@@ -111,7 +112,7 @@ const ModelComparison: React.FC = () => {
       if (data) {
         setProductionModel(data);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("프로덕션 모델 조회 오류:", err);
     }
   };
@@ -140,8 +141,9 @@ const ModelComparison: React.FC = () => {
     try {
       const result = await mlModelsApi.compare(selectedModel1, selectedModel2);
       setComparisonResult(result);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "모델 비교 실패");
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "모델 비교 실패");
       console.error("모델 비교 오류:", err);
     } finally {
       setLoading(false);

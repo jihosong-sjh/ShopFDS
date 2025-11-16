@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { productsApi, queryKeys as publicQueryKeys } from '../../services/api';
+import { productsApi, queryKeys as publicQueryKeys, type Product } from '../../services/api';
 import { adminApi, adminQueryKeys } from '../../services/admin-api';
 
 export const StockManagement: React.FC = () => {
@@ -39,15 +39,16 @@ export const StockManagement: React.FC = () => {
 
   // 재고 업데이트 뮤테이션
   const updateStockMutation = useMutation({
-    mutationFn: ({ productId, data }: { productId: string; data: any }) =>
+    mutationFn: ({ productId, data }: { productId: string; data: { stock_quantity: number; operation: string } }) =>
       adminApi.updateStock(productId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: publicQueryKeys.products.all });
       queryClient.invalidateQueries({ queryKey: adminQueryKeys.products.all });
       alert('재고가 성공적으로 업데이트되었습니다.');
     },
-    onError: (error: any) => {
-      alert(`재고 업데이트 실패: ${error.response?.data?.detail || error.message}`);
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      alert(`재고 업데이트 실패: ${err.response?.data?.detail || err.message}`);
     },
   });
 
@@ -228,7 +229,7 @@ export const StockManagement: React.FC = () => {
 
 // 재고 행 컴포넌트
 interface StockRowProps {
-  product: any;
+  product: Product;
   onAdjustment: (productId: string, operation: 'increment' | 'decrement', amount: number) => void;
   onSetStock: (productId: string, newStock: number) => void;
   isUpdating: boolean;

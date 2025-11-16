@@ -27,8 +27,9 @@ export const Login: React.FC = () => {
       setAuth(data.user, data.access_token, data.refresh_token);
       navigate('/');
     },
-    onError: (error: any) => {
-      setError(error.response?.data?.detail || '로그인에 실패했습니다.');
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } } };
+      setError(err.response?.data?.detail || '로그인에 실패했습니다.');
     },
   });
 

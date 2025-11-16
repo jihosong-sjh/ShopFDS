@@ -274,7 +274,7 @@ export const queryKeys = {
   },
   products: {
     all: ['products'] as const,
-    list: (params?: any) => ['products', 'list', params] as const,
+    list: (params?: Record<string, unknown>) => ['products', 'list', params] as const,
     detail: (id: string) => ['products', 'detail', id] as const,
     categories: ['products', 'categories'] as const,
     featured: ['products', 'featured'] as const,
@@ -284,7 +284,7 @@ export const queryKeys = {
   },
   orders: {
     all: ['orders'] as const,
-    list: (params?: any) => ['orders', 'list', params] as const,
+    list: (params?: Record<string, unknown>) => ['orders', 'list', params] as const,
     detail: (id: string) => ['orders', 'detail', id] as const,
   },
 };

@@ -64,7 +64,7 @@ export const OrderTracking: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-6">배송 현황</h2>
 
           <div className="space-y-4">
-            {trackingInfo.status_history.map((status: any, index: number) => (
+            {trackingInfo.status_history.map((status: { description: string; timestamp: string }, index: number) => (
               <div key={index} className="flex gap-4">
                 <div className="flex flex-col items-center">
                   <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>

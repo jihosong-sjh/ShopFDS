@@ -178,7 +178,7 @@ export const rulesApi = {
   /**
    * 새 룰 생성
    */
-  create: async (data: any) => {
+  create: async (data: Record<string, unknown>) => {
     const response = await apiClient.post(`/v1/rules`, data);
     return response.data;
   },
@@ -186,7 +186,7 @@ export const rulesApi = {
   /**
    * 룰 수정
    */
-  update: async (ruleId: string, data: any) => {
+  update: async (ruleId: string, data: Record<string, unknown>) => {
     const response = await apiClient.put(`/v1/rules/${ruleId}`, data);
     return response.data;
   },
@@ -236,7 +236,7 @@ export const abTestsApi = {
   /**
    * 새 A/B 테스트 생성
    */
-  create: async (data: any) => {
+  create: async (data: Record<string, unknown>) => {
     const response = await apiClient.post(`/v1/ab-tests`, data);
     return response.data;
   },
@@ -244,7 +244,7 @@ export const abTestsApi = {
   /**
    * A/B 테스트 수정
    */
-  update: async (testId: string, data: any) => {
+  update: async (testId: string, data: Record<string, unknown>) => {
     const response = await apiClient.put(`/v1/ab-tests/${testId}`, data);
     return response.data;
   },
@@ -333,7 +333,7 @@ export const mlModelsApi = {
   train: async (data: {
     model_type: string;
     training_period_days?: number;
-    hyperparameters?: any;
+    hyperparameters?: Record<string, unknown>;
     auto_deploy_to_staging?: boolean;
   }) => {
     const mlServiceUrl = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:8003";

@@ -90,7 +90,7 @@ export interface RiskFactor {
   factor_type: string;
   factor_score: number;
   description: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // 검토 큐 항목

@@ -31,7 +31,16 @@ export const Checkout: React.FC = () => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otpToken, setOtpToken] = useState('');
   const [otpAttempts, setOtpAttempts] = useState(3);
-  const [pendingOrderData, setPendingOrderData] = useState<any>(null);
+  const [pendingOrderData, setPendingOrderData] = useState<{
+    shipping_name: string;
+    shipping_address: string;
+    shipping_phone: string;
+    payment_info: {
+      card_number: string;
+      card_expiry: string;
+      card_cvv: string;
+    };
+  } | null>(null);
 
   // 장바구니 조회
   const { data: cart, isLoading: cartLoading } = useQuery({
@@ -70,9 +79,10 @@ export const Checkout: React.FC = () => {
         });
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } } };
       setErrors({
-        submit: error.response?.data?.detail || '주문 처리 중 오류가 발생했습니다.',
+        submit: err.response?.data?.detail || '주문 처리 중 오류가 발생했습니다.',
       });
     },
   });
@@ -85,9 +95,10 @@ export const Checkout: React.FC = () => {
       setOtpAttempts(3);
       setShowOtpModal(true);
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const err = error as { response?: { data?: { detail?: string } } };
       setErrors({
-        submit: error.response?.data?.detail || 'OTP 전송에 실패했습니다.',
+        submit: err.response?.data?.detail || 'OTP 전송에 실패했습니다.',
       });
     },
   });

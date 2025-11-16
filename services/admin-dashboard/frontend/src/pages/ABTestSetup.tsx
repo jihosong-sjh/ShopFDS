@@ -15,8 +15,8 @@ interface ABTest {
   description: string;
   test_type: string;
   status: string;
-  group_a_config: any;
-  group_b_config: any;
+  group_a_config: Record<string, unknown>;
+  group_b_config: Record<string, unknown>;
   traffic_split_percentage: number;
   start_time: string | null;
   end_time: string | null;
