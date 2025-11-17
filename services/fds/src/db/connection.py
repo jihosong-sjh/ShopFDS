@@ -296,3 +296,93 @@ async def check_database_health() -> dict:
         health["replica"] = {"status": "not_configured", "fallback": "using_master"}
 
     return health
+
+
+# --- Redis Cluster Connection ---
+from redis.cluster import RedisCluster
+from redis.cluster import ClusterNode
+
+_redis_cluster: RedisCluster | None = None
+
+def get_redis_cluster() -> RedisCluster:
+    """
+    Get or create Redis Cluster client
+
+    Returns:
+        RedisCluster: Redis Cluster client
+    """
+    global _redis_cluster
+
+    if _redis_cluster is None:
+        # Get Redis Cluster nodes from environment
+        redis_nodes_str = os.getenv(
+            "REDIS_CLUSTER_NODES",
+            "redis-node-1:6379,redis-node-2:6379,redis-node-3:6379"
+        )
+
+        # Parse nodes
+        startup_nodes = []
+        for node_str in redis_nodes_str.split(","):
+            host, port = node_str.strip().split(":")
+            startup_nodes.append(ClusterNode(host=host, port=int(port)))
+
+        logger.info(f"[REDIS] Creating Redis Cluster client with nodes: {redis_nodes_str}")
+
+        _redis_cluster = RedisCluster(
+            startup_nodes=startup_nodes,
+            decode_responses=False,  # Keep binary for blacklist manager
+            skip_full_coverage_check=True,  # Allow partial cluster
+            max_connections=50,
+            max_connections_per_node=10,
+        )
+
+    return _redis_cluster
+
+
+async def check_redis_cluster_health() -> dict:
+    """
+    Check health of Redis Cluster
+
+    Returns:
+        dict: Health status of Redis Cluster
+    """
+    import time
+
+    try:
+        start = time.time()
+        redis = get_redis_cluster()
+        redis.ping()
+        latency = (time.time() - start) * 1000
+
+        # Get cluster info
+        cluster_info = redis.cluster_info()
+        cluster_nodes = redis.cluster_nodes()
+
+        return {
+            "status": "healthy",
+            "latency_ms": round(latency, 2),
+            "cluster_state": cluster_info.get("cluster_state", "unknown"),
+            "cluster_size": cluster_info.get("cluster_size", 0),
+            "total_nodes": len(cluster_nodes.split("
+")) - 1,
+        }
+    except Exception as e:
+        logger.error(f"[REDIS] Health check failed: {str(e)}")
+        return {
+            "status": "unhealthy",
+            "error": str(e)
+        }
+
+
+async def close_redis_cluster() -> None:
+    """
+    Close Redis Cluster connection
+
+    Call this on application shutdown.
+    """
+    global _redis_cluster
+
+    if _redis_cluster is not None:
+        logger.info("[REDIS] Closing Redis Cluster connection")
+        _redis_cluster.close()
+        _redis_cluster = None

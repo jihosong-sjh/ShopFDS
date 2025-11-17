@@ -88,15 +88,20 @@ services:
       - shopfds-network
       - shopfds-internal
 
-  # Redis 7+
-  redis:
+  # Redis Cluster Node 1 (Master)
+  redis-node-1:
     image: redis:7-alpine
-    container_name: shopfds-redis
-    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    container_name: shopfds-redis-node-1
+    command: redis-server /usr/local/etc/redis/redis-cluster.conf
     ports:
-      - "6379:6379"
+      - "7000:6379"
+      - "17000:16379"
+    environment:
+      REDIS_CLUSTER_IP: redis-node-1
+      REDIS_PORT: 6379
     volumes:
-      - redis_data:/data
+      - redis_node_1_data:/data
+      - ./redis/redis-cluster.conf:/usr/local/etc/redis/redis-cluster.conf
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -104,6 +109,146 @@ services:
       retries: 5
     networks:
       - shopfds-network
+      - redis-cluster
+
+  # Redis Cluster Node 2 (Master)
+  redis-node-2:
+    image: redis:7-alpine
+    container_name: shopfds-redis-node-2
+    command: redis-server /usr/local/etc/redis/redis-cluster.conf
+    ports:
+      - "7001:6379"
+      - "17001:16379"
+    environment:
+      REDIS_CLUSTER_IP: redis-node-2
+      REDIS_PORT: 6379
+    volumes:
+      - redis_node_2_data:/data
+      - ./redis/redis-cluster.conf:/usr/local/etc/redis/redis-cluster.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - shopfds-network
+      - redis-cluster
+
+  # Redis Cluster Node 3 (Master)
+  redis-node-3:
+    image: redis:7-alpine
+    container_name: shopfds-redis-node-3
+    command: redis-server /usr/local/etc/redis/redis-cluster.conf
+    ports:
+      - "7002:6379"
+      - "17002:16379"
+    environment:
+      REDIS_CLUSTER_IP: redis-node-3
+      REDIS_PORT: 6379
+    volumes:
+      - redis_node_3_data:/data
+      - ./redis/redis-cluster.conf:/usr/local/etc/redis/redis-cluster.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - shopfds-network
+      - redis-cluster
+
+  # Redis Cluster Node 4 (Replica)
+  redis-node-4:
+    image: redis:7-alpine
+    container_name: shopfds-redis-node-4
+    command: redis-server /usr/local/etc/redis/redis-cluster.conf
+    ports:
+      - "7003:6379"
+      - "17003:16379"
+    environment:
+      REDIS_CLUSTER_IP: redis-node-4
+      REDIS_PORT: 6379
+    volumes:
+      - redis_node_4_data:/data
+      - ./redis/redis-cluster.conf:/usr/local/etc/redis/redis-cluster.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - shopfds-network
+      - redis-cluster
+
+  # Redis Cluster Node 5 (Replica)
+  redis-node-5:
+    image: redis:7-alpine
+    container_name: shopfds-redis-node-5
+    command: redis-server /usr/local/etc/redis/redis-cluster.conf
+    ports:
+      - "7004:6379"
+      - "17004:16379"
+    environment:
+      REDIS_CLUSTER_IP: redis-node-5
+      REDIS_PORT: 6379
+    volumes:
+      - redis_node_5_data:/data
+      - ./redis/redis-cluster.conf:/usr/local/etc/redis/redis-cluster.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - shopfds-network
+      - redis-cluster
+
+  # Redis Cluster Node 6 (Replica)
+  redis-node-6:
+    image: redis:7-alpine
+    container_name: shopfds-redis-node-6
+    command: redis-server /usr/local/etc/redis/redis-cluster.conf
+    ports:
+      - "7005:6379"
+      - "17005:16379"
+    environment:
+      REDIS_CLUSTER_IP: redis-node-6
+      REDIS_PORT: 6379
+    volumes:
+      - redis_node_6_data:/data
+      - ./redis/redis-cluster.conf:/usr/local/etc/redis/redis-cluster.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - shopfds-network
+      - redis-cluster
+
+  # Redis Cluster Initializer (runs once to create cluster)
+  redis-cluster-init:
+    image: redis:7-alpine
+    container_name: shopfds-redis-cluster-init
+    volumes:
+      - ../scripts/init-redis-cluster.sh:/init-redis-cluster.sh
+    entrypoint: ["/bin/sh", "/init-redis-cluster.sh"]
+    depends_on:
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      redis-node-4:
+        condition: service_healthy
+      redis-node-5:
+        condition: service_healthy
+      redis-node-6:
+        condition: service_healthy
+    networks:
+      - shopfds-network
+      - redis-cluster
 
   # RabbitMQ 3.12+ (Message Queue for Celery)
   rabbitmq:
@@ -148,7 +293,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
+      redis-node-1:
         condition: service_healthy
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     networks:
@@ -174,7 +319,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
+      redis-node-1:
         condition: service_healthy
     command: uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
     networks:
@@ -224,7 +369,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
+      redis-node-1:
         condition: service_healthy
     command: uvicorn src.main:app --host 0.0.0.0 --port 8003 --reload
     networks:
@@ -421,7 +566,17 @@ volumes:
     driver: local
   postgres_wal_archive:
     driver: local
-  redis_data:
+  redis_node_1_data:
+    driver: local
+  redis_node_2_data:
+    driver: local
+  redis_node_3_data:
+    driver: local
+  redis_node_4_data:
+    driver: local
+  redis_node_5_data:
+    driver: local
+  redis_node_6_data:
     driver: local
   rabbitmq_data:
     driver: local
@@ -443,4 +598,6 @@ networks:
     driver: bridge
     internal: true
   shopfds-monitoring:
+    driver: bridge
+  redis-cluster:
     driver: bridge

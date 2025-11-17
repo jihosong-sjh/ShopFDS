@@ -100,30 +100,30 @@
 
 ### Redis Cluster 구성
 
-- [ ] T022 [P] [US2] infrastructure/docker/redis/redis-cluster.conf 생성 (cluster-enabled yes, cluster-config-file, cluster-node-timeout 5000)
-- [ ] T023 [P] [US2] infrastructure/scripts/init-redis-cluster.sh 생성 (6노드 클러스터 생성, --cluster-replicas 1)
-- [ ] T024 [US2] infrastructure/docker/docker-compose.yml에 redis-node-1~6 서비스 추가 (포트 7000~7005) (T022 의존)
-- [ ] T025 [US2] infrastructure/docker/docker-compose.yml에서 기존 단일 Redis 서비스 제거, redis-cluster 네트워크 추가 (T024 의존)
+- [X] T022 [P] [US2] infrastructure/docker/redis/redis-cluster.conf 생성 (cluster-enabled yes, cluster-config-file, cluster-node-timeout 5000)
+- [X] T023 [P] [US2] infrastructure/scripts/init-redis-cluster.sh 생성 (6노드 클러스터 생성, --cluster-replicas 1)
+- [X] T024 [US2] infrastructure/docker/docker-compose.yml에 redis-node-1~6 서비스 추가 (포트 7000~7005) (T022 의존)
+- [X] T025 [US2] infrastructure/docker/docker-compose.yml에서 기존 단일 Redis 서비스 제거, redis-cluster 네트워크 추가 (T024 의존)
 
 ### FDS 블랙리스트 관리
 
-- [ ] T026 [P] [US2] services/fds/src/cache/blacklist.py 생성: BlacklistManager 클래스 (add_entry, check_entry, remove_entry, list_entries)
-- [ ] T027 [US2] services/fds/src/engines/evaluation_engine.py 수정: 블랙리스트 체크 로직 추가 (check_ip, check_card_bin, check_email_domain) (T026 의존)
-- [ ] T028 [US2] services/fds/src/db/connection.py 수정: Redis Cluster 클라이언트 연결 (redis.cluster.RedisCluster) (T026 의존)
+- [X] T026 [P] [US2] services/fds/src/cache/blacklist.py 생성: BlacklistManager 클래스 (add_entry, check_entry, remove_entry, list_entries)
+- [X] T027 [US2] services/fds/src/engines/evaluation_engine.py 수정: 블랙리스트 체크 로직 추가 (check_ip, check_card_bin, check_email_domain) (T026 의존)
+- [X] T028 [US2] services/fds/src/db/connection.py 수정: Redis Cluster 클라이언트 연결 (redis.cluster.RedisCluster) (T026 의존)
 
 ### Admin Dashboard 블랙리스트 API
 
-- [ ] T029 [P] [US2] services/admin-dashboard/backend/src/api/blacklist.py 생성: POST /v1/admin/blacklist (추가), GET /v1/admin/blacklist (목록), DELETE /v1/admin/blacklist/{entry_id} (삭제), PATCH /v1/admin/blacklist/{entry_id}/ttl (TTL 수정)
-- [ ] T030 [US2] services/admin-dashboard/backend/src/main.py 수정: 블랙리스트 라우터 등록 (T029 의존)
-- [ ] T031 [P] [US2] Alembic 마이그레이션 생성: BlacklistEntry 모델 추가 in services/fds/alembic/versions/ (로그용, Redis는 스키마 없음)
+- [X] T029 [P] [US2] services/admin-dashboard/backend/src/api/blacklist.py 생성: POST /v1/admin/blacklist (추가), GET /v1/admin/blacklist (목록), DELETE /v1/admin/blacklist/{entry_id} (삭제), PATCH /v1/admin/blacklist/{entry_id}/ttl (TTL 수정)
+- [X] T030 [US2] services/admin-dashboard/backend/src/main.py 수정: 블랙리스트 라우터 등록 (T029 의존)
+- [X] T031 [P] [US2] Alembic 마이그레이션 생성: BlacklistEntry 모델 추가 in services/fds/alembic/versions/ (로그용, Redis는 스키마 없음)
 
 ### 세션 스토어
 
-- [ ] T032 [US2] services/ecommerce/backend/src/middleware/session.py 수정: Redis Cluster 세션 스토어 통합 (TTL 30분) (T027 의존)
+- [X] T032 [US2] services/ecommerce/backend/src/middleware/session.py 수정: Redis Cluster 세션 스토어 통합 (TTL 30분) (T027 의존)
 
 ### 통합 테스트
 
-- [ ] T033 [US2] tests/infrastructure/test_redis_cluster.py 생성: 클러스터 생성, 샤딩, 페일오버, 블랙리스트 CRUD 테스트 (T026~T032 의존)
+- [X] T033 [US2] tests/infrastructure/test_redis_cluster.py 생성: 클러스터 생성, 샤딩, 페일오버, 블랙리스트 CRUD 테스트 (T026~T032 의존)
 
 **검증 포인트**:
 1. 블랙리스트 IP 추가 시 클러스터 전체에 자동 샤딩

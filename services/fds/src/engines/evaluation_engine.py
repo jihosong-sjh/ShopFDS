@@ -24,6 +24,7 @@ from ..models.schemas import (
     SeverityEnum,
 )
 from ..engines.cti_connector import CTIConnector, ThreatLevel
+from ..cache.blacklist import BlacklistManager
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +53,12 @@ class EvaluationEngine:
         self.db = db
         self.redis = redis
         self.cti_connector = None
+        self.blacklist_manager = None
 
         # CTI 커넥터 초기화 (db와 redis가 모두 제공된 경우)
         if db and redis:
             self.cti_connector = CTIConnector(db, redis)
+            self.blacklist_manager = BlacklistManager(redis)
 
     async def evaluate(self, request: FDSEvaluationRequest) -> FDSEvaluationResponse:
         """
@@ -190,6 +193,11 @@ class EvaluationEngine:
             List[RiskFactor]: 평가된 위험 요인 목록
         """
         risk_factors = []
+
+        # Phase 4: 블랙리스트 체크 (가장 높은 우선순위)
+        blacklist_risk = await self._check_blacklist(request)
+        if blacklist_risk:
+            risk_factors.extend(blacklist_risk)
 
         # 기본 위험 요인: 거래 금액 확인
         amount_risk = await self._check_amount_risk(request.amount)
@@ -502,6 +510,64 @@ class EvaluationEngine:
                 manual_review_required=True,
                 review_queue_id=None,  # Phase 5에서 검토 큐 ID 추가 예정
             )
+
+    async def _check_blacklist(
+        self, request: FDSEvaluationRequest
+    ) -> List[RiskFactor]:
+        """
+        블랙리스트 체크
+
+        IP, 이메일 도메인, 카드 BIN, 사용자 ID가 블랙리스트에 있는지 확인합니다.
+
+        Args:
+            request: FDS 평가 요청
+
+        Returns:
+            List[RiskFactor]: 블랙리스트 위험 요인 목록
+        """
+        risk_factors = []
+
+        if not self.blacklist_manager:
+            return risk_factors
+
+        # 이메일에서 도메인 추출
+        email_domain = None
+        if request.user_email and "@" in request.user_email:
+            email_domain = request.user_email.split("@")[1]
+
+        # 카드 정보에서 BIN 추출 (첫 6자리)
+        card_bin = None
+        if (
+            hasattr(request, "payment_method")
+            and request.payment_method
+            and request.payment_method.get("card_number")
+        ):
+            card_number = request.payment_method["card_number"].replace(" ", "")
+            if len(card_number) >= 6:
+                card_bin = card_number[:6]
+
+        # 블랙리스트 체크
+        blacklist_results = await self.blacklist_manager.is_blacklisted(
+            ip=request.ip_address,
+            email=email_domain,
+            card_bin=card_bin,
+            user_id=str(request.user_id) if request.user_id else None,
+        )
+
+        # 블랙리스트 항목이 있으면 고위험 요인으로 추가
+        for key, entry in blacklist_results.items():
+            if entry:
+                risk_factors.append(
+                    RiskFactor(
+                        factor_type=f"blacklist_{key}",
+                        factor_score=90,  # 블랙리스트는 매우 높은 점수
+                        description=f"블랙리스트 탐지 ({key}: {entry.value}, 사유: {entry.reason})",
+                        severity=SeverityEnum.HIGH,
+                    )
+                )
+
+        return risk_factors
+
 
 
 # 싱글톤 인스턴스
