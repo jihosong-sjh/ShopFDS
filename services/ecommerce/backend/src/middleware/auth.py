@@ -10,7 +10,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.utils.security import JWTManager
 from src.models.base import get_db
-from src.utils.redis_client import get_rate_limiter, RateLimiter as RedisRateLimiter
+from src.utils.redis_client import get_rate_limiter
 
 
 # HTTP Bearer 토큰 스킴 (Authorization: Bearer <token>)
@@ -255,10 +255,14 @@ class RateLimiter:
 
             # Rate Limit 체크
             key = f"rate_limit:user:{user_id}"
-            allowed, current_count, remaining = await self.rate_limiter.check_rate_limit(
+            (
+                allowed,
+                current_count,
+                remaining,
+            ) = await self.rate_limiter.check_rate_limit(
                 key=key,
                 max_requests=self.max_requests,
-                window_seconds=self.window_seconds
+                window_seconds=self.window_seconds,
             )
 
             return allowed

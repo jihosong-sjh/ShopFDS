@@ -71,7 +71,7 @@ class CartSummaryResponse(BaseModel):
 @router.get("", response_model=CartSummaryResponse)
 async def get_cart(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     장바구니 조회
@@ -97,7 +97,7 @@ async def get_cart(
 async def add_to_cart(
     request: AddToCartRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     장바구니에 상품 추가
@@ -134,7 +134,7 @@ async def update_cart_item(
     cart_item_id: str,
     request: UpdateCartItemRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     장바구니 항목 수량 변경
@@ -170,7 +170,7 @@ async def update_cart_item(
 async def remove_from_cart(
     cart_item_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     장바구니 항목 삭제
@@ -197,7 +197,7 @@ async def remove_from_cart(
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def clear_cart(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     장바구니 전체 비우기

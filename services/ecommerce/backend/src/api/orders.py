@@ -98,7 +98,7 @@ class CreateOrderResponse(BaseModel):
 async def create_order(
     request: CreateOrderRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     주문 생성
@@ -166,7 +166,7 @@ async def get_orders(
     page: int = Query(1, ge=1, description="페이지 번호"),
     page_size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     주문 목록 조회
@@ -220,7 +220,7 @@ async def get_orders(
 async def get_order(
     order_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     주문 상세 조회
@@ -271,7 +271,7 @@ async def get_order(
 async def cancel_order(
     order_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     주문 취소
@@ -307,7 +307,7 @@ async def cancel_order(
 async def track_order(
     order_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     주문 추적
@@ -360,7 +360,7 @@ async def complete_order_with_otp(
     order_id: str,
     request: CompleteOrderWithOTPRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user),  # JWT 인증
 ):
     """
     OTP 검증 후 주문 완료
