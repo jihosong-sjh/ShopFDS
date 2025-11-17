@@ -558,6 +558,8 @@ services:
     container_name: shopfds-logstash
     ports:
       - "5044:5044"  # Beats input
+      - "8080:8080"  # HTTP input (for direct app logging)
+      - "5000:5000"  # TCP input (for syslog-style logs)
       - "9600:9600"  # Monitoring API
     volumes:
       - ../monitoring/logstash/pipeline:/usr/share/logstash/pipeline

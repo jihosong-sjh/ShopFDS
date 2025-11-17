@@ -189,42 +189,42 @@
 
 ### Logstash 파이프라인
 
-- [ ] T048 [P] [US4] infrastructure/docker/elasticsearch/elasticsearch.yml 생성 (cluster.name, discovery.type=single-node, xpack.security.enabled=false)
-- [ ] T049 [P] [US4] infrastructure/monitoring/logstash/pipeline/app-logs.conf 생성 (input: beats, filter: json+grok, output: elasticsearch)
-- [ ] T050 [US4] infrastructure/docker/docker-compose.yml Logstash 서비스 볼륨 마운트 추가 (T049 의존)
+- [X] T048 [P] [US4] infrastructure/docker/elasticsearch/elasticsearch.yml 생성 (cluster.name, discovery.type=single-node, xpack.security.enabled=false)
+- [X] T049 [P] [US4] infrastructure/monitoring/logstash/pipeline/app-logs.conf 생성 (input: beats, filter: json+grok, output: elasticsearch)
+- [X] T050 [US4] infrastructure/docker/docker-compose.yml Logstash 서비스 볼륨 마운트 추가 (T049 의존)
 
 ### Elasticsearch 인덱스 템플릿
 
-- [ ] T051 [P] [US4] infrastructure/monitoring/elasticsearch/index-template.json 생성 (shopfds-{service}-{date} 패턴, 매핑, ILM 정책)
-- [ ] T052 [US4] infrastructure/scripts/init-elasticsearch.sh 생성 (인덱스 템플릿 적용, Curator 설정) (T051 의존)
+- [X] T051 [P] [US4] infrastructure/monitoring/elasticsearch/index-template.json 생성 (shopfds-{service}-{date} 패턴, 매핑, ILM 정책)
+- [X] T052 [US4] infrastructure/scripts/init-elasticsearch.sh 생성 (인덱스 템플릿 적용, Curator 설정) (T051 의존)
 
 ### Kibana 대시보드
 
-- [ ] T053 [P] [US4] infrastructure/monitoring/kibana/dashboards/fds-monitoring.json 생성 (에러율, 응답 시간, 트래픽 패턴 시각화)
+- [X] T053 [P] [US4] infrastructure/monitoring/kibana/dashboards/fds-monitoring.json 생성 (에러율, 응답 시간, 트래픽 패턴 시각화)
 
 ### 애플리케이션 로깅 강화
 
-- [ ] T054 [US4] services/ecommerce/backend/src/middleware/logging.py 수정: 구조화 로깅 (JSON 포맷, request_id, user_id, endpoint)
-- [ ] T055 [US4] services/fds/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
-- [ ] T056 [US4] services/ml-service/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
-- [ ] T057 [US4] services/admin-dashboard/backend/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
+- [X] T054 [US4] services/ecommerce/backend/src/middleware/logging.py 수정: 구조화 로깅 (JSON 포맷, request_id, user_id, endpoint)
+- [X] T055 [US4] services/fds/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
+- [X] T056 [US4] services/ml-service/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
+- [X] T057 [US4] services/admin-dashboard/backend/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
 
 ### Health Check 강화
 
-- [ ] T058 [US4] services/ecommerce/backend/src/api/health.py 수정: DB 연결, Redis PING, 디스크 공간(90% 미만), 복제 지연 체크 (T020 의존)
-- [ ] T059 [US4] services/fds/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
-- [ ] T060 [US4] services/ml-service/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
-- [ ] T061 [US4] services/admin-dashboard/backend/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
+- [X] T058 [US4] services/ecommerce/backend/src/api/health.py 수정: DB 연결, Redis PING, 디스크 공간(90% 미만), 복제 지연 체크 (T020 의존)
+- [X] T059 [US4] services/fds/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
+- [X] T060 [US4] services/ml-service/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
+- [X] T061 [US4] services/admin-dashboard/backend/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
 
 ### Prometheus 알림 규칙
 
-- [ ] T062 [P] [US4] infrastructure/monitoring/prometheus/alerts/infrastructure.yml 생성 (CPU 80%, 메모리 85%, 디스크 85% 알림)
-- [ ] T063 [P] [US4] infrastructure/monitoring/prometheus/alerts/application.yml 생성 (API 에러율 5%, Health Check 실패 알림)
-- [ ] T064 [P] [US4] infrastructure/monitoring/alertmanager/alertmanager.yml 생성 (Slack webhook, Email SMTP, 라우팅 규칙)
+- [X] T062 [P] [US4] infrastructure/monitoring/prometheus/alerts/infrastructure.yml 생성 (CPU 80%, 메모리 85%, 디스크 85% 알림)
+- [X] T063 [P] [US4] infrastructure/monitoring/prometheus/alerts/application.yml 생성 (API 에러율 5%, Health Check 실패 알림)
+- [X] T064 [P] [US4] infrastructure/monitoring/alertmanager/alertmanager.yml 생성 (Slack webhook, Email SMTP, 라우팅 규칙)
 
 ### 통합 테스트
 
-- [ ] T065 [US4] tests/infrastructure/test_elk_logging.py 생성: 로그 인덱싱, Kibana 조회, 10초 이내 검색 테스트 (T048~T064 의존)
+- [X] T065 [US4] tests/infrastructure/test_elk_logging.py 생성: 로그 인덱싱, Kibana 조회, 10초 이내 검색 테스트 (T048~T064 의존)
 
 **검증 포인트**:
 1. FastAPI 에러 발생 시 5초 이내 Elasticsearch 인덱싱

@@ -1,0 +1,126 @@
+{
+  "index_patterns": ["shopfds-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "index.refresh_interval": "5s",
+      "index.codec": "best_compression",
+      "index.lifecycle.name": "shopfds-logs-policy",
+      "index.lifecycle.rollover_alias": "shopfds-logs"
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "service": {
+          "type": "keyword"
+        },
+        "environment": {
+          "type": "keyword"
+        },
+        "level": {
+          "type": "keyword"
+        },
+        "message": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "request_id": {
+          "type": "keyword"
+        },
+        "user_id": {
+          "type": "keyword"
+        },
+        "endpoint": {
+          "type": "keyword"
+        },
+        "http_method": {
+          "type": "keyword"
+        },
+        "request_path": {
+          "type": "keyword"
+        },
+        "status_code": {
+          "type": "integer"
+        },
+        "response_size": {
+          "type": "integer"
+        },
+        "response_time": {
+          "type": "float"
+        },
+        "client_ip": {
+          "type": "ip"
+        },
+        "user_agent": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "keyword"
+            },
+            "message": {
+              "type": "text"
+            },
+            "stack_trace": {
+              "type": "text"
+            }
+          }
+        },
+        "transaction_id": {
+          "type": "keyword"
+        },
+        "order_id": {
+          "type": "keyword"
+        },
+        "risk_score": {
+          "type": "float"
+        },
+        "risk_level": {
+          "type": "keyword"
+        },
+        "geoip": {
+          "properties": {
+            "continent_name": {
+              "type": "keyword"
+            },
+            "country_name": {
+              "type": "keyword"
+            },
+            "country_iso_code": {
+              "type": "keyword"
+            },
+            "city_name": {
+              "type": "keyword"
+            },
+            "location": {
+              "type": "geo_point"
+            }
+          }
+        }
+      }
+    }
+  },
+  "priority": 200,
+  "version": 1,
+  "_meta": {
+    "description": "ShopFDS application logs index template",
+    "created_by": "ShopFDS Infrastructure Team",
+    "created_at": "2025-11-18"
+  }
+}
