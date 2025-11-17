@@ -9,13 +9,20 @@ Tests read/write routing, replication lag monitoring, and failover scenarios.
 import asyncio
 import os
 import pytest
-from datetime import datetime
+import pytest_asyncio
+from datetime import datetime, timezone
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# Load environment variables before importing connection modules
+from dotenv import load_dotenv
+
+backend_path = os.path.join(os.path.dirname(__file__), "../../services/ecommerce/backend")
+load_dotenv(os.path.join(backend_path, ".env"))
+
 # Import connection modules
 import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../services/ecommerce/backend"))
+sys.path.insert(0, backend_path)
 
 from src.db.connection import (
     get_write_db,
@@ -26,19 +33,11 @@ from src.db.connection import (
 from src.utils.replication_monitor import check_replication_lag
 
 
-@pytest.fixture(scope="module")
-def event_loop():
-    """Create an instance of the default event loop for the test module."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def cleanup():
-    """Cleanup after all tests"""
+    """Cleanup after each test"""
     yield
-    await close_all_connections()
+    # Cleanup is handled by context manager in get_write_db/get_read_db
 
 
 class TestDatabaseConnectionPools:
@@ -93,7 +92,7 @@ class TestReadWriteRouting:
             await db.commit()
 
             # Insert test data
-            test_value = f"test-{datetime.utcnow().isoformat()}"
+            test_value = f"test-{datetime.now(timezone.utc).isoformat()}"
             await db.execute(
                 text("INSERT INTO replication_test (test_value) VALUES (:value)"),
                 {"value": test_value}
@@ -113,7 +112,7 @@ class TestReadWriteRouting:
     async def test_read_from_replica(self, cleanup):
         """Test read operation from replica (with replication delay tolerance)"""
         # First, write to master
-        test_value = f"test-read-{datetime.utcnow().isoformat()}"
+        test_value = f"test-read-{datetime.now(timezone.utc).isoformat()}"
 
         async for db in get_write_db():
             await db.execute(text("""
@@ -287,7 +286,7 @@ class TestDataConsistency:
     async def test_write_read_consistency(self, cleanup):
         """Test that data written to master appears on replica"""
         # Write unique data to master
-        unique_value = f"consistency-test-{datetime.utcnow().isoformat()}"
+        unique_value = f"consistency-test-{datetime.now(timezone.utc).isoformat()}"
 
         async for db in get_write_db():
             await db.execute(text("""
