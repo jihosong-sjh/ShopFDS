@@ -10,6 +10,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.utils.security import JWTManager
 from src.models.base import get_db
+from src.utils.redis_client import get_rate_limiter
 
 
 # HTTP Bearer 토큰 스킴 (Authorization: Bearer <token>)
@@ -105,23 +106,19 @@ async def get_current_user(
             return {"email": current_user.email}
         ```
     """
-    # TODO: User 모델이 생성되면 주석 해제
-    # from sqlalchemy import select
-    # from src.models.user import User
-    #
-    # result = await db.execute(select(User).where(User.id == user_id))
-    # user = result.scalar_one_or_none()
-    #
-    # if user is None:
-    #     raise AuthenticationError(detail="사용자를 찾을 수 없습니다.")
-    #
-    # if user.status != "active":
-    #     raise AuthenticationError(detail="비활성화된 계정입니다.")
-    #
-    # return user
+    from sqlalchemy import select
+    from src.models.user import User
 
-    # 임시: User 모델이 생성되기 전까지 user_id만 반환
-    return {"id": user_id}
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+
+    if user is None:
+        raise AuthenticationError(detail="사용자를 찾을 수 없습니다.")
+
+    if user.status != "active":
+        raise AuthenticationError(detail="비활성화된 계정입니다.")
+
+    return user
 
 
 async def get_current_active_user(
@@ -169,13 +166,10 @@ def require_role(*allowed_roles: str):
     async def role_checker(
         current_user=Depends(get_current_user),
     ):
-        # TODO: User 모델 생성 후 주석 해제
-        # if current_user.role not in allowed_roles:
-        #     raise AuthorizationError(
-        #         detail=f"이 기능은 {', '.join(allowed_roles)} 역할만 사용할 수 있습니다."
-        #     )
-
-        # 임시: 역할 체크 생략
+        if current_user.role not in allowed_roles:
+            raise AuthorizationError(
+                detail=f"이 기능은 {', '.join(allowed_roles)} 역할만 사용할 수 있습니다."
+            )
         return current_user
 
     return role_checker
@@ -236,12 +230,13 @@ class RateLimiter:
     """
     간단한 Rate Limiting (Redis 기반)
 
-    추후 Redis 연결이 설정되면 구현됩니다.
+    Redis를 사용한 요청 제한 기능을 제공합니다.
     """
 
     def __init__(self, max_requests: int = 100, window_seconds: int = 60):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
+        self.rate_limiter = None
 
     async def check_rate_limit(self, user_id: str) -> bool:
         """
@@ -253,11 +248,26 @@ class RateLimiter:
         Returns:
             bool: 요청 허용 여부
         """
-        # TODO: Redis 연결 후 구현
-        # redis_key = f"rate_limit:{user_id}"
-        # current_count = await redis.incr(redis_key)
-        # if current_count == 1:
-        #     await redis.expire(redis_key, self.window_seconds)
-        # return current_count <= self.max_requests
+        try:
+            # Redis Rate Limiter 가져오기
+            if self.rate_limiter is None:
+                self.rate_limiter = await get_rate_limiter()
 
-        return True  # 임시로 항상 허용
+            # Rate Limit 체크
+            key = f"rate_limit:user:{user_id}"
+            (
+                allowed,
+                current_count,
+                remaining,
+            ) = await self.rate_limiter.check_rate_limit(
+                key=key,
+                max_requests=self.max_requests,
+                window_seconds=self.window_seconds,
+            )
+
+            return allowed
+
+        except Exception as e:
+            # Redis 연결 실패 시 요청 허용 (Fail Open)
+            print(f"[WARNING] Rate Limit 체크 실패: {e}")
+            return True

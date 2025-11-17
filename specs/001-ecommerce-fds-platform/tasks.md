@@ -350,15 +350,15 @@
 
 ### 문서화
 
-- [ ] T141 [P] API 문서 자동 생성 (OpenAPI/Swagger UI)
-- [ ] T142 [P] 아키텍처 다이어그램 업데이트 (docs/architecture/)
-- [ ] T143 CLAUDE.md 최종 업데이트 (프로젝트 현황 반영)
+- [X] T141 [P] API 문서 자동 생성 (OpenAPI/Swagger UI)
+- [X] T142 [P] 아키텍처 다이어그램 업데이트 (docs/architecture/)
+- [X] T143 CLAUDE.md 최종 업데이트 (프로젝트 현황 반영)
 
 ### 최종 검증
 
-- [ ] T144 quickstart.md 가이드 전체 실행 검증
-- [ ] T145 전체 사용자 플로우 E2E 테스트 (Playwright)
-- [ ] T146 성능 목표 달성 검증 (FDS 100ms, API 200ms, 1000 TPS)
+- [X] T144 quickstart.md 가이드 전체 실행 검증
+- [X] T145 전체 사용자 플로우 E2E 테스트 (Playwright)
+- [X] T146 성능 목표 달성 검증 (FDS 100ms, API 200ms, 1000 TPS)
 
 ---
 
