@@ -1,0 +1,546 @@
+openapi: 3.0.3
+info:
+  title: Admin Blacklist API
+  description: |
+    API for managing blacklisted IPs, card BINs, and email domains in Redis Cluster.
+    Used by Admin Dashboard to manually block/unblock suspicious entities.
+  version: 1.0.0
+  contact:
+    name: ShopFDS Team
+    email: dev@shopfds.com
+
+servers:
+  - url: http://localhost:8003
+    description: Local development
+  - url: https://admin-api.shopfds.com
+    description: Production
+
+tags:
+  - name: blacklist
+    description: Blacklist management operations
+
+paths:
+  /v1/admin/blacklist:
+    post:
+      summary: Add entry to blacklist
+      description: |
+        Add a new IP address, card BIN, or email domain to the blacklist with automatic TTL.
+        Entries are stored in Redis Cluster with SETEX for automatic expiration.
+      operationId: addBlacklistEntry
+      tags:
+        - blacklist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlacklistEntryCreate'
+            examples:
+              blockIP:
+                summary: Block suspicious IP
+                value:
+                  type: ip
+                  value: 192.168.1.1
+                  threat_level: fraud
+                  reason: Multiple failed payment attempts detected
+              blockCardBIN:
+                summary: Block stolen card BIN
+                value:
+                  type: card_bin
+                  value: "123456"
+                  threat_level: stolen_card
+                  reason: Reported stolen by issuing bank
+              blockEmailDomain:
+                summary: Block temporary email domain
+                value:
+                  type: email_domain
+                  value: guerrillamail.com
+                  threat_level: suspicious_email
+                  reason: Disposable email service used for fraud
+      responses:
+        '201':
+          description: Blacklist entry created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlacklistEntryResponse'
+              example:
+                id: blacklist:ip:192.168.1.1
+                type: ip
+                value: 192.168.1.1
+                threat_level: fraud
+                reason: Multiple failed payment attempts detected
+                ttl: 604800
+                expires_at: "2025-11-24T12:00:00Z"
+                added_at: "2025-11-17T12:00:00Z"
+                added_by: user_admin_123
+        '400':
+          description: Invalid request (e.g., invalid IP format, unsupported type)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid IP address format"
+                detail: "192.168.1.256 is not a valid IPv4 address"
+                code: INVALID_IP_FORMAT
+        '401':
+          description: Unauthorized (missing or invalid JWT token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden (user lacks BLACKLIST_WRITE permission)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict (entry already exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Blacklist entry already exists"
+                detail: "IP 192.168.1.1 is already blacklisted (expires in 5d 3h)"
+                code: DUPLICATE_ENTRY
+
+    get:
+      summary: List blacklist entries
+      description: |
+        Retrieve all blacklist entries with optional filtering by type, threat level, or search term.
+        Supports pagination for large result sets.
+      operationId: listBlacklistEntries
+      tags:
+        - blacklist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          description: Filter by blacklist type
+          schema:
+            type: string
+            enum: [ip, card_bin, email_domain]
+          example: ip
+        - name: threat_level
+          in: query
+          description: Filter by threat level
+          schema:
+            type: string
+            enum: [temporary, fraud, permanent, stolen_card, suspicious_email]
+          example: fraud
+        - name: search
+          in: query
+          description: Search by value (supports wildcards with Redis SCAN)
+          schema:
+            type: string
+          example: "192.168.*"
+        - name: page
+          in: query
+          description: Page number (1-indexed)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: page_size
+          in: query
+          description: Number of entries per page
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 100
+            default: 50
+          example: 50
+      responses:
+        '200':
+          description: List of blacklist entries retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlacklistListResponse'
+              example:
+                total: 150
+                page: 1
+                page_size: 50
+                total_pages: 3
+                entries:
+                  - id: blacklist:ip:192.168.1.1
+                    type: ip
+                    value: 192.168.1.1
+                    threat_level: fraud
+                    reason: Multiple failed payment attempts
+                    ttl: 604800
+                    expires_at: "2025-11-24T12:00:00Z"
+                    added_at: "2025-11-17T12:00:00Z"
+                    added_by: user_admin_123
+                  - id: blacklist:ip:10.0.0.5
+                    type: ip
+                    value: 10.0.0.5
+                    threat_level: temporary
+                    reason: Suspicious login pattern
+                    ttl: 3600
+                    expires_at: "2025-11-17T13:00:00Z"
+                    added_at: "2025-11-17T12:00:00Z"
+                    added_by: fds-engine
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden (user lacks BLACKLIST_READ permission)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/admin/blacklist/{entry_id}:
+    delete:
+      summary: Remove entry from blacklist
+      description: |
+        Remove a blacklist entry immediately (e.g., false positive correction).
+        Entry ID format: "blacklist:{type}:{value}" (e.g., "blacklist:ip:192.168.1.1")
+      operationId: deleteBlacklistEntry
+      tags:
+        - blacklist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: entry_id
+          in: path
+          required: true
+          description: Blacklist entry ID (URL-encoded if contains special characters)
+          schema:
+            type: string
+          example: blacklist:ip:192.168.1.1
+      responses:
+        '200':
+          description: Blacklist entry deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                message: Blacklist entry deleted successfully
+                deleted_id: blacklist:ip:192.168.1.1
+                deleted_at: "2025-11-17T12:30:00Z"
+        '404':
+          description: Entry not found (already expired or never existed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Blacklist entry not found"
+                detail: "Entry blacklist:ip:192.168.1.1 does not exist or has already expired"
+                code: NOT_FOUND
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden (user lacks BLACKLIST_DELETE permission)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/admin/blacklist/{entry_id}/ttl:
+    patch:
+      summary: Update TTL of existing entry
+      description: |
+        Extend or shorten the TTL of an existing blacklist entry.
+        Use case: Extend TTL for repeat offenders, shorten for temporary blocks.
+      operationId: updateBlacklistTTL
+      tags:
+        - blacklist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: entry_id
+          in: path
+          required: true
+          description: Blacklist entry ID
+          schema:
+            type: string
+          example: blacklist:ip:192.168.1.1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TTLUpdateRequest'
+            examples:
+              extendTTL:
+                summary: Extend TTL by 7 days
+                value:
+                  ttl: 604800
+                  reason: Repeat offender detected
+              shortenTTL:
+                summary: Shorten TTL to 1 hour (false positive)
+                value:
+                  ttl: 3600
+                  reason: Manual review showed legitimate user
+      responses:
+        '200':
+          description: TTL updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TTLUpdateResponse'
+              example:
+                message: TTL updated successfully
+                entry_id: blacklist:ip:192.168.1.1
+                old_ttl: 604800
+                new_ttl: 3600
+                expires_at: "2025-11-17T13:00:00Z"
+                updated_at: "2025-11-17T12:00:00Z"
+                updated_by: user_admin_123
+        '400':
+          description: Invalid TTL value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid TTL value"
+                detail: "TTL must be between 60 (1 minute) and 31536000 (1 year)"
+                code: INVALID_TTL
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden (user lacks BLACKLIST_WRITE permission)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    BlacklistEntryCreate:
+      type: object
+      required:
+        - type
+        - value
+        - threat_level
+        - reason
+      properties:
+        type:
+          type: string
+          enum: [ip, card_bin, email_domain]
+          description: Type of entity to blacklist
+          example: ip
+        value:
+          type: string
+          description: |
+            Actual value to blacklist. Format depends on type:
+            - ip: IPv4 address (e.g., "192.168.1.1")
+            - card_bin: First 6 digits of card number (e.g., "123456")
+            - email_domain: Domain name (e.g., "guerrillamail.com")
+          example: "192.168.1.1"
+        threat_level:
+          type: string
+          enum: [temporary, fraud, permanent, stolen_card, suspicious_email]
+          description: |
+            Threat level determines TTL:
+            - temporary: 1 hour
+            - fraud: 7 days
+            - permanent: No expiration
+            - stolen_card: 30 days
+            - suspicious_email: 90 days
+          example: fraud
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 500
+          description: Human-readable reason for blacklisting (required for audit trail)
+          example: "Multiple failed payment attempts detected from this IP"
+
+    BlacklistEntryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Redis key identifier
+          example: blacklist:ip:192.168.1.1
+        type:
+          type: string
+          enum: [ip, card_bin, email_domain]
+          example: ip
+        value:
+          type: string
+          example: "192.168.1.1"
+        threat_level:
+          type: string
+          enum: [temporary, fraud, permanent, stolen_card, suspicious_email]
+          example: fraud
+        reason:
+          type: string
+          example: "Multiple failed payment attempts detected"
+        ttl:
+          type: integer
+          nullable: true
+          description: Seconds until expiration (null for permanent)
+          example: 604800
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: ISO8601 timestamp when entry expires (null for permanent)
+          example: "2025-11-24T12:00:00Z"
+        added_at:
+          type: string
+          format: date-time
+          description: ISO8601 timestamp when entry was added
+          example: "2025-11-17T12:00:00Z"
+        added_by:
+          type: string
+          description: User ID or system that added the entry
+          example: user_admin_123
+
+    BlacklistListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of blacklist entries matching filters
+          example: 150
+        page:
+          type: integer
+          description: Current page number (1-indexed)
+          example: 1
+        page_size:
+          type: integer
+          description: Number of entries per page
+          example: 50
+        total_pages:
+          type: integer
+          description: Total number of pages
+          example: 3
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlacklistEntryResponse'
+
+    TTLUpdateRequest:
+      type: object
+      required:
+        - ttl
+        - reason
+      properties:
+        ttl:
+          type: integer
+          minimum: 60
+          maximum: 31536000
+          description: New TTL in seconds (60s to 1 year)
+          example: 604800
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 500
+          description: Reason for TTL update (audit trail)
+          example: "Repeat offender detected"
+
+    TTLUpdateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: TTL updated successfully
+        entry_id:
+          type: string
+          example: blacklist:ip:192.168.1.1
+        old_ttl:
+          type: integer
+          nullable: true
+          example: 604800
+        new_ttl:
+          type: integer
+          example: 3600
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2025-11-17T13:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-11-17T12:00:00Z"
+        updated_by:
+          type: string
+          example: user_admin_123
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation completed successfully
+        deleted_id:
+          type: string
+          example: blacklist:ip:192.168.1.1
+        deleted_at:
+          type: string
+          format: date-time
+          example: "2025-11-17T12:30:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: High-level error message
+          example: "Invalid request"
+        detail:
+          type: string
+          description: Detailed error explanation
+          example: "IP address format is invalid"
+        code:
+          type: string
+          description: Machine-readable error code
+          example: INVALID_IP_FORMAT
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: "2025-11-17T12:00:00Z"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token obtained from /v1/auth/login endpoint.
+        Required permissions:
+        - BLACKLIST_READ: List blacklist entries
+        - BLACKLIST_WRITE: Add/update blacklist entries
+        - BLACKLIST_DELETE: Remove blacklist entries
+
+security:
+  - bearerAuth: []
