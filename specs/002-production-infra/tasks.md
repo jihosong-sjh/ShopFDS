@@ -31,10 +31,10 @@
 
 ### 디렉토리 구조 생성
 
-- [ ] T001 [P] infrastructure/docker/postgres/ 디렉토리 생성
-- [ ] T002 [P] infrastructure/docker/redis/ 디렉토리 생성
-- [ ] T003 [P] infrastructure/monitoring/ 하위 디렉토리 생성 (prometheus/alerts/, alertmanager/, logstash/pipeline/, kibana/dashboards/)
-- [ ] T004 [P] infrastructure/scripts/ 및 tests/infrastructure/ 디렉토리 생성
+- [X] T001 [P] infrastructure/docker/postgres/ 디렉토리 생성
+- [X] T002 [P] infrastructure/docker/redis/ 디렉토리 생성
+- [X] T003 [P] infrastructure/monitoring/ 하위 디렉토리 생성 (prometheus/alerts/, alertmanager/, logstash/pipeline/, kibana/dashboards/)
+- [X] T004 [P] infrastructure/scripts/ 및 tests/infrastructure/ 디렉토리 생성
 
 ---
 
