@@ -273,6 +273,113 @@ services:
     networks:
       - shopfds-network
 
+  # Celery Worker - Ecommerce (이메일, 리포트, 정리 작업)
+  celery-worker-ecommerce:
+    build:
+      context: ../../services/ecommerce/backend
+      dockerfile: Dockerfile
+    container_name: shopfds-celery-worker-ecommerce
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASSWORD:-admin}@rabbitmq:5672/${RABBITMQ_VHOST:-shopfds}
+      CELERY_RESULT_BACKEND: redis://redis-node-1:6379/0
+      CELERY_WORKER_CONCURRENCY: 4
+      ENVIRONMENT: ${ENVIRONMENT}
+    volumes:
+      - ../../services/ecommerce/backend:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis-node-1:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    command: celery -A src.tasks worker --loglevel=info --concurrency=4 --queues=email,reports,cleanup
+    networks:
+      - shopfds-network
+    restart: unless-stopped
+
+  # Celery Worker - FDS (배치 평가 작업)
+  celery-worker-fds:
+    build:
+      context: ../../services/fds
+      dockerfile: Dockerfile
+    container_name: shopfds-celery-worker-fds
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASSWORD:-admin}@rabbitmq:5672/${RABBITMQ_VHOST:-shopfds}
+      CELERY_RESULT_BACKEND: redis://redis-node-1:6379/1
+      CELERY_WORKER_CONCURRENCY: 2
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY}
+      ENVIRONMENT: ${ENVIRONMENT}
+    volumes:
+      - ../../services/fds:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis-node-1:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    command: celery -A src.tasks worker --loglevel=info --concurrency=2 --queues=fds_batch,fds_realtime
+    networks:
+      - shopfds-network
+    restart: unless-stopped
+
+  # Celery Beat - 주기적 작업 스케줄러
+  celery-beat:
+    build:
+      context: ../../services/ecommerce/backend
+      dockerfile: Dockerfile
+    container_name: shopfds-celery-beat
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASSWORD:-admin}@rabbitmq:5672/${RABBITMQ_VHOST:-shopfds}
+      CELERY_RESULT_BACKEND: redis://redis-node-1:6379/0
+      ENVIRONMENT: ${ENVIRONMENT}
+    volumes:
+      - ../../services/ecommerce/backend:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis-node-1:
+        condition: service_healthy
+    command: celery -A src.tasks beat --loglevel=info --scheduler celery.beat:PersistentScheduler
+    networks:
+      - shopfds-network
+    restart: unless-stopped
+
+  # Flower - Celery 모니터링 대시보드
+  flower:
+    build:
+      context: ../../services/ecommerce/backend
+      dockerfile: Dockerfile
+    container_name: shopfds-flower
+    env_file:
+      - .env
+    environment:
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASSWORD:-admin}@rabbitmq:5672/${RABBITMQ_VHOST:-shopfds}
+      CELERY_RESULT_BACKEND: redis://redis-node-1:6379/0
+      FLOWER_PORT: 5555
+      FLOWER_BASIC_AUTH: ${FLOWER_USER:-admin}:${FLOWER_PASSWORD:-admin}
+    ports:
+      - "5555:5555"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis-node-1:
+        condition: service_healthy
+    command: celery -A src.tasks flower --port=5555 --basic_auth=${FLOWER_USER:-admin}:${FLOWER_PASSWORD:-admin}
+    networks:
+      - shopfds-network
+    restart: unless-stopped
+
   # 이커머스 백엔드 (FastAPI)
   ecommerce-backend:
     build:
