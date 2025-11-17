@@ -150,13 +150,51 @@ npm run format
 - **API 엔드포인트**: `/kebab-case`
 - **데이터베이스**: `snake_case`
 
+## Windows 환경 호환성 규칙
+
+### [중요] 유니코드 및 이모지 사용 금지
+Windows 환경의 cp949 인코딩 문제를 방지하기 위해 다음 규칙을 **반드시** 준수:
+
+1. **이모지 사용 금지**
+   - 절대 사용 금지: ✅ ❌ ✓ ✗ 🎉 ⚠️ 💨 🔥 ⚡ 🚨 등 모든 이모지
+   - Python 코드, 로그 메시지, 주석, 문서에서 모두 금지
+
+2. **ASCII 문자만 사용**
+   - 성공/실패 표시: [OK], [FAIL], [SUCCESS], [ERROR], [WARNING]
+   - 체크 표시: [x], [ ], [DONE], [TODO]
+   - 구분선: === (헤더), --- (섹션), *** (중요)
+   - 강조: UPPERCASE, **bold** (마크다운), >> (화살표)
+
+3. **코드 예시**
+```python
+# CORRECT: ASCII 문자만 사용
+print("[OK] 작업 완료")
+print("[FAIL] 오류 발생")
+logger.info("[SUCCESS] 테스트 통과")
+
+# WRONG: 이모지 또는 특수 유니코드 문자 사용
+# print("✅ 작업 완료")  # UnicodeEncodeError 발생
+# print("❌ 오류 발생")  # cp949 인코딩 실패
+```
+
+4. **Git 커밋 메시지**
+   - 이모지 prefix 사용 금지
+   - 대신 텍스트 태그 사용: [feat], [fix], [docs], [test], [refactor]
+
+5. **적용 범위**
+   - 모든 Python 스크립트
+   - 모든 로그 출력
+   - 모든 테스트 코드
+   - 모든 문서 파일 (README, 가이드 등)
+   - CI/CD 스크립트
+
 ## CI/CD Guidelines
 
 ### 자주 발생하는 CI 오류 및 빠른 해결법
 
 **주의**: 커밋 전 반드시 아래 명령어들을 실행하여 CI 실패를 예방하세요!
 
-#### 🔥 가장 빈번한 CI 실패 원인 TOP 3
+#### [HOT] 가장 빈번한 CI 실패 원인 TOP 3
 
 1. **Black 포맷팅 미적용** (전체 CI 실패의 60%)
 2. **Ruff 린팅 오류** (F401 미사용 import, E712 불리언 비교 등)
@@ -164,7 +202,7 @@ npm run format
 
 ---
 
-#### 💨 빠른 해결: 전체 서비스 한 번에 검증 및 수정
+#### [QUICK] 빠른 해결: 전체 서비스 한 번에 검증 및 수정
 
 **모든 Python 서비스 자동 포맷팅 + 린팅**:
 ```bash
@@ -191,25 +229,25 @@ done
 
 ---
 
-#### ⚡ 자주 발생하는 Ruff 오류 패턴 및 자동 수정
+#### [COMMON] 자주 발생하는 Ruff 오류 패턴 및 자동 수정
 
 **F401: 미사용 import**
 ```python
-# ❌ 잘못된 코드
+# [WRONG] 잘못된 코드
 from uuid import UUID  # 사용하지 않음
 from typing import Optional  # 사용하지 않음
 
-# ✅ 자동 수정
+# [AUTO-FIX] 자동 수정
 ruff check src/ --fix
 ```
 
 **E712: 불리언 비교**
 ```python
-# ❌ 잘못된 코드
+# [WRONG] 잘못된 코드
 if user.is_active == True:
     pass
 
-# ✅ 올바른 코드
+# [CORRECT] 올바른 코드
 if user.is_active:
     pass
 
@@ -219,13 +257,13 @@ ruff check src/ --fix
 
 **E722: Bare except (보안 위험)**
 ```python
-# ❌ 잘못된 코드
+# [WRONG] 잘못된 코드
 try:
     risky_operation()
 except:  # 모든 예외를 무시 (위험!)
     pass
 
-# ✅ 올바른 코드
+# [CORRECT] 올바른 코드
 try:
     risky_operation()
 except Exception:  # 명시적으로 Exception 지정
@@ -236,12 +274,12 @@ except Exception:  # 명시적으로 Exception 지정
 
 **F841: 미사용 변수**
 ```python
-# ❌ 잘못된 코드
+# [WRONG] 잘못된 코드
 def process_data():
     result = expensive_calculation()  # 사용하지 않음
     return True
 
-# ✅ 올바른 코드
+# [CORRECT] 올바른 코드
 def process_data():
     expensive_calculation()  # 반환값이 필요없으면 할당하지 않음
     return True
@@ -255,7 +293,7 @@ def process_data():
 
 ---
 
-#### 🚨 CI 실패 시 긴급 대응 절차
+#### [URGENT] CI 실패 시 긴급 대응 절차
 
 **1단계: 로컬에서 CI 재현**
 ```bash
@@ -295,36 +333,36 @@ git push
 
 ---
 
-#### 📋 CI 통과를 위한 최종 체크리스트
+#### [CHECKLIST] CI 통과를 위한 최종 체크리스트
 
 커밋 전 **반드시** 확인:
 
 ```bash
-# ✅ 1. Black 포맷팅 (모든 Python 파일)
+# [CHECK] 1. Black 포맷팅 (모든 Python 파일)
 cd services/ecommerce/backend && black src/
 cd services/fds && black src/
 cd services/ml-service && black src/
 cd services/admin-dashboard/backend && black src/
 
-# ✅ 2. Ruff 린팅 (자동 수정 가능한 오류)
+# [CHECK] 2. Ruff 린팅 (자동 수정 가능한 오류)
 cd services/ecommerce/backend && ruff check src/ --fix
 cd services/fds && ruff check src/ --fix
 cd services/ml-service && ruff check src/ --fix
 cd services/admin-dashboard/backend && ruff check src/ --fix
 
-# ✅ 3. 최종 검증 (CI와 동일)
+# [CHECK] 3. 최종 검증 (CI와 동일)
 cd services/ecommerce/backend && black --check src/ && ruff check src/
 cd services/fds && black --check src/ && ruff check src/
 cd services/ml-service && black --check src/ && ruff check src/
 cd services/admin-dashboard/backend && black --check src/ && ruff check src/
 
-# ✅ 4. 테스트 실행 (선택사항, 시간 있으면)
+# [CHECK] 4. 테스트 실행 (선택사항, 시간 있으면)
 pytest tests/unit -v
 ```
 
 ---
 
-#### 🛠️ CI 오류 자동 방지 팁
+#### [TIPS] CI 오류 자동 방지 팁
 
 **Pre-commit Hook 설정** (권장):
 ```bash
@@ -345,7 +383,7 @@ for service in "${services[@]}"; do
   fi
 done
 
-echo "✅ Pre-commit checks passed!"
+echo "[OK] Pre-commit checks passed!"
 EOF
 
 chmod +x .git/hooks/pre-commit
@@ -672,8 +710,8 @@ print("테스트 통과 (남은 시도: 2회)")
 print("Step 1: 주문 생성 완료")
 
 # WRONG: 특수 Unicode 문자 사용
-print("✓ 테스트 통과")  # UnicodeEncodeError (Windows cp949)
-print("❌ 실패")
+# print("✓ 테스트 통과")  # UnicodeEncodeError (Windows cp949)
+# print("❌ 실패")  # 이모지 사용 금지
 ```
 
 #### 7. pytest.ini 설정 확인
@@ -714,6 +752,12 @@ async def test_user(self, db_session: AsyncSession):
 - [ ] pytest.ini 설정 확인
 
 ## Recent Changes
+- 2025-11-17: Windows 환경 호환성 규칙 추가
+  - 유니코드 및 이모지 사용 금지 규칙 명문화
+  - Windows cp949 인코딩 문제 방지를 위한 ASCII 문자 사용 가이드
+  - 모든 코드, 로그, 문서에서 이모지 대신 텍스트 표현 사용
+  - 성공/실패 표시: [OK], [FAIL], [SUCCESS], [ERROR], [WARNING] 사용
+
 - 2025-11-16 (3): CI/CD Guidelines 대폭 강화 - 자주 발생하는 CI 오류 예방 가이드 추가
   - "자주 발생하는 CI 오류 및 빠른 해결법" 섹션 신규 추가
   - 가장 빈번한 CI 실패 원인 TOP 3: Black 포맷팅(60%), Ruff 린팅, 의존성 누락

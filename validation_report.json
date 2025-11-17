@@ -1,0 +1,465 @@
+{
+  "execution_time": 14.342514,
+  "total_checks": 86,
+  "success_count": 26,
+  "error_count": 34,
+  "warning_count": 2,
+  "success_rate": 30.23255813953488,
+  "details": [
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "ShopFDS Quickstart 가이드 검증 시작"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "1. 사전 요구사항 검증 시작"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 명령어 성공: python --version"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "WARNING",
+      "message": "  경고: 예상 출력을 찾을 수 없음 - Python 3.11"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 명령어 성공: node --version"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "WARNING",
+      "message": "  경고: 예상 출력을 찾을 수 없음 - v18"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: psql --version"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "  에러: 'psql'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는\n배치 파일이 아닙니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: redis-cli --version"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "  에러: 'redis-cli'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는\n배치 파일이 아닙니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 명령어 성공: docker --version"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 명령어 성공: docker-compose --version"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "2. 프로젝트 구조 검증 시작"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/ecommerce/backend"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/ecommerce/frontend"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/fds"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/ml-service"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/admin-dashboard"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: infrastructure/docker"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: infrastructure/k8s"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: infrastructure/nginx"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: specs/001-ecommerce-fds-platform"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: docker-compose.yml"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/ecommerce/backend/requirements.txt"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/ecommerce/frontend/package.json"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: services/fds/requirements.txt"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: infrastructure/nginx/nginx.conf"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 파일 존재: specs/001-ecommerce-fds-platform/spec.md"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "3. 데이터베이스 설정 검증 시작"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: docker exec shopfds_postgres psql -U postgres -c \"SELECT version();\" 2>/dev/null"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: docker exec shopfds_redis redis-cli ping 2>/dev/null"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "4. 서비스 실행 검증 시작"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 포트 8000 사용 중 (ecommerce-backend)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 포트 8001 사용 중 (fds)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 포트 8002 사용 중 (ml-service)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:28",
+      "level": "SUCCESS",
+      "message": "[OK] 포트 8003 사용 중 (admin-dashboard)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:30",
+      "level": "ERROR",
+      "message": "[FAIL] 포트 3000 사용하지 않음 (ecommerce-frontend)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:32",
+      "level": "ERROR",
+      "message": "[FAIL] 포트 3001 사용하지 않음 (admin-frontend)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:34",
+      "level": "ERROR",
+      "message": "[FAIL] 포트 80 사용하지 않음 (nginx)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:34",
+      "level": "SUCCESS",
+      "message": "[OK] 포트 5432 사용 중 (postgresql)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:34",
+      "level": "SUCCESS",
+      "message": "[OK] 포트 6379 사용 중 (redis)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:35",
+      "level": "ERROR",
+      "message": "[FAIL] API 접근 실패: ecommerce-backend (http://localhost:8000/health) - Remote end closed connection without response"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:35",
+      "level": "ERROR",
+      "message": "[FAIL] API 접근 실패: fds (http://localhost:8001/health) - Remote end closed connection without response"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:35",
+      "level": "SUCCESS",
+      "message": "[OK] API 응답 정상: ml-service (http://localhost:8002/health)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:35",
+      "level": "ERROR",
+      "message": "[FAIL] API 접근 실패: admin-dashboard (http://localhost:8003/health) - Remote end closed connection without response"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:38",
+      "level": "ERROR",
+      "message": "[FAIL] API 접근 실패: ecommerce-frontend (http://localhost:3000) - Remote end closed connection without response"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:38",
+      "level": "ERROR",
+      "message": "[FAIL] API 접근 실패: admin-frontend (http://localhost:3001) - Remote end closed connection without response"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] API 접근 실패: nginx-gateway (http://localhost/api/v1/health) - <urlopen error [WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다>"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "5. API 테스트 검증 시작"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/ecommerce/backend && python -m pytest tests/unit -v --tb=short"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/fds && python -m pytest tests/unit -v --tb=short"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/ml-service && python -m pytest tests/unit -v --tb=short"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/admin-dashboard/backend && python -m pytest tests/unit -v --tb=short"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "6. 개발 워크플로우 검증 시작"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/ecommerce/backend && black --check src/"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/ecommerce/backend && ruff check src/"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/fds && black --check src/"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 명령어 실패: cd services/fds && ruff check src/"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "  에러: 지정된 경로를 찾을 수 없습니다.\n"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "ERROR",
+      "message": "[FAIL] 파일 없음: .git/hooks/pre-commit"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "검증 결과 요약"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "============================================================"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "총 검사 항목: 86"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "성공: 26 (30.2%)"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "실패: 34"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "경고: 2"
+    },
+    {
+      "timestamp": "2025-11-17 11:01:42",
+      "level": "INFO",
+      "message": "실행 시간: 14.34초"
+    }
+  ]
+}
