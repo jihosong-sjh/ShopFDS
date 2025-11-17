@@ -63,32 +63,18 @@ services:
       if [ ! -s /var/lib/postgresql/data/pgdata/PG_VERSION ]; then
         echo '[INFO] Initializing replica from master using pg_basebackup...'
         rm -rf /var/lib/postgresql/data/pgdata/*
-        PGPASSWORD=$${POSTGRES_REPLICATION_PASSWORD} pg_basebackup \
-          -h postgres \
-          -D /var/lib/postgresql/data/pgdata \
-          -U $${POSTGRES_REPLICATION_USER} \
-          -P \
-          -v \
-          -R \
-          -X stream \
-          -C -S replica_slot_1
 
-        # Create standby.signal to enable replica mode
-        touch /var/lib/postgresql/data/pgdata/standby.signal
+        # Run pg_basebackup as postgres user
+        # -R option automatically creates standby.signal and sets primary_conninfo
+        gosu postgres bash -c \"PGPASSWORD=\$${POSTGRES_REPLICATION_PASSWORD} pg_basebackup -h postgres -D /var/lib/postgresql/data/pgdata -U \$${POSTGRES_REPLICATION_USER} -P -v -R -X stream -S replica_slot_1\"
 
-        # Set primary connection info
-        cat >> /var/lib/postgresql/data/pgdata/postgresql.auto.conf <<EOF
-primary_conninfo = 'host=postgres port=5432 user=$${POSTGRES_REPLICATION_USER} password=$${POSTGRES_REPLICATION_PASSWORD} application_name=replica-node-1'
-primary_slot_name = 'replica_slot_1'
-EOF
-
-        echo '[SUCCESS] Replica initialized successfully'
+        echo '[SUCCESS] Replica initialized successfully (pg_basebackup -R created standby.signal and primary_conninfo automatically)'
       else
         echo '[INFO] Replica already initialized, starting...'
       fi
 
-      # Start PostgreSQL with custom config
-      postgres -c config_file=/etc/postgresql/postgresql.conf
+      # Start PostgreSQL with custom config as postgres user
+      exec gosu postgres postgres -c config_file=/etc/postgresql/postgresql.conf
       "
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
@@ -429,7 +415,11 @@ EOF
       - prometheus
 
 volumes:
-  postgres_data:
+  postgres_master_data:
+    driver: local
+  postgres_replica_data:
+    driver: local
+  postgres_wal_archive:
     driver: local
   redis_data:
     driver: local
