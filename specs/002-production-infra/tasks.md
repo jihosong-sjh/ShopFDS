@@ -63,26 +63,26 @@
 
 ### PostgreSQL 복제 설정
 
-- [ ] T011 [P] [US1] infrastructure/docker/postgres/master.conf 생성 (스트리밍 복제 활성화, wal_level=replica, max_wal_senders=5)
-- [ ] T012 [P] [US1] infrastructure/docker/postgres/replica.conf 생성 (hot_standby=on, primary_conninfo)
-- [ ] T013 [US1] infrastructure/docker/docker-compose.yml에 postgres-replica 서비스 추가 (T011~T012 의존)
-- [ ] T014 [P] [US1] infrastructure/scripts/init-postgres-replication.sh 생성 (replicator 사용자 생성, pg_basebackup)
+- [X] T011 [P] [US1] infrastructure/docker/postgres/master.conf 생성 (스트리밍 복제 활성화, wal_level=replica, max_wal_senders=5)
+- [X] T012 [P] [US1] infrastructure/docker/postgres/replica.conf 생성 (hot_standby=on, primary_conninfo)
+- [X] T013 [US1] infrastructure/docker/docker-compose.yml에 postgres-replica 서비스 추가 (T011~T012 의존)
+- [X] T014 [P] [US1] infrastructure/scripts/init-postgres-replication.sh 생성 (replicator 사용자 생성, pg_basebackup)
 
 ### 애플리케이션 연결 풀 수정
 
-- [ ] T015 [US1] services/ecommerce/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리, get_read_db()/get_write_db() 함수 추가
-- [ ] T016 [US1] services/fds/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
-- [ ] T017 [US1] services/ml-service/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
-- [ ] T018 [US1] services/admin-dashboard/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
+- [X] T015 [US1] services/ecommerce/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리, get_read_db()/get_write_db() 함수 추가
+- [X] T016 [US1] services/fds/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
+- [X] T017 [US1] services/ml-service/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
+- [X] T018 [US1] services/admin-dashboard/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
 
 ### 복제 모니터링
 
-- [ ] T019 [US1] Alembic 마이그레이션 생성: ReplicationStatus 모델 추가 in services/ecommerce/backend/alembic/versions/ (T015 의존)
-- [ ] T020 [US1] services/ecommerce/backend/src/utils/replication_monitor.py 생성: check_replication_lag() 함수, pg_stat_replication 쿼리
+- [X] T019 [US1] Alembic 마이그레이션 생성: ReplicationStatus 모델 추가 in services/ecommerce/backend/alembic/versions/ (T015 의존)
+- [X] T020 [US1] services/ecommerce/backend/src/utils/replication_monitor.py 생성: check_replication_lag() 함수, pg_stat_replication 쿼리
 
 ### 통합 테스트
 
-- [ ] T021 [US1] tests/infrastructure/test_postgres_replication.py 생성: 읽기/쓰기 라우팅, 복제 지연, 폴백 테스트 (T015~T020 의존)
+- [X] T021 [US1] tests/infrastructure/test_postgres_replication.py 생성: 읽기/쓰기 라우팅, 복제 지연, 폴백 테스트 (T015~T020 의존)
 
 **검증 포인트**:
 1. 읽기 전용 연결 풀을 통해 Replica에서 데이터 조회

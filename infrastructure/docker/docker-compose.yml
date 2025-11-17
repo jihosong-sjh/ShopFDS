@@ -1,10 +1,10 @@
 # version: '3.8'
 
 services:
-  # PostgreSQL 15+ with TimescaleDB extension
+  # PostgreSQL 15+ Master (with TimescaleDB extension)
   postgres:
     image: timescale/timescaledb:latest-pg15
-    container_name: shopfds-postgres
+    container_name: shopfds-postgres-master
     env_file:
       - .env
     environment:
@@ -12,11 +12,17 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_INITDB_ARGS: "-E UTF8"
+      POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER:-replicator}
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD:-replicator_password}
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_master_data:/var/lib/postgresql/data
+      - postgres_wal_archive:/var/lib/postgresql/wal_archive
+      - ./postgres/master.conf:/etc/postgresql/postgresql.conf
       - ./init-scripts:/docker-entrypoint-initdb.d
+      - ../scripts/init-postgres-replication.sh:/docker-entrypoint-initdb.d/99-init-replication.sh
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -24,6 +30,77 @@ services:
       retries: 5
     networks:
       - shopfds-network
+      - shopfds-internal
+
+  # PostgreSQL 15+ Replica (Read-Only)
+  postgres-replica:
+    image: timescale/timescaledb:latest-pg15
+    container_name: shopfds-postgres-replica
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_MASTER_HOST: postgres
+      POSTGRES_REPLICATION_USER: ${POSTGRES_REPLICATION_USER:-replicator}
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD:-replicator_password}
+    ports:
+      - "5433:5432"  # Different external port
+    volumes:
+      - postgres_replica_data:/var/lib/postgresql/data
+      - ./postgres/replica.conf:/etc/postgresql/postgresql.conf
+    command: |
+      bash -c "
+      # Wait for master to be ready
+      until pg_isready -h postgres -U $${POSTGRES_USER}; do
+        echo '[INFO] Waiting for master database to be ready...'
+        sleep 2
+      done
+
+      # Check if replica is already initialized
+      if [ ! -s /var/lib/postgresql/data/pgdata/PG_VERSION ]; then
+        echo '[INFO] Initializing replica from master using pg_basebackup...'
+        rm -rf /var/lib/postgresql/data/pgdata/*
+        PGPASSWORD=$${POSTGRES_REPLICATION_PASSWORD} pg_basebackup \
+          -h postgres \
+          -D /var/lib/postgresql/data/pgdata \
+          -U $${POSTGRES_REPLICATION_USER} \
+          -P \
+          -v \
+          -R \
+          -X stream \
+          -C -S replica_slot_1
+
+        # Create standby.signal to enable replica mode
+        touch /var/lib/postgresql/data/pgdata/standby.signal
+
+        # Set primary connection info
+        cat >> /var/lib/postgresql/data/pgdata/postgresql.auto.conf <<EOF
+primary_conninfo = 'host=postgres port=5432 user=$${POSTGRES_REPLICATION_USER} password=$${POSTGRES_REPLICATION_PASSWORD} application_name=replica-node-1'
+primary_slot_name = 'replica_slot_1'
+EOF
+
+        echo '[SUCCESS] Replica initialized successfully'
+      else
+        echo '[INFO] Replica already initialized, starting...'
+      fi
+
+      # Start PostgreSQL with custom config
+      postgres -c config_file=/etc/postgresql/postgresql.conf
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shopfds-network
+      - shopfds-internal
 
   # Redis 7+
   redis:
