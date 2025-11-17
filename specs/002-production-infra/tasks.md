@@ -44,12 +44,12 @@
 
 ### Docker Compose 기본 확장
 
-- [ ] T005 [P] infrastructure/docker/docker-compose.yml에 RabbitMQ 서비스 추가
-- [ ] T006 [P] infrastructure/docker/docker-compose.monitoring.yml 생성 (Prometheus, Grafana, Alertmanager)
-- [ ] T007 infrastructure/docker/docker-compose.yml에 Elasticsearch, Logstash, Kibana 서비스 추가 (T006 의존)
-- [ ] T008 [P] infrastructure/docker/.env.example 업데이트 (Redis Cluster, RabbitMQ, ELK 환경 변수)
-- [ ] T009 [P] infrastructure/docker/docker-compose.yml에 내부 네트워크 설정 추가 (shopfds-internal, shopfds-monitoring)
-- [ ] T010 모든 Docker Compose 파일 검증: docker-compose config (T005~T009 의존)
+- [X] T005 [P] infrastructure/docker/docker-compose.yml에 RabbitMQ 서비스 추가
+- [X] T006 [P] infrastructure/docker/docker-compose.monitoring.yml 생성 (Prometheus, Grafana, Alertmanager)
+- [X] T007 infrastructure/docker/docker-compose.yml에 Elasticsearch, Logstash, Kibana 서비스 추가 (T006 의존)
+- [X] T008 [P] infrastructure/docker/.env.example 업데이트 (Redis Cluster, RabbitMQ, ELK 환경 변수)
+- [X] T009 [P] infrastructure/docker/docker-compose.yml에 내부 네트워크 설정 추가 (shopfds-internal, shopfds-monitoring)
+- [X] T010 모든 Docker Compose 파일 검증: docker-compose config (T005~T009 의존)
 
 **검증 포인트**: docker-compose config 오류 없이 실행, 모든 서비스 네트워크 연결 가능
 

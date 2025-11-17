@@ -42,6 +42,29 @@ services:
     networks:
       - shopfds-network
 
+  # RabbitMQ 3.12+ (Message Queue for Celery)
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: shopfds-rabbitmq
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-admin}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-shopfds}
+    ports:
+      - "5672:5672"    # AMQP protocol
+      - "15672:15672"  # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopfds-network
+
   # 이커머스 백엔드 (FastAPI)
   ecommerce-backend:
     build:
@@ -186,6 +209,81 @@ services:
     networks:
       - shopfds-network
 
+  # Elasticsearch 7.17 (Log Storage)
+  elasticsearch:
+    image: elasticsearch:7.17.15
+    container_name: shopfds-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - cluster.name=shopfds-logs
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - shopfds-network
+
+  # Logstash 7.17 (Log Processing)
+  logstash:
+    image: logstash:7.17.15
+    container_name: shopfds-logstash
+    ports:
+      - "5044:5044"  # Beats input
+      - "9600:9600"  # Monitoring API
+    volumes:
+      - ../monitoring/logstash/pipeline:/usr/share/logstash/pipeline
+      - ../monitoring/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+    networks:
+      - shopfds-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Kibana 7.17 (Log Visualization)
+  kibana:
+    image: kibana:7.17.15
+    container_name: shopfds-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    volumes:
+      - ../monitoring/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ../monitoring/kibana/dashboards:/usr/share/kibana/dashboards
+    networks:
+      - shopfds-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
   # MLflow (모델 버전 관리)
   mlflow:
     build:
@@ -258,6 +356,10 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  rabbitmq_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
   ml_models:
     driver: local
   mlflow_artifacts:
@@ -269,4 +371,9 @@ volumes:
 
 networks:
   shopfds-network:
+    driver: bridge
+  shopfds-internal:
+    driver: bridge
+    internal: true
+  shopfds-monitoring:
     driver: bridge
