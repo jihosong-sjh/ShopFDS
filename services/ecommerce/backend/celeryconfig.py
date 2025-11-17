@@ -110,3 +110,84 @@ worker_concurrency = int(os.getenv("CELERY_WORKER_CONCURRENCY", "4"))
 # 작업 이벤트 활성화 (Flower 모니터링용)
 worker_send_task_events = True
 task_send_sent_event = True
+
+# =======================
+# Signal Handlers (작업 로깅)
+# =======================
+
+
+def setup_task_signal_handlers(celery_app):
+    """
+    Celery 작업 시그널 핸들러 설정
+
+    작업 시작, 완료, 실패, 재시도 시 CeleryTaskLog에 기록
+    """
+    import asyncio
+    from celery.signals import task_prerun, task_postrun, task_failure, task_retry
+    from src.utils.celery_logger import get_celery_task_logger
+
+    celery_logger = get_celery_task_logger()
+
+    @task_prerun.connect
+    def log_task_start(sender=None, task_id=None, task=None, args=None, kwargs=None, **extra):
+        """작업 시작 시 로깅"""
+        try:
+            # 비동기 함수를 동기적으로 실행
+            asyncio.run(
+                celery_logger.log_task_start(
+                    task_id=task_id,
+                    task_name=sender.name if sender else task.name,
+                    args=args,
+                    kwargs=kwargs,
+                    queue_name=extra.get("queue"),
+                )
+            )
+        except Exception as exc:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"[FAIL] Failed to log task start: {exc}")
+
+    @task_postrun.connect
+    def log_task_success(sender=None, task_id=None, task=None, retval=None, **extra):
+        """작업 완료 시 로깅"""
+        try:
+            result = {"return_value": str(retval)} if retval else None
+            asyncio.run(
+                celery_logger.log_task_success(
+                    task_id=task_id,
+                    result=result,
+                )
+            )
+        except Exception as exc:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"[FAIL] Failed to log task success: {exc}")
+
+    @task_failure.connect
+    def log_task_error(sender=None, task_id=None, exception=None, traceback=None, **extra):
+        """작업 실패 시 로깅"""
+        try:
+            import traceback as tb_module
+            asyncio.run(
+                celery_logger.log_task_failure(
+                    task_id=task_id,
+                    error=str(exception),
+                    traceback=tb_module.format_exc() if traceback else None,
+                )
+            )
+        except Exception as exc:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"[FAIL] Failed to log task failure: {exc}")
+
+    @task_retry.connect
+    def log_task_retry_handler(sender=None, task_id=None, **extra):
+        """작업 재시도 시 로깅"""
+        try:
+            asyncio.run(
+                celery_logger.log_task_retry(task_id=task_id)
+            )
+        except Exception as exc:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"[FAIL] Failed to log task retry: {exc}")

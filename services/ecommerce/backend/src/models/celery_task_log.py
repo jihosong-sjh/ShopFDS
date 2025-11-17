@@ -10,7 +10,7 @@ from datetime import datetime
 import uuid
 import enum
 
-from src.db.base import Base
+from src.models.base import Base
 
 
 class TaskStatus(str, enum.Enum):

@@ -142,35 +142,35 @@
 
 ### Celery 설정
 
-- [ ] T034 [P] [US3] services/ecommerce/backend/celeryconfig.py 생성 (broker_url=RabbitMQ, result_backend=Redis, task_routes)
-- [ ] T035 [P] [US3] services/fds/celeryconfig.py 생성 (T034와 동일 패턴)
-- [ ] T036 [P] [US3] infrastructure/docker/docker-compose.yml에 celery-worker, celery-beat, flower 서비스 추가 (T005 RabbitMQ 의존)
+- [X] T034 [P] [US3] services/ecommerce/backend/celeryconfig.py 생성 (broker_url=RabbitMQ, result_backend=Redis, task_routes)
+- [X] T035 [P] [US3] services/fds/celeryconfig.py 생성 (T034와 동일 패턴)
+- [X] T036 [P] [US3] infrastructure/docker/docker-compose.yml에 celery-worker, celery-beat, flower 서비스 추가 (T005 RabbitMQ 의존)
 
 ### Ecommerce 비동기 작업
 
-- [ ] T037 [P] [US3] services/ecommerce/backend/src/tasks/email.py 생성: send_order_confirmation_email(), send_password_reset_email() Celery 작업
-- [ ] T038 [P] [US3] services/ecommerce/backend/src/tasks/reports.py 생성: generate_sales_report() Celery 작업
-- [ ] T039 [P] [US3] services/ecommerce/backend/src/tasks/cleanup.py 생성: cleanup_old_sessions(), archive_old_logs() Celery Beat 스케줄 작업
-- [ ] T040 [US3] services/ecommerce/backend/src/services/order_service.py 수정: 주문 생성 시 send_order_confirmation_email.delay() 호출 (T037 의존)
+- [X] T037 [P] [US3] services/ecommerce/backend/src/tasks/email.py 생성: send_order_confirmation_email(), send_password_reset_email() Celery 작업
+- [X] T038 [P] [US3] services/ecommerce/backend/src/tasks/reports.py 생성: generate_sales_report() Celery 작업
+- [X] T039 [P] [US3] services/ecommerce/backend/src/tasks/cleanup.py 생성: cleanup_old_sessions(), archive_old_logs() Celery Beat 스케줄 작업
+- [X] T040 [US3] services/ecommerce/backend/src/services/order_service.py 수정: 주문 생성 시 send_order_confirmation_email.delay() 호출 (T037 의존)
 
 ### FDS 배치 평가
 
-- [ ] T041 [P] [US3] services/fds/src/tasks/batch_evaluation.py 생성: batch_evaluate_transactions() Celery Beat 작업 (매일 자정)
-- [ ] T042 [US3] services/fds/src/services/batch_service.py 생성: 지난 24시간 거래 재평가 로직 (T041 의존)
+- [X] T041 [P] [US3] services/fds/src/tasks/batch_evaluation.py 생성: batch_evaluate_transactions() Celery Beat 작업 (매일 자정)
+- [X] T042 [US3] services/fds/src/services/batch_service.py 생성: 지난 24시간 거래 재평가 로직 (T041 의존)
 
 ### Celery 작업 로깅
 
-- [ ] T043 [US3] Alembic 마이그레이션 생성: CeleryTaskLog 모델 추가 in services/ecommerce/backend/alembic/versions/
-- [ ] T044 [US3] services/ecommerce/backend/src/utils/celery_logger.py 생성: Celery 작업 시작/완료 시 CeleryTaskLog 기록 (T043 의존)
-- [ ] T045 [US3] celeryconfig.py 수정: task_prerun, task_postrun 시그널 핸들러 추가 (T044 의존)
+- [X] T043 [US3] Alembic 마이그레이션 생성: CeleryTaskLog 모델 추가 in services/ecommerce/backend/alembic/versions/
+- [X] T044 [US3] services/ecommerce/backend/src/utils/celery_logger.py 생성: Celery 작업 시작/완료 시 CeleryTaskLog 기록 (T043 의존)
+- [X] T045 [US3] celeryconfig.py 수정: task_prerun, task_postrun 시그널 핸들러 추가 (T044 의존)
 
 ### Flower 모니터링
 
-- [ ] T046 [US3] infrastructure/docker/docker-compose.yml Flower 서비스 환경 변수 설정 (basic auth, port 5555) (T036 의존)
+- [X] T046 [US3] infrastructure/docker/docker-compose.yml Flower 서비스 환경 변수 설정 (basic auth, port 5555) (T036 의존)
 
 ### 통합 테스트
 
-- [ ] T047 [US3] tests/infrastructure/test_celery_tasks.py 생성: 이메일 발송, 배치 평가, 리포트 생성, 재시도, DLQ 테스트 (T037~T046 의존)
+- [X] T047 [US3] tests/infrastructure/test_celery_tasks.py 생성: 이메일 발송, 배치 평가, 리포트 생성, 재시도, DLQ 테스트 (T037~T046 의존)
 
 **검증 포인트**:
 1. 주문 생성 시 이메일 발송 작업이 RabbitMQ 큐에 추가
