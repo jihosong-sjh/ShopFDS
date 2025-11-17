@@ -10,8 +10,10 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.base import get_db
+from src.models.user import User
 from src.services.cart_service import CartService
 from src.utils.exceptions import ResourceNotFoundError, ValidationError
+from src.middleware.auth import get_current_user
 
 
 router = APIRouter(prefix="/v1/cart", tags=["장바구니"])
@@ -69,16 +71,14 @@ class CartSummaryResponse(BaseModel):
 @router.get("", response_model=CartSummaryResponse)
 async def get_cart(
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     장바구니 조회
 
     현재 사용자의 장바구니 정보를 조회합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    # 임시로 테스트 user_id 사용
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         cart_service = CartService(db)
@@ -97,7 +97,7 @@ async def get_cart(
 async def add_to_cart(
     request: AddToCartRequest,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     장바구니에 상품 추가
@@ -105,8 +105,7 @@ async def add_to_cart(
     지정한 상품을 장바구니에 추가합니다.
     이미 장바구니에 있는 상품이면 수량이 증가합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         cart_service = CartService(db)
@@ -135,15 +134,14 @@ async def update_cart_item(
     cart_item_id: str,
     request: UpdateCartItemRequest,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     장바구니 항목 수량 변경
 
     지정한 장바구니 항목의 수량을 변경합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         cart_service = CartService(db)
@@ -172,15 +170,14 @@ async def update_cart_item(
 async def remove_from_cart(
     cart_item_id: str,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     장바구니 항목 삭제
 
     지정한 항목을 장바구니에서 삭제합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         cart_service = CartService(db)
@@ -200,15 +197,14 @@ async def remove_from_cart(
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def clear_cart(
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     장바구니 전체 비우기
 
     현재 사용자의 장바구니를 전부 비웁니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         cart_service = CartService(db)

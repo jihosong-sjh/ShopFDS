@@ -11,7 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.base import get_db
 from src.models.order import OrderStatus
+from src.models.user import User
 from src.services.order_service import OrderService
+from src.middleware.auth import get_current_user
 from src.utils.exceptions import (
     ResourceNotFoundError,
     ValidationError,
@@ -96,7 +98,7 @@ class CreateOrderResponse(BaseModel):
 async def create_order(
     request: CreateOrderRequest,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     주문 생성
@@ -104,8 +106,7 @@ async def create_order(
     장바구니의 상품으로 주문을 생성하고 결제를 처리합니다.
     FDS 평가를 거쳐 위험도에 따라 자동 승인/추가 인증/자동 차단됩니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         order_service = OrderService(db)
@@ -165,15 +166,14 @@ async def get_orders(
     page: int = Query(1, ge=1, description="페이지 번호"),
     page_size: int = Query(20, ge=1, le=100, description="페이지 크기"),
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     주문 목록 조회
 
     현재 사용자의 주문 목록을 조회합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         order_service = OrderService(db)
@@ -220,15 +220,14 @@ async def get_orders(
 async def get_order(
     order_id: str,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     주문 상세 조회
 
     지정한 주문의 상세 정보를 조회합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         order_service = OrderService(db)
@@ -272,15 +271,14 @@ async def get_order(
 async def cancel_order(
     order_id: str,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     주문 취소
 
     지정한 주문을 취소합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         order_service = OrderService(db)
@@ -309,15 +307,14 @@ async def cancel_order(
 async def track_order(
     order_id: str,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     주문 추적
 
     주문의 배송 상태를 추적합니다.
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         order_service = OrderService(db)
@@ -363,7 +360,7 @@ async def complete_order_with_otp(
     order_id: str,
     request: CompleteOrderWithOTPRequest,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(get_current_user)  # JWT 인증
+    current_user: User = Depends(get_current_user)  # JWT 인증
 ):
     """
     OTP 검증 후 주문 완료
@@ -373,8 +370,7 @@ async def complete_order_with_otp(
     - OTP 검증 실패 시: 401 Unauthorized 반환 (시도 횟수 차감)
     - 최대 시도 횟수 초과 시: 429 Too Many Requests 반환
     """
-    # TODO: JWT 인증에서 user_id 가져오기
-    user_id = "test-user-id"
+    user_id = str(current_user.id)
 
     try:
         order_service = OrderService(db)
