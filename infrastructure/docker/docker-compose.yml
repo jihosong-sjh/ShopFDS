@@ -375,7 +375,7 @@ services:
         condition: service_healthy
       redis-node-1:
         condition: service_healthy
-    command: celery -A src.tasks flower --port=5555 --basic_auth=${FLOWER_USER:-admin}:${FLOWER_PASSWORD:-admin}
+    command: celery -A src.tasks flower --port=5555 --basic-auth=${FLOWER_USER:-admin}:${FLOWER_PASSWORD:-admin}
     networks:
       - shopfds-network
     restart: unless-stopped
@@ -559,7 +559,7 @@ services:
     ports:
       - "5044:5044"  # Beats input
       - "8080:8080"  # HTTP input (for direct app logging)
-      - "5000:5000"  # TCP input (for syslog-style logs)
+      - "5001:5000"  # TCP input (for syslog-style logs) - Changed to 5001 to avoid conflict with MLflow
       - "9600:9600"  # Monitoring API
     volumes:
       - ../monitoring/logstash/pipeline:/usr/share/logstash/pipeline

@@ -1,0 +1,25 @@
+# Kibana Configuration
+# ShopFDS Production Infrastructure
+
+server.host: "0.0.0.0"
+server.port: 5601
+server.name: "shopfds-kibana"
+
+# Elasticsearch connection
+elasticsearch.hosts: ["http://elasticsearch:9200"]
+elasticsearch.requestTimeout: 90000
+
+# Monitoring
+monitoring.ui.container.elasticsearch.enabled: true
+
+# Logging
+logging.dest: stdout
+logging.quiet: false
+logging.verbose: false
+
+# Security (disabled for development)
+xpack.security.enabled: false
+xpack.encryptedSavedObjects.encryptionKey: "shopfds-kibana-encryption-key-32-chars"
+
+# UI settings
+i18n.locale: "ko"

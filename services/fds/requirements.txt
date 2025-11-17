@@ -11,7 +11,9 @@ psycopg[binary]
 
 # Redis
 redis
-aioredis
+
+# Background Tasks
+celery[redis]
 
 # HTTP Client (CTI 연동용)
 httpx

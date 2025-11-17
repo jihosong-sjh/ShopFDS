@@ -265,11 +265,11 @@
 
 ### 최종 통합 테스트
 
-- [ ] T072 전체 인프라 통합 테스트: docker-compose up -d 실행 후 모든 서비스 Health Check 통과, 2분 이내 시작 (T010, T021, T033, T047, T065 의존)
+- [X] T072 전체 인프라 통합 테스트: docker-compose up -d 실행 후 모든 서비스 Health Check 통과, 2분 이내 시작 (T010, T021, T033, T047, T065 의존)
 
 ### 문서화
 
-- [ ] T073 specs/002-production-infra/quickstart.md 작성: 로컬 개발 환경 설정 가이드, 트러블슈팅 (T066~T072 의존)
+- [X] T073 specs/002-production-infra/quickstart.md 작성: 로컬 개발 환경 설정 가이드, 트러블슈팅 (T066~T072 의존)
 
 **검증 포인트**:
 - 전체 인프라가 `docker-compose up -d` 명령어로 2분 이내 시작

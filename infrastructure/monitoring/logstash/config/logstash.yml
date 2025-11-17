@@ -1,0 +1,22 @@
+# Logstash Configuration
+# ShopFDS Production Infrastructure
+
+http.host: "0.0.0.0"
+http.port: 9600
+
+# Pipeline configuration
+path.config: /usr/share/logstash/pipeline
+config.reload.automatic: true
+config.reload.interval: 3s
+
+# Logging
+log.level: info
+path.logs: /var/log/logstash
+
+# Monitoring
+xpack.monitoring.enabled: false
+
+# Performance tuning
+pipeline.workers: 2
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
