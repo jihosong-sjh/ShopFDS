@@ -243,12 +243,12 @@
 
 ### Makefile 및 스크립트
 
-- [ ] T066 [P] [US5] infrastructure/Makefile 생성 (dev, test, migrate, seed, clean 타겟)
-- [ ] T067 [P] [US5] infrastructure/scripts/setup.sh 생성 (의존성 설치, Docker 이미지 빌드, 초기 마이그레이션)
-- [ ] T068 [P] [US5] infrastructure/scripts/reset-db.sh 생성 (모든 테이블 삭제, 최신 스키마 재생성)
-- [ ] T069 [P] [US5] infrastructure/scripts/seed-data.py 생성 (사용자 1000명, 주문 10000건, 상품 500개, 리뷰 5000개, 정상 거래 85%, 의심 거래 10%, 사기 거래 5%)
-- [ ] T070 [US5] infrastructure/scripts/seed-data.py 멱등성 보장 로직 추가: --append 플래그, 중복 제거 (T069 의존)
-- [ ] T071 [US5] README.md 업데이트: Quickstart 가이드, 개발 환경 설정 명령어 (T066~T070 의존)
+- [X] T066 [P] [US5] infrastructure/Makefile 생성 (dev, test, migrate, seed, clean 타겟)
+- [X] T067 [P] [US5] infrastructure/scripts/setup.sh 생성 (의존성 설치, Docker 이미지 빌드, 초기 마이그레이션)
+- [X] T068 [P] [US5] infrastructure/scripts/reset-db.sh 생성 (모든 테이블 삭제, 최신 스키마 재생성)
+- [X] T069 [P] [US5] infrastructure/scripts/seed-data.py 생성 (사용자 1000명, 주문 10000건, 상품 500개, 리뷰 5000개, 정상 거래 85%, 의심 거래 10%, 사기 거래 5%)
+- [X] T070 [US5] infrastructure/scripts/seed-data.py 멱등성 보장 로직 추가: --append 플래그, 중복 제거 (T069 의존)
+- [X] T071 [US5] README.md 업데이트: Quickstart 가이드, 개발 환경 설정 명령어 (T066~T070 의존)
 
 **검증 포인트**:
 1. `make setup` 실행 시 Docker Compose, 의존성 설치, DB 마이그레이션 자동 완료
