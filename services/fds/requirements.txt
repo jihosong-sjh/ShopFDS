@@ -45,3 +45,7 @@ mypy
 # Monitoring
 prometheus-client
 sentry-sdk[fastapi]
+
+# XAI Libraries (설명 가능한 AI)
+shap>=0.45.0
+lime>=0.2.0

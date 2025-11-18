@@ -204,15 +204,15 @@
 
 ### Implementation for User Story 7
 
-- [ ] T079 [P] [US7] SHAP 분석 엔진 구현 (TreeExplainer, DeepExplainer) in services/fds/src/services/xai_service.py
-- [ ] T080 [P] [US7] LIME 로컬 모델 근사 코드 구현 in services/fds/src/services/xai_service.py
-- [ ] T081 [US7] Feature 기여도 계산 로직 구현 (워터폴 차트 데이터) in services/fds/src/services/xai_service.py
-- [ ] T082 [US7] SHAP 계산 타임아웃 처리 로직 구현 (5초 제한) in services/fds/src/services/xai_service.py
-- [ ] T083 [US7] XAI 분석 API 구현 (GET /v1/fds/xai/{transaction_id}) in services/fds/src/api/xai.py
-- [ ] T084 [US7] XAI 대시보드 프론트엔드 페이지 생성 in services/admin-dashboard/frontend/src/pages/XAIDashboard.tsx
-- [ ] T085 [US7] 워터폴 차트 컴포넌트 구현 (Recharts) in services/admin-dashboard/frontend/src/components/WaterfallChart.tsx
-- [ ] T086 [US7] 위험 요인 상위 5개 시각화 컴포넌트 구현 in services/admin-dashboard/frontend/src/components/TopRiskFactors.tsx
-- [ ] T087 [US7] SHAP 값 검증 로직 구현 (feature 값과 일치 확인)
+- [X] T079 [P] [US7] SHAP 분석 엔진 구현 (TreeExplainer, DeepExplainer) in services/fds/src/services/xai_service.py
+- [X] T080 [P] [US7] LIME 로컬 모델 근사 코드 구현 in services/fds/src/services/xai_service.py
+- [X] T081 [US7] Feature 기여도 계산 로직 구현 (워터폴 차트 데이터) in services/fds/src/services/xai_service.py
+- [X] T082 [US7] SHAP 계산 타임아웃 처리 로직 구현 (5초 제한) in services/fds/src/services/xai_service.py
+- [X] T083 [US7] XAI 분석 API 구현 (GET /v1/fds/xai/{transaction_id}) in services/fds/src/api/xai.py
+- [X] T084 [US7] XAI 대시보드 프론트엔드 페이지 생성 in services/admin-dashboard/frontend/src/pages/XAIDashboard.tsx
+- [X] T085 [US7] 워터폴 차트 컴포넌트 구현 (Recharts) in services/admin-dashboard/frontend/src/components/WaterfallChart.tsx
+- [X] T086 [US7] 위험 요인 상위 5개 시각화 컴포넌트 구현 in services/admin-dashboard/frontend/src/components/TopRiskFactors.tsx
+- [X] T087 [US7] SHAP 값 검증 로직 구현 (feature 값과 일치 확인)
 
 **Checkpoint**: US7 완료 - XAI 대시보드에서 거래 차단 사유를 3클릭 이내로 확인 가능, SHAP 분석 95%가 5초 이내
 

@@ -23,6 +23,7 @@ from .api.behavior_pattern import router as behavior_pattern_router
 from .api.blacklist import router as blacklist_router
 from .api.network_analysis import router as network_analysis_router
 from .api.rules import router as rules_router
+from .api.xai import router as xai_router
 from .api.health import router as health_router
 from .api.metrics import router as metrics_router
 
@@ -96,6 +97,7 @@ app.include_router(behavior_pattern_router)
 app.include_router(blacklist_router)
 app.include_router(network_analysis_router)
 app.include_router(rules_router)
+app.include_router(xai_router)
 app.include_router(health_router)
 app.include_router(metrics_router)
 
