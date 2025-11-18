@@ -5,7 +5,6 @@ Celery Tasks for Ecommerce Service
 """
 
 from celery import Celery
-import os
 
 # Celery 애플리케이션 인스턴스 생성
 app = Celery("ecommerce_tasks")

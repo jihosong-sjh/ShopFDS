@@ -240,9 +240,7 @@ class OrderService:
             import logging
 
             logger = logging.getLogger(__name__)
-            logger.warning(
-                f"[WARNING] Failed to queue order confirmation email: {e}"
-            )
+            logger.warning(f"[WARNING] Failed to queue order confirmation email: {e}")
 
         # 9. 장바구니 비우기
         for cart_item in cart.items:

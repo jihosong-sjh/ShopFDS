@@ -38,9 +38,7 @@ def generate_sales_report(
         Dict[str, Any]: 리포트 생성 결과
     """
     try:
-        logger.info(
-            f"[Celery] Generating sales report from {start_date} to {end_date}"
-        )
+        logger.info(f"[Celery] Generating sales report from {start_date} to {end_date}")
 
         # 날짜 기본값 설정
         if not end_date:
@@ -53,19 +51,18 @@ def generate_sales_report(
 
         # 포맷에 따라 변환
         if report_format == "csv":
-            report_content = _convert_to_csv(report_data)
+            _convert_to_csv(report_data)
         elif report_format == "pdf":
-            report_content = _convert_to_pdf(report_data)
+            _convert_to_pdf(report_data)
         else:
-            report_content = json.dumps(report_data, ensure_ascii=False, indent=2)
+            json.dumps(report_data, ensure_ascii=False, indent=2)
 
         # TODO: S3나 로컬 파일 시스템에 저장
         report_path = f"/reports/sales_{start_date}_{end_date}.{report_format}"
+        # report_content = _convert_to_csv/pdf/json(report_data)
         # save_report_to_storage(report_path, report_content)
 
-        logger.info(
-            f"[SUCCESS] Sales report generated: {report_path}"
-        )
+        logger.info(f"[SUCCESS] Sales report generated: {report_path}")
 
         return {
             "success": True,
@@ -79,9 +76,7 @@ def generate_sales_report(
         }
 
     except Exception as exc:
-        logger.error(
-            f"[FAIL] Failed to generate sales report: {exc}"
-        )
+        logger.error(f"[FAIL] Failed to generate sales report: {exc}")
 
         # 재시도 로직
         if self.request.retries < self.max_retries:
@@ -131,9 +126,7 @@ def _convert_to_csv(report_data: Dict[str, Any]) -> str:
     """리포트 데이터를 CSV 포맷으로 변환"""
     csv_lines = ["Date,Revenue,Order Count"]
     for daily in report_data.get("daily_sales", []):
-        csv_lines.append(
-            f"{daily['date']},{daily['revenue']},{daily['order_count']}"
-        )
+        csv_lines.append(f"{daily['date']},{daily['revenue']},{daily['order_count']}")
     return "\n".join(csv_lines)
 
 
