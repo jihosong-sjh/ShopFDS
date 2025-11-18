@@ -268,13 +268,13 @@
 
 **목적**: 여러 사용자 스토리에 영향을 주는 개선 사항
 
-- [ ] T108 [P] 통합 FDS 평가 엔진 구현 (모든 엔진 조합) in services/fds/src/engines/evaluation_engine.py
-- [ ] T109 통합 FDS 평가 API 구현 (POST /v1/fds/evaluate) in services/fds/src/api/evaluation.py
-- [ ] T110 [P] 성능 최적화 (Redis 캐싱 확장, 쿼리 최적화)
-- [ ] T111 [P] 보안 강화 (API Rate Limiting, JWT 검증)
-- [ ] T112 [P] Prometheus 메트릭 추가 (FDS 평가 시간, 모델 추론 시간)
-- [ ] T113 [P] Grafana 대시보드 생성 (성능 지표, 사기 탐지율)
-- [ ] T114 [P] API 문서 업데이트 (Swagger/OpenAPI)
+- [X] T108 [P] 통합 FDS 평가 엔진 구현 (모든 엔진 조합) in services/fds/src/engines/evaluation_engine.py
+- [X] T109 통합 FDS 평가 API 구현 (POST /v1/fds/evaluate) in services/fds/src/api/evaluation.py
+- [X] T110 [P] 성능 최적화 (Redis 캐싱 확장, 쿼리 최적화)
+- [X] T111 [P] 보안 강화 (API Rate Limiting, JWT 검증)
+- [X] T112 [P] Prometheus 메트릭 추가 (FDS 평가 시간, 모델 추론 시간)
+- [X] T113 [P] Grafana 대시보드 생성 (성능 지표, 사기 탐지율)
+- [X] T114 [P] API 문서 업데이트 (Swagger/OpenAPI)
 - [ ] T115 통합 테스트 작성 (전체 FDS 평가 플로우)
 - [ ] T116 성능 테스트 실행 (1,000 TPS 부하, P95 50ms 검증)
 - [ ] T117 quickstart.md 검증 및 업데이트

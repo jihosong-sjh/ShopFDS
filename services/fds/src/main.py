@@ -17,6 +17,9 @@ load_dotenv(dotenv_path=env_path)
 
 from .models import init_db, close_db
 from .api.evaluation import router as evaluation_router
+from .api.integrated_evaluation import (
+    router as integrated_evaluation_router,
+)  # Phase 12: T109
 from .api.threat import router as threat_router
 from .api.device_fingerprint import router as device_fingerprint_router
 from .api.behavior_pattern import router as behavior_pattern_router
@@ -27,6 +30,7 @@ from .api.xai import router as xai_router
 from .api.verification import router as verification_router
 from .api.health import router as health_router
 from .api.metrics import router as metrics_router
+from .api.prometheus import router as prometheus_router  # Phase 12: T112
 
 # 로깅 설정
 logging.basicConfig(
@@ -92,6 +96,7 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(evaluation_router)
+app.include_router(integrated_evaluation_router)  # Phase 12: T109
 app.include_router(threat_router)
 app.include_router(device_fingerprint_router)
 app.include_router(behavior_pattern_router)
@@ -102,6 +107,7 @@ app.include_router(xai_router)
 app.include_router(verification_router)
 app.include_router(health_router)
 app.include_router(metrics_router)
+app.include_router(prometheus_router)  # Phase 12: T112
 
 
 @app.get("/", tags=["Root"])
