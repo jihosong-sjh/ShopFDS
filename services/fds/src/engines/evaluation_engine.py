@@ -511,9 +511,7 @@ class EvaluationEngine:
                 review_queue_id=None,  # Phase 5에서 검토 큐 ID 추가 예정
             )
 
-    async def _check_blacklist(
-        self, request: FDSEvaluationRequest
-    ) -> List[RiskFactor]:
+    async def _check_blacklist(self, request: FDSEvaluationRequest) -> List[RiskFactor]:
         """
         블랙리스트 체크
 
@@ -567,7 +565,6 @@ class EvaluationEngine:
                 )
 
         return risk_factors
-
 
 
 # 싱글톤 인스턴스

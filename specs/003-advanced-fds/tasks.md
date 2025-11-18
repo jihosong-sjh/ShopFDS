@@ -92,14 +92,14 @@
 
 ### Implementation for User Story 2
 
-- [ ] T032 [P] [US2] 클라이언트 사이드 행동 패턴 추적 유틸리티 생성 (mousemove/keydown/click 이벤트) in services/ecommerce/frontend/src/utils/behaviorTracking.ts
-- [ ] T033 [P] [US2] 행동 패턴 분석 엔진 구현 (마우스 속도/가속도/곡률 계산) in services/fds/src/engines/behavior_analysis_engine.py
-- [ ] T034 [US2] 키보드 타이핑 패턴 분석 로직 구현 (입력 속도, 백스페이스 빈도) in services/fds/src/engines/behavior_analysis_engine.py
-- [ ] T035 [US2] 클릭스트림 분석 로직 구현 (페이지 체류 시간 이상치 탐지) in services/fds/src/engines/behavior_analysis_engine.py
-- [ ] T036 [US2] 봇 확률 점수 계산 알고리즘 구현 (곡률 < 0.1 → 85점) in services/fds/src/engines/behavior_analysis_engine.py
-- [ ] T037 [US2] 행동 패턴 데이터 수집 API 구현 (POST /v1/fds/behavior-pattern) in services/fds/src/api/behavior_pattern.py
-- [ ] T038 [US2] 봇 탐지 시 추가 인증 트리거 로직 구현 (OTP/CAPTCHA 요구)
-- [ ] T039 [US2] 프론트엔드 통합 (결제 페이지에서 행동 패턴 수집) in services/ecommerce/frontend/src/pages/CheckoutPage.tsx
+- [X] T032 [P] [US2] 클라이언트 사이드 행동 패턴 추적 유틸리티 생성 (mousemove/keydown/click 이벤트) in services/ecommerce/frontend/src/utils/behaviorTracking.ts
+- [X] T033 [P] [US2] 행동 패턴 분석 엔진 구현 (마우스 속도/가속도/곡률 계산) in services/fds/src/engines/behavior_analysis_engine.py
+- [X] T034 [US2] 키보드 타이핑 패턴 분석 로직 구현 (입력 속도, 백스페이스 빈도) in services/fds/src/engines/behavior_analysis_engine.py
+- [X] T035 [US2] 클릭스트림 분석 로직 구현 (페이지 체류 시간 이상치 탐지) in services/fds/src/engines/behavior_analysis_engine.py
+- [X] T036 [US2] 봇 확률 점수 계산 알고리즘 구현 (곡률 < 0.1 → 85점) in services/fds/src/engines/behavior_analysis_engine.py
+- [X] T037 [US2] 행동 패턴 데이터 수집 API 구현 (POST /v1/fds/behavior-pattern) in services/fds/src/api/behavior_pattern.py
+- [X] T038 [US2] 봇 탐지 시 추가 인증 트리거 로직 구현 (OTP/CAPTCHA 요구)
+- [X] T039 [US2] 프론트엔드 통합 (결제 페이지에서 행동 패턴 수집) in services/ecommerce/frontend/src/pages/CheckoutPage.tsx
 
 **Checkpoint**: US2 완료 - 행동 패턴 분석이 봇을 90% 정확도로 탐지하고 추가 인증 자동 요청
 

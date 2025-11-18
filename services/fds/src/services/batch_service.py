@@ -19,9 +19,7 @@ class BatchService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def reevaluate_transactions(
-        self, cutoff_time: datetime
-    ) -> Dict[str, Any]:
+    async def reevaluate_transactions(self, cutoff_time: datetime) -> Dict[str, Any]:
         """
         지난 기간의 거래를 재평가
 
@@ -64,9 +62,7 @@ class BatchService:
             high_risk_count = 0
             false_positive_count = 0
 
-            logger.info(
-                f"[SUCCESS] Re-evaluated {evaluated_count} transactions"
-            )
+            logger.info(f"[SUCCESS] Re-evaluated {evaluated_count} transactions")
 
             return {
                 "success": True,
@@ -77,9 +73,7 @@ class BatchService:
             }
 
         except Exception as exc:
-            logger.error(
-                f"[FAIL] Failed to re-evaluate transactions: {exc}"
-            )
+            logger.error(f"[FAIL] Failed to re-evaluate transactions: {exc}")
             raise
 
     async def _save_reevaluation_result(

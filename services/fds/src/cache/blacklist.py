@@ -345,7 +345,9 @@ class BlacklistManager:
             )
 
         if card_bin:
-            results["card_bin"] = await self.check_entry(BlacklistType.CARD_BIN, card_bin)
+            results["card_bin"] = await self.check_entry(
+                BlacklistType.CARD_BIN, card_bin
+            )
 
         if user_id:
             results["user_id"] = await self.check_entry(BlacklistType.USER_ID, user_id)
