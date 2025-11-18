@@ -14,7 +14,7 @@ from sqlalchemy import (
     Index,
     UUID,
 )
-from sqlalchemy.dialects.postgresql import INET
+from sqlalchemy import String  # String(45) -> String for SQLite compatibility
 from src.models.base import Base
 
 
@@ -24,7 +24,7 @@ class NetworkAnalysis(Base):
     __tablename__ = "network_analysis"
 
     transaction_id = Column(UUID(as_uuid=True), primary_key=True, comment="거래 ID")
-    ip_address = Column(INET, nullable=False, comment="IP 주소")
+    ip_address = Column(String(45), nullable=False, comment="IP 주소")
     geoip_country = Column(String(2), nullable=True, comment="GeoIP 국가 코드 (ISO)")
     geoip_city = Column(String(50), nullable=True, comment="GeoIP 도시")
     asn = Column(Integer, nullable=True, comment="AS 번호")

@@ -7,7 +7,7 @@ EmailRep, Numverify, BIN DB, HaveIBeenPwned 등 외부 API 호출을 기록한�
 from datetime import datetime
 import enum
 from sqlalchemy import Column, Text, Integer, DateTime, Index, UUID, Enum
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSON  # JSON -> JSON for SQLite compatibility
 from src.models.base import Base
 import uuid
 
@@ -30,8 +30,8 @@ class ExternalServiceLog(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, comment="로그 ID"
     )
     service_name = Column(Enum(ServiceName), nullable=False, comment="서비스 이름")
-    request_data = Column(JSONB, nullable=True, comment="요청 데이터")
-    response_data = Column(JSONB, nullable=True, comment="응답 데이터")
+    request_data = Column(JSON, nullable=True, comment="요청 데이터")
+    response_data = Column(JSON, nullable=True, comment="응답 데이터")
     response_time_ms = Column(Integer, nullable=False, comment="응답 시간 (밀리초)")
     status_code = Column(Integer, nullable=True, comment="HTTP 상태 코드")
     error_message = Column(Text, nullable=True, comment="에러 메시지")

@@ -6,7 +6,7 @@ RuleExecution 모델
 
 from datetime import datetime
 from sqlalchemy import Column, Boolean, DateTime, Index, UUID
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSON  # JSON -> JSON for SQLite compatibility
 from src.models.base import Base
 import uuid
 
@@ -25,7 +25,7 @@ class RuleExecution(Base):
     triggered_at = Column(
         DateTime, nullable=False, default=datetime.utcnow, comment="트리거 일시"
     )
-    metadata = Column(JSONB, nullable=True, comment="매칭 상세 정보")
+    match_metadata = Column(JSON, nullable=True, comment="매칭 상세 정보")
 
     __table_args__ = (
         Index("idx_rule_executions_transaction_id", "transaction_id"),

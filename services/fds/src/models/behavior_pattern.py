@@ -6,7 +6,7 @@ BehaviorPattern 모델
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, DateTime, Index, UUID
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSON  # JSON -> JSON for SQLite compatibility
 from src.models.base import Base
 import uuid
 
@@ -21,15 +21,15 @@ class BehaviorPattern(Base):
     )
     user_id = Column(UUID(as_uuid=True), nullable=False, comment="사용자 ID")
     mouse_movements = Column(
-        JSONB,
+        JSON,
         nullable=True,
         comment="마우스 움직임 데이터 [{timestamp, x, y, speed, acceleration, curvature}]",
     )
     keyboard_events = Column(
-        JSONB, nullable=True, comment="키보드 이벤트 [{timestamp, key, duration}]"
+        JSON, nullable=True, comment="키보드 이벤트 [{timestamp, key, duration}]"
     )
     clickstream = Column(
-        JSONB, nullable=True, comment="클릭스트림 [{page, timestamp, duration}]"
+        JSON, nullable=True, comment="클릭스트림 [{page, timestamp, duration}]"
     )
     bot_score = Column(Integer, default=0, nullable=False, comment="봇 확률 (0-100)")
     created_at = Column(

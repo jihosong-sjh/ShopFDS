@@ -18,7 +18,7 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
+from sqlalchemy.dialects.postgresql import JSON, UUID as PGUUID  # JSON -> JSON for SQLite compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -104,7 +104,7 @@ class RiskFactor(Base):
 
     # 추가 메타데이터 (룰 ID, ML 모델 feature importance 등)
     risk_metadata: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True,
         comment="추가 메타데이터 (JSON 형식)",
     )

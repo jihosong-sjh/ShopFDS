@@ -6,7 +6,7 @@ SHAP/LIME 기반 XAI 분석 결과를 저장한다.
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, DateTime, Index, UUID
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSON  # JSON -> JSON for SQLite compatibility
 from src.models.base import Base
 import uuid
 
@@ -21,11 +21,11 @@ class XAIExplanation(Base):
     )
     transaction_id = Column(UUID(as_uuid=True), nullable=False, comment="거래 ID")
     shap_values = Column(
-        JSONB, nullable=True, comment="SHAP 값 [{feature, shap_value, base_value}]"
+        JSON, nullable=True, comment="SHAP 값 [{feature, shap_value, base_value}]"
     )
-    lime_explanation = Column(JSONB, nullable=True, comment="LIME 로컬 모델 근사 결과")
+    lime_explanation = Column(JSON, nullable=True, comment="LIME 로컬 모델 근사 결과")
     top_risk_factors = Column(
-        JSONB, nullable=True, comment="상위 위험 요인 [{factor, contribution, rank}]"
+        JSON, nullable=True, comment="상위 위험 요인 [{factor, contribution, rank}]"
     )
     explanation_time_ms = Column(Integer, nullable=True, comment="SHAP 계산 시간 (밀리초)")
     generated_at = Column(

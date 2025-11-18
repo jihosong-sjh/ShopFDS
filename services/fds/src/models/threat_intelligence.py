@@ -16,7 +16,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSON  # JSON -> JSON for SQLite compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -123,7 +123,7 @@ class ThreatIntelligence(Base, TimestampMixin):
 
     # CTI 추가 메타데이터 (JSON)
     threat_metadata: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True,
         comment="추가 메타데이터 (신뢰도 점수, 카테고리 등)",
     )

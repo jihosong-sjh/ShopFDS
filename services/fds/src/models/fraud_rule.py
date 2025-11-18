@@ -17,7 +17,7 @@ from sqlalchemy import (
     UUID,
     Enum,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSON  # JSON -> JSON for SQLite compatibility
 from src.models.base import Base
 import uuid
 
@@ -41,7 +41,7 @@ class FraudRule(Base):
     rule_name = Column(String(255), nullable=False, comment="룰 이름")
     rule_category = Column(Enum(RuleCategory), nullable=False, comment="룰 카테고리")
     rule_description = Column(Text, nullable=True, comment="룰 설명")
-    rule_logic = Column(JSONB, nullable=True, comment="룰 실행 로직")
+    rule_logic = Column(JSON, nullable=True, comment="룰 실행 로직")
     risk_score = Column(Integer, nullable=False, comment="이 룰이 매칭되면 부여할 점수")
     is_active = Column(Boolean, default=True, nullable=False, comment="활성화 여부")
     priority = Column(Integer, default=0, nullable=False, comment="우선순위 (높을수록 먼저 실행)")
