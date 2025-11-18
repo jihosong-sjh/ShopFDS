@@ -277,9 +277,9 @@
 - [X] T114 [P] API 문서 업데이트 (Swagger/OpenAPI)
 - [X] T115 통합 테스트 작성 (전체 FDS 평가 플로우)
 - [X] T116 성능 테스트 실행 (1,000 TPS 부하, P95 50ms 검증)
-- [ ] T117 quickstart.md 검증 및 업데이트
-- [ ] T118 보안 감사 (GDPR/CCPA/PCI-DSS 준수 확인)
-- [ ] T119 코드 리뷰 및 리팩토링
+- [X] T117 quickstart.md 검증 및 업데이트
+- [X] T118 보안 감사 (GDPR/CCPA/PCI-DSS 준수 확인)
+- [X] T119 코드 리뷰 및 리팩토링
 - [ ] T120 최종 배포 준비 (Docker 이미지 빌드, Kubernetes 매니페스트)
 
 ---
