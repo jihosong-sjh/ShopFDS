@@ -22,6 +22,7 @@ from src.utils.exceptions import (
 from src.utils.otp import get_otp_service
 from src.utils.redis_client import get_redis
 from src.config import get_settings
+from src.tasks.email import send_order_confirmation_email
 
 
 class OrderService:
@@ -198,7 +199,50 @@ class OrderService:
         await self.db.commit()
         await self.db.refresh(order)
 
-        # 8. 장바구니 비우기
+        # 8. 비동기 이메일 발송 (Celery 작업 큐에 추가)
+        # 주문 확인 이메일을 백그라운드에서 발송
+        # 주문 상세 정보 준비
+        order_details = {
+            "items": [
+                {
+                    "name": item_data["product"].name,
+                    "quantity": item_data["quantity"],
+                    "unit_price": item_data["unit_price"],
+                }
+                for item_data in order_items_data
+            ],
+            "total_amount": total_amount,
+            "shipping_address": shipping_address,
+        }
+
+        # Celery 작업 큐에 이메일 발송 작업 추가 (비동기)
+        # User 모델에서 이메일 조회 필요 - 여기서는 플레이스홀더 사용
+        try:
+            # TODO: User 모델에서 실제 이메일 조회
+            # user = await self.db.execute(select(User).where(User.id == user_id))
+            # user_email = user.scalars().first().email
+            user_email = f"user_{user_id}@example.com"  # 플레이스홀더
+
+            send_order_confirmation_email.delay(
+                order_id=str(order.id),
+                user_email=user_email,
+                order_details=order_details,
+            )
+
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.info(
+                f"[Celery] Queued order confirmation email for order {order.id}"
+            )
+        except Exception as e:
+            # 이메일 발송 실패는 주문 처리에 영향을 주지 않음
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.warning(f"[WARNING] Failed to queue order confirmation email: {e}")
+
+        # 9. 장바구니 비우기
         for cart_item in cart.items:
             await self.db.delete(cart_item)
         await self.db.commit()

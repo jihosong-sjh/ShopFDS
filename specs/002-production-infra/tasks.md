@@ -31,10 +31,10 @@
 
 ### 디렉토리 구조 생성
 
-- [ ] T001 [P] infrastructure/docker/postgres/ 디렉토리 생성
-- [ ] T002 [P] infrastructure/docker/redis/ 디렉토리 생성
-- [ ] T003 [P] infrastructure/monitoring/ 하위 디렉토리 생성 (prometheus/alerts/, alertmanager/, logstash/pipeline/, kibana/dashboards/)
-- [ ] T004 [P] infrastructure/scripts/ 및 tests/infrastructure/ 디렉토리 생성
+- [X] T001 [P] infrastructure/docker/postgres/ 디렉토리 생성
+- [X] T002 [P] infrastructure/docker/redis/ 디렉토리 생성
+- [X] T003 [P] infrastructure/monitoring/ 하위 디렉토리 생성 (prometheus/alerts/, alertmanager/, logstash/pipeline/, kibana/dashboards/)
+- [X] T004 [P] infrastructure/scripts/ 및 tests/infrastructure/ 디렉토리 생성
 
 ---
 
@@ -44,12 +44,12 @@
 
 ### Docker Compose 기본 확장
 
-- [ ] T005 [P] infrastructure/docker/docker-compose.yml에 RabbitMQ 서비스 추가
-- [ ] T006 [P] infrastructure/docker/docker-compose.monitoring.yml 생성 (Prometheus, Grafana, Alertmanager)
-- [ ] T007 infrastructure/docker/docker-compose.yml에 Elasticsearch, Logstash, Kibana 서비스 추가 (T006 의존)
-- [ ] T008 [P] infrastructure/docker/.env.example 업데이트 (Redis Cluster, RabbitMQ, ELK 환경 변수)
-- [ ] T009 [P] infrastructure/docker/docker-compose.yml에 내부 네트워크 설정 추가 (shopfds-internal, shopfds-monitoring)
-- [ ] T010 모든 Docker Compose 파일 검증: docker-compose config (T005~T009 의존)
+- [X] T005 [P] infrastructure/docker/docker-compose.yml에 RabbitMQ 서비스 추가
+- [X] T006 [P] infrastructure/docker/docker-compose.monitoring.yml 생성 (Prometheus, Grafana, Alertmanager)
+- [X] T007 infrastructure/docker/docker-compose.yml에 Elasticsearch, Logstash, Kibana 서비스 추가 (T006 의존)
+- [X] T008 [P] infrastructure/docker/.env.example 업데이트 (Redis Cluster, RabbitMQ, ELK 환경 변수)
+- [X] T009 [P] infrastructure/docker/docker-compose.yml에 내부 네트워크 설정 추가 (shopfds-internal, shopfds-monitoring)
+- [X] T010 모든 Docker Compose 파일 검증: docker-compose config (T005~T009 의존)
 
 **검증 포인트**: docker-compose config 오류 없이 실행, 모든 서비스 네트워크 연결 가능
 
@@ -63,26 +63,26 @@
 
 ### PostgreSQL 복제 설정
 
-- [ ] T011 [P] [US1] infrastructure/docker/postgres/master.conf 생성 (스트리밍 복제 활성화, wal_level=replica, max_wal_senders=5)
-- [ ] T012 [P] [US1] infrastructure/docker/postgres/replica.conf 생성 (hot_standby=on, primary_conninfo)
-- [ ] T013 [US1] infrastructure/docker/docker-compose.yml에 postgres-replica 서비스 추가 (T011~T012 의존)
-- [ ] T014 [P] [US1] infrastructure/scripts/init-postgres-replication.sh 생성 (replicator 사용자 생성, pg_basebackup)
+- [X] T011 [P] [US1] infrastructure/docker/postgres/master.conf 생성 (스트리밍 복제 활성화, wal_level=replica, max_wal_senders=5)
+- [X] T012 [P] [US1] infrastructure/docker/postgres/replica.conf 생성 (hot_standby=on, primary_conninfo)
+- [X] T013 [US1] infrastructure/docker/docker-compose.yml에 postgres-replica 서비스 추가 (T011~T012 의존)
+- [X] T014 [P] [US1] infrastructure/scripts/init-postgres-replication.sh 생성 (replicator 사용자 생성, pg_basebackup)
 
 ### 애플리케이션 연결 풀 수정
 
-- [ ] T015 [US1] services/ecommerce/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리, get_read_db()/get_write_db() 함수 추가
-- [ ] T016 [US1] services/fds/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
-- [ ] T017 [US1] services/ml-service/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
-- [ ] T018 [US1] services/admin-dashboard/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
+- [X] T015 [US1] services/ecommerce/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리, get_read_db()/get_write_db() 함수 추가
+- [X] T016 [US1] services/fds/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
+- [X] T017 [US1] services/ml-service/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
+- [X] T018 [US1] services/admin-dashboard/backend/src/db/connection.py 수정: 읽기/쓰기 연결 풀 분리 (T015와 동일 패턴)
 
 ### 복제 모니터링
 
-- [ ] T019 [US1] Alembic 마이그레이션 생성: ReplicationStatus 모델 추가 in services/ecommerce/backend/alembic/versions/ (T015 의존)
-- [ ] T020 [US1] services/ecommerce/backend/src/utils/replication_monitor.py 생성: check_replication_lag() 함수, pg_stat_replication 쿼리
+- [X] T019 [US1] Alembic 마이그레이션 생성: ReplicationStatus 모델 추가 in services/ecommerce/backend/alembic/versions/ (T015 의존)
+- [X] T020 [US1] services/ecommerce/backend/src/utils/replication_monitor.py 생성: check_replication_lag() 함수, pg_stat_replication 쿼리
 
 ### 통합 테스트
 
-- [ ] T021 [US1] tests/infrastructure/test_postgres_replication.py 생성: 읽기/쓰기 라우팅, 복제 지연, 폴백 테스트 (T015~T020 의존)
+- [X] T021 [US1] tests/infrastructure/test_postgres_replication.py 생성: 읽기/쓰기 라우팅, 복제 지연, 폴백 테스트 (T015~T020 의존)
 
 **검증 포인트**:
 1. 읽기 전용 연결 풀을 통해 Replica에서 데이터 조회
@@ -100,30 +100,30 @@
 
 ### Redis Cluster 구성
 
-- [ ] T022 [P] [US2] infrastructure/docker/redis/redis-cluster.conf 생성 (cluster-enabled yes, cluster-config-file, cluster-node-timeout 5000)
-- [ ] T023 [P] [US2] infrastructure/scripts/init-redis-cluster.sh 생성 (6노드 클러스터 생성, --cluster-replicas 1)
-- [ ] T024 [US2] infrastructure/docker/docker-compose.yml에 redis-node-1~6 서비스 추가 (포트 7000~7005) (T022 의존)
-- [ ] T025 [US2] infrastructure/docker/docker-compose.yml에서 기존 단일 Redis 서비스 제거, redis-cluster 네트워크 추가 (T024 의존)
+- [X] T022 [P] [US2] infrastructure/docker/redis/redis-cluster.conf 생성 (cluster-enabled yes, cluster-config-file, cluster-node-timeout 5000)
+- [X] T023 [P] [US2] infrastructure/scripts/init-redis-cluster.sh 생성 (6노드 클러스터 생성, --cluster-replicas 1)
+- [X] T024 [US2] infrastructure/docker/docker-compose.yml에 redis-node-1~6 서비스 추가 (포트 7000~7005) (T022 의존)
+- [X] T025 [US2] infrastructure/docker/docker-compose.yml에서 기존 단일 Redis 서비스 제거, redis-cluster 네트워크 추가 (T024 의존)
 
 ### FDS 블랙리스트 관리
 
-- [ ] T026 [P] [US2] services/fds/src/cache/blacklist.py 생성: BlacklistManager 클래스 (add_entry, check_entry, remove_entry, list_entries)
-- [ ] T027 [US2] services/fds/src/engines/evaluation_engine.py 수정: 블랙리스트 체크 로직 추가 (check_ip, check_card_bin, check_email_domain) (T026 의존)
-- [ ] T028 [US2] services/fds/src/db/connection.py 수정: Redis Cluster 클라이언트 연결 (redis.cluster.RedisCluster) (T026 의존)
+- [X] T026 [P] [US2] services/fds/src/cache/blacklist.py 생성: BlacklistManager 클래스 (add_entry, check_entry, remove_entry, list_entries)
+- [X] T027 [US2] services/fds/src/engines/evaluation_engine.py 수정: 블랙리스트 체크 로직 추가 (check_ip, check_card_bin, check_email_domain) (T026 의존)
+- [X] T028 [US2] services/fds/src/db/connection.py 수정: Redis Cluster 클라이언트 연결 (redis.cluster.RedisCluster) (T026 의존)
 
 ### Admin Dashboard 블랙리스트 API
 
-- [ ] T029 [P] [US2] services/admin-dashboard/backend/src/api/blacklist.py 생성: POST /v1/admin/blacklist (추가), GET /v1/admin/blacklist (목록), DELETE /v1/admin/blacklist/{entry_id} (삭제), PATCH /v1/admin/blacklist/{entry_id}/ttl (TTL 수정)
-- [ ] T030 [US2] services/admin-dashboard/backend/src/main.py 수정: 블랙리스트 라우터 등록 (T029 의존)
-- [ ] T031 [P] [US2] Alembic 마이그레이션 생성: BlacklistEntry 모델 추가 in services/fds/alembic/versions/ (로그용, Redis는 스키마 없음)
+- [X] T029 [P] [US2] services/admin-dashboard/backend/src/api/blacklist.py 생성: POST /v1/admin/blacklist (추가), GET /v1/admin/blacklist (목록), DELETE /v1/admin/blacklist/{entry_id} (삭제), PATCH /v1/admin/blacklist/{entry_id}/ttl (TTL 수정)
+- [X] T030 [US2] services/admin-dashboard/backend/src/main.py 수정: 블랙리스트 라우터 등록 (T029 의존)
+- [X] T031 [P] [US2] Alembic 마이그레이션 생성: BlacklistEntry 모델 추가 in services/fds/alembic/versions/ (로그용, Redis는 스키마 없음)
 
 ### 세션 스토어
 
-- [ ] T032 [US2] services/ecommerce/backend/src/middleware/session.py 수정: Redis Cluster 세션 스토어 통합 (TTL 30분) (T027 의존)
+- [X] T032 [US2] services/ecommerce/backend/src/middleware/session.py 수정: Redis Cluster 세션 스토어 통합 (TTL 30분) (T027 의존)
 
 ### 통합 테스트
 
-- [ ] T033 [US2] tests/infrastructure/test_redis_cluster.py 생성: 클러스터 생성, 샤딩, 페일오버, 블랙리스트 CRUD 테스트 (T026~T032 의존)
+- [X] T033 [US2] tests/infrastructure/test_redis_cluster.py 생성: 클러스터 생성, 샤딩, 페일오버, 블랙리스트 CRUD 테스트 (T026~T032 의존)
 
 **검증 포인트**:
 1. 블랙리스트 IP 추가 시 클러스터 전체에 자동 샤딩
@@ -142,35 +142,35 @@
 
 ### Celery 설정
 
-- [ ] T034 [P] [US3] services/ecommerce/backend/celeryconfig.py 생성 (broker_url=RabbitMQ, result_backend=Redis, task_routes)
-- [ ] T035 [P] [US3] services/fds/celeryconfig.py 생성 (T034와 동일 패턴)
-- [ ] T036 [P] [US3] infrastructure/docker/docker-compose.yml에 celery-worker, celery-beat, flower 서비스 추가 (T005 RabbitMQ 의존)
+- [X] T034 [P] [US3] services/ecommerce/backend/celeryconfig.py 생성 (broker_url=RabbitMQ, result_backend=Redis, task_routes)
+- [X] T035 [P] [US3] services/fds/celeryconfig.py 생성 (T034와 동일 패턴)
+- [X] T036 [P] [US3] infrastructure/docker/docker-compose.yml에 celery-worker, celery-beat, flower 서비스 추가 (T005 RabbitMQ 의존)
 
 ### Ecommerce 비동기 작업
 
-- [ ] T037 [P] [US3] services/ecommerce/backend/src/tasks/email.py 생성: send_order_confirmation_email(), send_password_reset_email() Celery 작업
-- [ ] T038 [P] [US3] services/ecommerce/backend/src/tasks/reports.py 생성: generate_sales_report() Celery 작업
-- [ ] T039 [P] [US3] services/ecommerce/backend/src/tasks/cleanup.py 생성: cleanup_old_sessions(), archive_old_logs() Celery Beat 스케줄 작업
-- [ ] T040 [US3] services/ecommerce/backend/src/services/order_service.py 수정: 주문 생성 시 send_order_confirmation_email.delay() 호출 (T037 의존)
+- [X] T037 [P] [US3] services/ecommerce/backend/src/tasks/email.py 생성: send_order_confirmation_email(), send_password_reset_email() Celery 작업
+- [X] T038 [P] [US3] services/ecommerce/backend/src/tasks/reports.py 생성: generate_sales_report() Celery 작업
+- [X] T039 [P] [US3] services/ecommerce/backend/src/tasks/cleanup.py 생성: cleanup_old_sessions(), archive_old_logs() Celery Beat 스케줄 작업
+- [X] T040 [US3] services/ecommerce/backend/src/services/order_service.py 수정: 주문 생성 시 send_order_confirmation_email.delay() 호출 (T037 의존)
 
 ### FDS 배치 평가
 
-- [ ] T041 [P] [US3] services/fds/src/tasks/batch_evaluation.py 생성: batch_evaluate_transactions() Celery Beat 작업 (매일 자정)
-- [ ] T042 [US3] services/fds/src/services/batch_service.py 생성: 지난 24시간 거래 재평가 로직 (T041 의존)
+- [X] T041 [P] [US3] services/fds/src/tasks/batch_evaluation.py 생성: batch_evaluate_transactions() Celery Beat 작업 (매일 자정)
+- [X] T042 [US3] services/fds/src/services/batch_service.py 생성: 지난 24시간 거래 재평가 로직 (T041 의존)
 
 ### Celery 작업 로깅
 
-- [ ] T043 [US3] Alembic 마이그레이션 생성: CeleryTaskLog 모델 추가 in services/ecommerce/backend/alembic/versions/
-- [ ] T044 [US3] services/ecommerce/backend/src/utils/celery_logger.py 생성: Celery 작업 시작/완료 시 CeleryTaskLog 기록 (T043 의존)
-- [ ] T045 [US3] celeryconfig.py 수정: task_prerun, task_postrun 시그널 핸들러 추가 (T044 의존)
+- [X] T043 [US3] Alembic 마이그레이션 생성: CeleryTaskLog 모델 추가 in services/ecommerce/backend/alembic/versions/
+- [X] T044 [US3] services/ecommerce/backend/src/utils/celery_logger.py 생성: Celery 작업 시작/완료 시 CeleryTaskLog 기록 (T043 의존)
+- [X] T045 [US3] celeryconfig.py 수정: task_prerun, task_postrun 시그널 핸들러 추가 (T044 의존)
 
 ### Flower 모니터링
 
-- [ ] T046 [US3] infrastructure/docker/docker-compose.yml Flower 서비스 환경 변수 설정 (basic auth, port 5555) (T036 의존)
+- [X] T046 [US3] infrastructure/docker/docker-compose.yml Flower 서비스 환경 변수 설정 (basic auth, port 5555) (T036 의존)
 
 ### 통합 테스트
 
-- [ ] T047 [US3] tests/infrastructure/test_celery_tasks.py 생성: 이메일 발송, 배치 평가, 리포트 생성, 재시도, DLQ 테스트 (T037~T046 의존)
+- [X] T047 [US3] tests/infrastructure/test_celery_tasks.py 생성: 이메일 발송, 배치 평가, 리포트 생성, 재시도, DLQ 테스트 (T037~T046 의존)
 
 **검증 포인트**:
 1. 주문 생성 시 이메일 발송 작업이 RabbitMQ 큐에 추가
@@ -189,42 +189,42 @@
 
 ### Logstash 파이프라인
 
-- [ ] T048 [P] [US4] infrastructure/docker/elasticsearch/elasticsearch.yml 생성 (cluster.name, discovery.type=single-node, xpack.security.enabled=false)
-- [ ] T049 [P] [US4] infrastructure/monitoring/logstash/pipeline/app-logs.conf 생성 (input: beats, filter: json+grok, output: elasticsearch)
-- [ ] T050 [US4] infrastructure/docker/docker-compose.yml Logstash 서비스 볼륨 마운트 추가 (T049 의존)
+- [X] T048 [P] [US4] infrastructure/docker/elasticsearch/elasticsearch.yml 생성 (cluster.name, discovery.type=single-node, xpack.security.enabled=false)
+- [X] T049 [P] [US4] infrastructure/monitoring/logstash/pipeline/app-logs.conf 생성 (input: beats, filter: json+grok, output: elasticsearch)
+- [X] T050 [US4] infrastructure/docker/docker-compose.yml Logstash 서비스 볼륨 마운트 추가 (T049 의존)
 
 ### Elasticsearch 인덱스 템플릿
 
-- [ ] T051 [P] [US4] infrastructure/monitoring/elasticsearch/index-template.json 생성 (shopfds-{service}-{date} 패턴, 매핑, ILM 정책)
-- [ ] T052 [US4] infrastructure/scripts/init-elasticsearch.sh 생성 (인덱스 템플릿 적용, Curator 설정) (T051 의존)
+- [X] T051 [P] [US4] infrastructure/monitoring/elasticsearch/index-template.json 생성 (shopfds-{service}-{date} 패턴, 매핑, ILM 정책)
+- [X] T052 [US4] infrastructure/scripts/init-elasticsearch.sh 생성 (인덱스 템플릿 적용, Curator 설정) (T051 의존)
 
 ### Kibana 대시보드
 
-- [ ] T053 [P] [US4] infrastructure/monitoring/kibana/dashboards/fds-monitoring.json 생성 (에러율, 응답 시간, 트래픽 패턴 시각화)
+- [X] T053 [P] [US4] infrastructure/monitoring/kibana/dashboards/fds-monitoring.json 생성 (에러율, 응답 시간, 트래픽 패턴 시각화)
 
 ### 애플리케이션 로깅 강화
 
-- [ ] T054 [US4] services/ecommerce/backend/src/middleware/logging.py 수정: 구조화 로깅 (JSON 포맷, request_id, user_id, endpoint)
-- [ ] T055 [US4] services/fds/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
-- [ ] T056 [US4] services/ml-service/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
-- [ ] T057 [US4] services/admin-dashboard/backend/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
+- [X] T054 [US4] services/ecommerce/backend/src/middleware/logging.py 수정: 구조화 로깅 (JSON 포맷, request_id, user_id, endpoint)
+- [X] T055 [US4] services/fds/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
+- [X] T056 [US4] services/ml-service/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
+- [X] T057 [US4] services/admin-dashboard/backend/src/middleware/logging.py 수정: 구조화 로깅 (T054와 동일 패턴)
 
 ### Health Check 강화
 
-- [ ] T058 [US4] services/ecommerce/backend/src/api/health.py 수정: DB 연결, Redis PING, 디스크 공간(90% 미만), 복제 지연 체크 (T020 의존)
-- [ ] T059 [US4] services/fds/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
-- [ ] T060 [US4] services/ml-service/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
-- [ ] T061 [US4] services/admin-dashboard/backend/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
+- [X] T058 [US4] services/ecommerce/backend/src/api/health.py 수정: DB 연결, Redis PING, 디스크 공간(90% 미만), 복제 지연 체크 (T020 의존)
+- [X] T059 [US4] services/fds/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
+- [X] T060 [US4] services/ml-service/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
+- [X] T061 [US4] services/admin-dashboard/backend/src/api/health.py 수정: Health Check 강화 (T058와 동일 패턴)
 
 ### Prometheus 알림 규칙
 
-- [ ] T062 [P] [US4] infrastructure/monitoring/prometheus/alerts/infrastructure.yml 생성 (CPU 80%, 메모리 85%, 디스크 85% 알림)
-- [ ] T063 [P] [US4] infrastructure/monitoring/prometheus/alerts/application.yml 생성 (API 에러율 5%, Health Check 실패 알림)
-- [ ] T064 [P] [US4] infrastructure/monitoring/alertmanager/alertmanager.yml 생성 (Slack webhook, Email SMTP, 라우팅 규칙)
+- [X] T062 [P] [US4] infrastructure/monitoring/prometheus/alerts/infrastructure.yml 생성 (CPU 80%, 메모리 85%, 디스크 85% 알림)
+- [X] T063 [P] [US4] infrastructure/monitoring/prometheus/alerts/application.yml 생성 (API 에러율 5%, Health Check 실패 알림)
+- [X] T064 [P] [US4] infrastructure/monitoring/alertmanager/alertmanager.yml 생성 (Slack webhook, Email SMTP, 라우팅 규칙)
 
 ### 통합 테스트
 
-- [ ] T065 [US4] tests/infrastructure/test_elk_logging.py 생성: 로그 인덱싱, Kibana 조회, 10초 이내 검색 테스트 (T048~T064 의존)
+- [X] T065 [US4] tests/infrastructure/test_elk_logging.py 생성: 로그 인덱싱, Kibana 조회, 10초 이내 검색 테스트 (T048~T064 의존)
 
 **검증 포인트**:
 1. FastAPI 에러 발생 시 5초 이내 Elasticsearch 인덱싱
@@ -243,12 +243,12 @@
 
 ### Makefile 및 스크립트
 
-- [ ] T066 [P] [US5] infrastructure/Makefile 생성 (dev, test, migrate, seed, clean 타겟)
-- [ ] T067 [P] [US5] infrastructure/scripts/setup.sh 생성 (의존성 설치, Docker 이미지 빌드, 초기 마이그레이션)
-- [ ] T068 [P] [US5] infrastructure/scripts/reset-db.sh 생성 (모든 테이블 삭제, 최신 스키마 재생성)
-- [ ] T069 [P] [US5] infrastructure/scripts/seed-data.py 생성 (사용자 1000명, 주문 10000건, 상품 500개, 리뷰 5000개, 정상 거래 85%, 의심 거래 10%, 사기 거래 5%)
-- [ ] T070 [US5] infrastructure/scripts/seed-data.py 멱등성 보장 로직 추가: --append 플래그, 중복 제거 (T069 의존)
-- [ ] T071 [US5] README.md 업데이트: Quickstart 가이드, 개발 환경 설정 명령어 (T066~T070 의존)
+- [X] T066 [P] [US5] infrastructure/Makefile 생성 (dev, test, migrate, seed, clean 타겟)
+- [X] T067 [P] [US5] infrastructure/scripts/setup.sh 생성 (의존성 설치, Docker 이미지 빌드, 초기 마이그레이션)
+- [X] T068 [P] [US5] infrastructure/scripts/reset-db.sh 생성 (모든 테이블 삭제, 최신 스키마 재생성)
+- [X] T069 [P] [US5] infrastructure/scripts/seed-data.py 생성 (사용자 1000명, 주문 10000건, 상품 500개, 리뷰 5000개, 정상 거래 85%, 의심 거래 10%, 사기 거래 5%)
+- [X] T070 [US5] infrastructure/scripts/seed-data.py 멱등성 보장 로직 추가: --append 플래그, 중복 제거 (T069 의존)
+- [X] T071 [US5] README.md 업데이트: Quickstart 가이드, 개발 환경 설정 명령어 (T066~T070 의존)
 
 **검증 포인트**:
 1. `make setup` 실행 시 Docker Compose, 의존성 설치, DB 마이그레이션 자동 완료
@@ -265,11 +265,11 @@
 
 ### 최종 통합 테스트
 
-- [ ] T072 전체 인프라 통합 테스트: docker-compose up -d 실행 후 모든 서비스 Health Check 통과, 2분 이내 시작 (T010, T021, T033, T047, T065 의존)
+- [X] T072 전체 인프라 통합 테스트: docker-compose up -d 실행 후 모든 서비스 Health Check 통과, 2분 이내 시작 (T010, T021, T033, T047, T065 의존)
 
 ### 문서화
 
-- [ ] T073 specs/002-production-infra/quickstart.md 작성: 로컬 개발 환경 설정 가이드, 트러블슈팅 (T066~T072 의존)
+- [X] T073 specs/002-production-infra/quickstart.md 작성: 로컬 개발 환경 설정 가이드, 트러블슈팅 (T066~T072 의존)
 
 **검증 포인트**:
 - 전체 인프라가 `docker-compose up -d` 명령어로 2분 이내 시작

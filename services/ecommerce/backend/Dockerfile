@@ -47,6 +47,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY src/ ./src/
 COPY alembic/ ./alembic/
 COPY alembic.ini .
+COPY celeryconfig.py .
 
 # 비-root 사용자 생성 (보안)
 RUN useradd -m -u 1000 appuser && \

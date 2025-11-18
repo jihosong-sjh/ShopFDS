@@ -113,12 +113,14 @@ from src.api.review import router as review_router
 from src.api.transactions import router as transactions_router
 from src.api.rules import router as rules_router
 from src.api.ab_tests import router as ab_tests_router
+from src.api.blacklist import router as blacklist_router
 
 app.include_router(dashboard_router)
 app.include_router(review_router)
 app.include_router(transactions_router)
 app.include_router(rules_router)
 app.include_router(ab_tests_router)
+app.include_router(blacklist_router)
 
 
 if __name__ == "__main__":

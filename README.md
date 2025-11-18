@@ -119,6 +119,8 @@ ShopFDS/
 - Redis 7+ (로컬 개발용)
 
 ### Quick Start
+> [RECOMMENDED] For automated setup with Makefile, see [infrastructure/QUICKSTART.md](infrastructure/QUICKSTART.md)
+
 
 #### 1. 저장소 클론
 ```bash
