@@ -41,23 +41,23 @@
 
 **⚠️ CRITICAL**: 이 Phase가 완료되어야 사용자 스토리 작업을 시작할 수 있습니다
 
-- [ ] T007 데이터베이스 마이그레이션 생성 (13개 신규 엔티티) in services/fds/alembic/versions/
-- [ ] T008 DeviceFingerprint 모델 생성 in services/fds/src/models/device_fingerprint.py
-- [ ] T009 [P] BehaviorPattern 모델 생성 in services/fds/src/models/behavior_pattern.py
-- [ ] T010 [P] NetworkAnalysis 모델 생성 in services/fds/src/models/network_analysis.py
-- [ ] T011 [P] FraudRule 모델 생성 in services/fds/src/models/fraud_rule.py
-- [ ] T012 [P] RuleExecution 모델 생성 in services/fds/src/models/rule_execution.py
-- [ ] T013 [P] MLModelVersion 모델 생성 in services/ml-service/src/models/ml_model_version.py
-- [ ] T014 [P] EnsemblePrediction 모델 생성 in services/ml-service/src/models/ensemble_prediction.py
-- [ ] T015 [P] FeatureImportance 모델 생성 in services/ml-service/src/models/feature_importance.py
-- [ ] T016 [P] XAIExplanation 모델 생성 in services/fds/src/models/xai_explanation.py
-- [ ] T017 [P] DataDriftLog 모델 생성 in services/ml-service/src/models/data_drift_log.py
-- [ ] T018 [P] RetrainingJob 모델 생성 in services/ml-service/src/models/retraining_job.py
-- [ ] T019 [P] ExternalServiceLog 모델 생성 in services/fds/src/models/external_service_log.py
-- [ ] T020 [P] BlacklistEntry 모델 생성 in services/fds/src/models/blacklist_entry.py
-- [ ] T021 데이터베이스 마이그레이션 적용 (alembic upgrade head)
-- [ ] T022 Redis 캐시 유틸리티 생성 in services/fds/src/utils/cache_utils.py
-- [ ] T023 외부 API 공통 클라이언트 생성 in services/fds/src/services/external_api_client.py
+- [X] T007 데이터베이스 마이그레이션 생성 (13개 신규 엔티티) in services/fds/alembic/versions/
+- [X] T008 DeviceFingerprint 모델 생성 in services/fds/src/models/device_fingerprint.py
+- [X] T009 [P] BehaviorPattern 모델 생성 in services/fds/src/models/behavior_pattern.py
+- [X] T010 [P] NetworkAnalysis 모델 생성 in services/fds/src/models/network_analysis.py
+- [X] T011 [P] FraudRule 모델 생성 in services/fds/src/models/fraud_rule.py
+- [X] T012 [P] RuleExecution 모델 생성 in services/fds/src/models/rule_execution.py
+- [X] T013 [P] MLModelVersion 모델 생성 in services/ml-service/src/models/ml_model_version.py
+- [X] T014 [P] EnsemblePrediction 모델 생성 in services/ml-service/src/models/ensemble_prediction.py
+- [X] T015 [P] FeatureImportance 모델 생성 in services/ml-service/src/models/feature_importance.py
+- [X] T016 [P] XAIExplanation 모델 생성 in services/fds/src/models/xai_explanation.py
+- [X] T017 [P] DataDriftLog 모델 생성 in services/ml-service/src/models/data_drift_log.py
+- [X] T018 [P] RetrainingJob 모델 생성 in services/ml-service/src/models/retraining_job.py
+- [X] T019 [P] ExternalServiceLog 모델 생성 in services/fds/src/models/external_service_log.py
+- [X] T020 [P] BlacklistEntry 모델 생성 in services/fds/src/models/blacklist_entry.py
+- [X] T021 데이터베이스 마이그레이션 적용 (alembic upgrade head)
+- [X] T022 Redis 캐시 유틸리티 생성 in services/fds/src/utils/cache_utils.py
+- [X] T023 외부 API 공통 클라이언트 생성 in services/fds/src/services/external_api_client.py
 
 **Checkpoint**: 인프라 준비 완료 - 사용자 스토리 구현을 병렬로 시작할 수 있습니다
 

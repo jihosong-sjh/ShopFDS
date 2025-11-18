@@ -21,23 +21,13 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """마이그레이션 적용 (업그레이드)"""
-    # TaskStatus Enum 타입 생성 (이미 존재하면 건너뛰기)
-    conn = op.get_bind()
-
-    # ENUM 타입이 이미 존재하는지 확인
-    enum_exists = conn.execute(
-        sa.text(
-            "SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status')"
-        )
-    ).scalar()
-
-    if not enum_exists:
-        task_status_enum = postgresql.ENUM(
-            'pending', 'started', 'success', 'failure', 'retry',
-            name='task_status',
-            create_type=False
-        )
-        task_status_enum.create(conn, checkfirst=False)
+    # TaskStatus Enum 타입 생성
+    task_status_enum = postgresql.ENUM(
+        'pending', 'started', 'success', 'failure', 'retry',
+        name='task_status',
+        create_type=True
+    )
+    task_status_enum.create(op.get_bind(), checkfirst=True)
 
     # celery_task_logs 테이블 생성
     op.create_table(
@@ -45,11 +35,7 @@ def upgrade() -> None:
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('task_id', sa.String(255), unique=True, nullable=False, index=True),
         sa.Column('task_name', sa.String(255), nullable=False, index=True),
-        sa.Column('status', postgresql.ENUM(
-            'pending', 'started', 'success', 'failure', 'retry',
-            name='task_status',
-            create_type=False
-        ), nullable=False, index=True),
+        sa.Column('status', task_status_enum, nullable=False, index=True),
         sa.Column('queued_at', sa.DateTime(), nullable=False),
         sa.Column('started_at', sa.DateTime(), nullable=True),
         sa.Column('completed_at', sa.DateTime(), nullable=True),
@@ -72,6 +58,7 @@ def upgrade() -> None:
     op.create_index('idx_task_logs_status', 'celery_task_logs', ['status'])
     op.create_index('idx_task_logs_queue_name', 'celery_task_logs', ['queue_name'])
     op.create_index('idx_task_logs_created_at', 'celery_task_logs', ['created_at'])
+
 
 def downgrade() -> None:
     """마이그레이션 되돌리기 (다운그레이드)"""

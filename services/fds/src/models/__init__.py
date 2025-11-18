@@ -32,6 +32,14 @@ from .review_queue import (
     ReviewStatus,
     ReviewDecision,
 )
+from .device_fingerprint import DeviceFingerprint
+from .behavior_pattern import BehaviorPattern
+from .network_analysis import NetworkAnalysis
+from .fraud_rule import FraudRule, RuleCategory
+from .rule_execution import RuleExecution
+from .xai_explanation import XAIExplanation
+from .external_service_log import ExternalServiceLog, ServiceName
+from .blacklist_entry import BlacklistEntry, BlacklistEntryType
 
 __all__ = [
     # Base
@@ -63,4 +71,16 @@ __all__ = [
     "ThreatType",
     "ThreatLevel",
     "ThreatSource",
+    # Advanced FDS - Phase 2
+    "DeviceFingerprint",
+    "BehaviorPattern",
+    "NetworkAnalysis",
+    "FraudRule",
+    "RuleCategory",
+    "RuleExecution",
+    "XAIExplanation",
+    "ExternalServiceLog",
+    "ServiceName",
+    "BlacklistEntry",
+    "BlacklistEntryType",
 ]
