@@ -12,11 +12,10 @@ Phase 8: 실시간 추론 최적화 및 Edge 배포
 """
 
 from typing import Optional, Dict, Any, List
-from pathlib import Path
 from uuid import uuid4
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/v1/ml/optimize", tags=["ML Optimization"])

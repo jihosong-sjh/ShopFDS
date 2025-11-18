@@ -15,7 +15,7 @@ from typing import Dict, Any, Tuple, Optional
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import confusion_matrix
 from pathlib import Path
 
 

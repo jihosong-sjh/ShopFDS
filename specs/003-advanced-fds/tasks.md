@@ -226,16 +226,16 @@
 
 ### Implementation for User Story 8
 
-- [ ] T088 [P] [US8] 차지백 데이터 자동 라벨링 시스템 구현 in services/ml-service/src/training/auto_labeler.py
-- [ ] T089 [P] [US8] 사용자 신고 데이터 수집 로직 구현 in services/ml-service/src/training/feedback_collector.py
-- [ ] T090 [US8] 데이터 드리프트 감지 로직 구현 (KS 테스트) in services/ml-service/src/monitoring/drift_detector.py
-- [ ] T091 [US8] 모델 성능 모니터링 로직 구현 (F1 Score 추적) in services/ml-service/src/monitoring/performance_monitor.py
-- [ ] T092 [US8] 자동 재학습 트리거 로직 구현 (성능 저하/드리프트 감지 시) in services/ml-service/src/training/auto_retrainer.py
-- [ ] T093 [US8] Celery 비동기 작업 큐 통합 (재학습 작업) in services/ml-service/src/training/celery_tasks.py
-- [ ] T094 [US8] Slack 알림 통합 (성능 저하, 재학습 완료) in services/ml-service/src/utils/slack_notifier.py
-- [ ] T095 [US8] A/B 테스트 자동화 로직 구현 (신규 모델 카나리 배포) in services/ml-service/src/deployment/ab_test_manager.py
-- [ ] T096 [US8] 데이터 드리프트 모니터링 API 구현 (GET /v1/ml/monitoring/drift) in services/ml-service/src/api/monitoring.py
-- [ ] T097 [US8] 재학습 작업 상태 API 구현 (GET /v1/ml/training/jobs/{job_id}) in services/ml-service/src/api/training.py
+- [X] T088 [P] [US8] 차지백 데이터 자동 라벨링 시스템 구현 in services/ml-service/src/training/auto_labeler.py
+- [X] T089 [P] [US8] 사용자 신고 데이터 수집 로직 구현 in services/ml-service/src/training/feedback_collector.py
+- [X] T090 [US8] 데이터 드리프트 감지 로직 구현 (KS 테스트) in services/ml-service/src/monitoring/drift_detector.py
+- [X] T091 [US8] 모델 성능 모니터링 로직 구현 (F1 Score 추적) in services/ml-service/src/monitoring/performance_monitor.py
+- [X] T092 [US8] 자동 재학습 트리거 로직 구현 (성능 저하/드리프트 감지 시) in services/ml-service/src/training/auto_retrainer.py
+- [X] T093 [US8] Celery 비동기 작업 큐 통합 (재학습 작업) in services/ml-service/src/training/celery_tasks.py
+- [X] T094 [US8] Slack 알림 통합 (성능 저하, 재학습 완료) in services/ml-service/src/utils/slack_notifier.py
+- [X] T095 [US8] A/B 테스트 자동화 로직 구현 (신규 모델 카나리 배포) in services/ml-service/src/deployment/ab_test_manager.py
+- [X] T096 [US8] 데이터 드리프트 모니터링 API 구현 (GET /v1/ml/monitoring/drift) in services/ml-service/src/api/monitoring.py
+- [X] T097 [US8] 재학습 작업 상태 API 구현 (GET /v1/ml/training/jobs/{job_id}) in services/ml-service/src/api/training.py
 
 **Checkpoint**: US8 완료 - 자동 학습 파이프라인이 데이터 드리프트 감지 후 24시간 이내 재학습 완료
 

@@ -16,7 +16,6 @@ import mlflow
 import mlflow.sklearn
 import mlflow.xgboost
 import mlflow.pytorch
-from pathlib import Path
 
 
 logger = logging.getLogger(__name__)

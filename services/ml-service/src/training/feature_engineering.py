@@ -13,10 +13,9 @@ Raw 거래 데이터에서 ML 모델 학습에 필요한 다양한 특징을 추
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, List, Optional
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 

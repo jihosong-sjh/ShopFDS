@@ -16,7 +16,7 @@ Ensemble Model for Fraud Detection
 """
 
 import logging
-from typing import Dict, Any, Tuple, Optional, List
+from typing import Dict, Any, Tuple, Optional
 import numpy as np
 import pandas as pd
 from pathlib import Path

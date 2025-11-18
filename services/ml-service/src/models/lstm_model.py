@@ -11,7 +11,7 @@ LSTM은 시계열 패턴을 분석하는 순환 신경망으로, 다음과 같�
 """
 
 import logging
-from typing import Dict, Any, Tuple, Optional, List
+from typing import Dict, Any, Tuple, Optional
 import numpy as np
 import pandas as pd
 import torch

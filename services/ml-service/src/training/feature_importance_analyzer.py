@@ -12,15 +12,13 @@ Random Forest 및 XGBoost 모델의 Feature Importance를 분석하여
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
-import numpy as np
+from typing import Dict, List, Optional, Tuple
 import pandas as pd
 from sklearn.inspection import permutation_importance
 import matplotlib
 
 matplotlib.use("Agg")  # 백엔드 설정 (GUI 없이 사용)
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 logger = logging.getLogger(__name__)

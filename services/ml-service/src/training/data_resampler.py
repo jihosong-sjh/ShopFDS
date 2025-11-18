@@ -12,11 +12,10 @@ SMOTE (Synthetic Minority Over-sampling Technique)를 사용하여 사기 거래
 
 import logging
 from typing import Dict, Any, Tuple, Optional
-import numpy as np
 import pandas as pd
 from imblearn.over_sampling import SMOTE, ADASYN
 from imblearn.under_sampling import RandomUnderSampler
-from imblearn.combine import SMOTETomek, SMOTEENN
+from imblearn.combine import SMOTETomek
 from collections import Counter
 
 

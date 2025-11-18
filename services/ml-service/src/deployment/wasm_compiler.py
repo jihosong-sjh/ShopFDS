@@ -8,11 +8,10 @@ PyTorch/ONNX 모델을 WebAssembly로 변환하여 브라우저에서 실행
 - 경량화 모델 (< 5MB)
 """
 
-import subprocess
 import onnx
 from onnx import optimizer
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import List
 import logging
 import json
 import shutil
@@ -119,7 +118,7 @@ class WasmModelCompiler:
             - WebAssembly 백엔드 사용
             - WebGL 가속 지원 (가능 시)
         """
-        logger.info(f"[CONVERT] Converting ONNX to ONNX Runtime Web format...")
+        logger.info("[CONVERT] Converting ONNX to ONNX Runtime Web format...")
 
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -453,7 +452,7 @@ if (typeof window !== 'undefined') {{
             model_dir: 모델 디렉토리
             output_zip: 출력 ZIP 파일 경로
         """
-        logger.info(f"[PACKAGE] Creating deployment package...")
+        logger.info("[PACKAGE] Creating deployment package...")
 
         shutil.make_archive(str(output_zip.with_suffix("")), "zip", model_dir)
 

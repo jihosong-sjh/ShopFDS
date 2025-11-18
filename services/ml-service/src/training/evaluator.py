@@ -23,8 +23,6 @@ from sklearn.metrics import (
     roc_auc_score,
     confusion_matrix,
     classification_report,
-    precision_recall_curve,
-    roc_curve,
 )
 
 
@@ -189,7 +187,7 @@ class ModelEvaluator:
         # 추가 메트릭
         metrics = self.evaluate(y_true, y_pred, y_proba)
 
-        report += f"\n\n=== Additional Metrics ===\n"
+        report += "\n\n=== Additional Metrics ===\n"
         report += (
             f"ROC-AUC Score: {metrics['roc_auc']:.4f}\n" if metrics["roc_auc"] else ""
         )

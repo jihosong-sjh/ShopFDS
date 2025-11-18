@@ -9,10 +9,8 @@ PyTorch 모델을 TorchServe로 배포하여 프로덕션 추론 서버 구축
 """
 
 import subprocess
-import json
-import shutil
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 import logging
 import yaml
 
@@ -44,7 +42,7 @@ class TorchServeDeployer:
         self.model_store_path.mkdir(parents=True, exist_ok=True)
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
-        logger.info(f"[INIT] TorchServe deployer initialized")
+        logger.info("[INIT] TorchServe deployer initialized")
         logger.info(f"  Model Store: {self.model_store_path}")
         logger.info(f"  Log Directory: {self.log_dir}")
 

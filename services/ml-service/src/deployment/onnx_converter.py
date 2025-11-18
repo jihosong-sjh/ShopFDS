@@ -14,7 +14,7 @@ import onnx
 import onnxruntime as ort
 from onnxruntime.quantization import quantize_dynamic, QuantType
 import numpy as np
-from typing import Dict, List, Any, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 import logging
 from pathlib import Path
 import time
