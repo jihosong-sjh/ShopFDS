@@ -182,15 +182,15 @@
 
 ### Implementation for User Story 6
 
-- [ ] T070 [P] [US6] PyTorch 모델 INT8 양자화 코드 구현 in services/ml-service/src/deployment/quantizer.py
-- [ ] T071 [P] [US6] ONNX Runtime 통합 (추론 가속) in services/ml-service/src/deployment/onnx_converter.py
-- [ ] T072 [US6] TorchServe 배포 설정 구현 (배치 크기 50) in services/ml-service/src/deployment/torchserve_deploy.py
-- [ ] T073 [US6] 배치 추론 파이프라인 구현 (동시 요청 50개 이상 시 활성화) in services/ml-service/src/deployment/batch_inference.py
-- [ ] T074 [US6] WebAssembly 모델 컴파일 코드 구현 (Emscripten) in services/ml-service/src/deployment/wasm_compiler.py
-- [ ] T075 [US6] 클라이언트 사이드 모델 로더 구현 (브라우저) in services/ecommerce/frontend/src/utils/wasmModelLoader.ts
-- [ ] T076 [US6] 클라이언트 사이드 봇 차단 로직 구현 (점수 90+ 서버 요청 전 차단) in services/ecommerce/frontend/src/utils/wasmModelLoader.ts
-- [ ] T077 [US6] 모델 배포 API 구현 (POST /v1/ml/deployment/deploy) in services/ml-service/src/api/deployment.py
-- [ ] T078 [US6] 추론 시간 모니터링 로직 구현 (P95 50ms 목표) in services/ml-service/src/deployment/performance_monitor.py
+- [X] T070 [P] [US6] PyTorch 모델 INT8 양자화 코드 구현 in services/ml-service/src/deployment/quantizer.py
+- [X] T071 [P] [US6] ONNX Runtime 통합 (추론 가속) in services/ml-service/src/deployment/onnx_converter.py
+- [X] T072 [US6] TorchServe 배포 설정 구현 (배치 크기 50) in services/ml-service/src/deployment/torchserve_deploy.py
+- [X] T073 [US6] 배치 추론 파이프라인 구현 (동시 요청 50개 이상 시 활성화) in services/ml-service/src/deployment/batch_inference.py
+- [X] T074 [US6] WebAssembly 모델 컴파일 코드 구현 (Emscripten) in services/ml-service/src/deployment/wasm_compiler.py
+- [X] T075 [US6] 클라이언트 사이드 모델 로더 구현 (브라우저) in services/ecommerce/frontend/src/utils/wasmModelLoader.ts
+- [X] T076 [US6] 클라이언트 사이드 봇 차단 로직 구현 (점수 90+ 서버 요청 전 차단) in services/ecommerce/frontend/src/utils/clientSideBotBlocker.ts
+- [X] T077 [US6] 모델 배포 API 구현 (POST /v1/ml/deployment/deploy) in services/ml-service/src/api/optimization.py
+- [X] T078 [US6] 추론 시간 모니터링 로직 구현 (P95 50ms 목표) in services/ml-service/src/deployment/performance_monitor.py
 
 **Checkpoint**: US6 완료 - 추론 시간 P95 50ms 달성, 서버 부하 20% 감소
 
