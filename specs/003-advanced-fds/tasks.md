@@ -134,10 +134,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T048 [P] [US4] 결제 관련 룰 10개 구현 (테스트 카드, BIN 불일치 등) in services/fds/src/engines/rule_engine.py
-- [ ] T049 [P] [US4] 계정 탈취 관련 룰 10개 구현 (비밀번호 실패, 세션 하이재킹 등) in services/fds/src/engines/rule_engine.py
-- [ ] T050 [P] [US4] 배송지 사기 관련 룰 10개 구현 (화물 전달 주소, 일회용 이메일 등) in services/fds/src/engines/rule_engine.py
-- [ ] T051 [US4] 룰 우선순위 실행 엔진 구현 (차단 > 수동 검토 > 위험 점수) in services/fds/src/engines/rule_engine.py
+- [ ] T048 [P] [US4] 결제 관련 룰 10개 구현 (테스트 카드, BIN 불일치 등) in services/fds/src/engines/fraud_rule_engine.py
+- [ ] T049 [P] [US4] 계정 탈취 관련 룰 10개 구현 (비밀번호 실패, 세션 하이재킹 등) in services/fds/src/engines/fraud_rule_engine.py
+- [ ] T050 [P] [US4] 배송지 사기 관련 룰 10개 구현 (화물 전달 주소, 일회용 이메일 등) in services/fds/src/engines/fraud_rule_engine.py
+- [ ] T051 [US4] 룰 우선순위 실행 엔진 구현 (차단 > 수동 검토 > 위험 점수) in services/fds/src/engines/fraud_rule_engine.py
 - [ ] T052 [US4] 테스트 카드 리스트 데이터 로더 구현 (4111111111111111 등) in services/fds/src/data/test_cards.json
 - [ ] T053 [US4] 화물 전달 주소 DB 로더 구현 in services/fds/src/data/freight_forwarders.json
 - [ ] T054 [US4] 일회용 이메일 도메인 리스트 로더 구현 in services/fds/src/data/disposable_emails.json

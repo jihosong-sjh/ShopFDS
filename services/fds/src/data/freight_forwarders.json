@@ -1,0 +1,88 @@
+{
+  "freight_forwarders": [
+    {
+      "name": "Shipito",
+      "address": "3540 Toringdon Way, Suite 200",
+      "city": "Charlotte",
+      "state": "NC",
+      "country": "US",
+      "keywords": ["shipito", "toringdon"]
+    },
+    {
+      "name": "MyUS",
+      "address": "451 Florida Central Pkwy",
+      "city": "Longwood",
+      "state": "FL",
+      "country": "US",
+      "keywords": ["myus", "florida central"]
+    },
+    {
+      "name": "Stackry",
+      "address": "251 Little Falls Drive",
+      "city": "Wilmington",
+      "state": "DE",
+      "country": "US",
+      "keywords": ["stackry", "little falls"]
+    },
+    {
+      "name": "Planet Express",
+      "address": "1115 S Rock Rd Suite 1",
+      "city": "Wichita",
+      "state": "KS",
+      "country": "US",
+      "keywords": ["planet express", "south rock"]
+    },
+    {
+      "name": "Borderlinx",
+      "address": "17801 NW 2nd Ave Suite 100",
+      "city": "Miami",
+      "state": "FL",
+      "country": "US",
+      "keywords": ["borderlinx", "nw 2nd"]
+    },
+    {
+      "name": "Parcl",
+      "address": "30 N Gould St Suite R",
+      "city": "Sheridan",
+      "state": "WY",
+      "country": "US",
+      "keywords": ["parcl", "gould"]
+    },
+    {
+      "name": "Reship",
+      "address": "251 Little Falls Drive",
+      "city": "Wilmington",
+      "state": "DE",
+      "country": "US",
+      "keywords": ["reship", "little falls"]
+    },
+    {
+      "name": "Viabox",
+      "address": "8801 NW 23rd St",
+      "city": "Doral",
+      "state": "FL",
+      "country": "US",
+      "keywords": ["viabox", "nw 23rd"]
+    },
+    {
+      "name": "USGoBuy",
+      "address": "1500 District Ave Suite 1",
+      "city": "Burlington",
+      "state": "MA",
+      "country": "US",
+      "keywords": ["usgobuy", "district ave"]
+    },
+    {
+      "name": "Fishisfast",
+      "address": "2110 Powers Ferry Rd SE",
+      "city": "Atlanta",
+      "state": "GA",
+      "country": "US",
+      "keywords": ["fishisfast", "powers ferry"]
+    }
+  ],
+  "description": "Known freight forwarding and mail forwarding services often used for fraud",
+  "risk_level": "high",
+  "action": "block_or_manual_review",
+  "last_updated": "2025-11-18"
+}
