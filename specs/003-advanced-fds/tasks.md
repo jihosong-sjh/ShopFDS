@@ -26,12 +26,12 @@
 
 **목적**: 프로젝트 구조 및 기본 설정
 
-- [ ] T001 고도화 브랜치 생성 및 프로젝트 구조 확인
-- [ ] T002 [P] FDS 서비스에 신규 디렉토리 생성 (engines/, models/, services/)
-- [ ] T003 [P] ML 서비스에 신규 디렉토리 생성 (models/, training/, deployment/, monitoring/)
-- [ ] T004 [P] 이커머스 프론트엔드에 utils/ 디렉토리 생성
-- [ ] T005 [P] Admin 대시보드 프론트엔드에 pages/ 디렉토리 생성
-- [ ] T006 외부 API 키 환경 변수 설정 (.env 파일)
+- [X] T001 고도화 브랜치 생성 및 프로젝트 구조 확인
+- [X] T002 [P] FDS 서비스에 신규 디렉토리 생성 (engines/, models/, services/)
+- [X] T003 [P] ML 서비스에 신규 디렉토리 생성 (models/, training/, deployment/, monitoring/)
+- [X] T004 [P] 이커머스 프론트엔드에 utils/ 디렉토리 생성
+- [X] T005 [P] Admin 대시보드 프론트엔드에 pages/ 디렉토리 생성
+- [X] T006 외부 API 키 환경 변수 설정 (.env 파일)
 
 ---
 
