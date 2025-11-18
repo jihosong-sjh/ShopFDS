@@ -30,6 +30,7 @@ joblib
 # Utilities
 python-dotenv
 python-dateutil
+pycountry
 
 # Testing
 pytest

@@ -43,7 +43,7 @@ const transformToWaterfallData = (shapValues: SHAPValue[]) => {
   const sortedValues = [...shapValues].sort((a, b) => a.rank - b.rank);
 
   let cumulative = 0;
-  const data = sortedValues.map((item, index) => {
+  const data = sortedValues.map((item) => {
     const start = cumulative;
     cumulative += item.contribution;
 
