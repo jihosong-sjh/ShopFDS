@@ -71,14 +71,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T024 [P] [US1] 클라이언트 사이드 핑거프린팅 유틸리티 생성 (Canvas/WebGL/Audio 해싱) in services/ecommerce/frontend/src/utils/deviceFingerprint.ts
-- [ ] T025 [P] [US1] 디바이스 핑거프린팅 수집 API 구현 (POST /v1/fds/device-fingerprint) in services/fds/src/api/device_fingerprint.py
-- [ ] T026 [US1] 디바이스 ID 생성 엔진 구현 (SHA-256 해싱) in services/fds/src/engines/fingerprint_engine.py
-- [ ] T027 [US1] 타임존/언어 불일치 검사 로직 구현 in services/fds/src/engines/fingerprint_engine.py
-- [ ] T028 [US1] 블랙리스트 조회 API 구현 (GET /v1/fds/blacklist/device/{device_id}) in services/fds/src/api/blacklist.py
-- [ ] T029 [US1] 블랙리스트 등록/해제 API 구현 (POST/DELETE /v1/fds/blacklist) in services/fds/src/api/blacklist.py
-- [ ] T030 [US1] Redis 캐싱 적용 (디바이스 ID 조회 TTL 24시간)
-- [ ] T031 [US1] 프론트엔드 통합 (사용자 접속 시 자동 핑거프린팅 수집) in services/ecommerce/frontend/src/App.tsx
+- [X] T024 [P] [US1] 클라이언트 사이드 핑거프린팅 유틸리티 생성 (Canvas/WebGL/Audio 해싱) in services/ecommerce/frontend/src/utils/deviceFingerprint.ts
+- [X] T025 [P] [US1] 디바이스 핑거프린팅 수집 API 구현 (POST /v1/fds/device-fingerprint) in services/fds/src/api/device_fingerprint.py
+- [X] T026 [US1] 디바이스 ID 생성 엔진 구현 (SHA-256 해싱) in services/fds/src/engines/fingerprint_engine.py
+- [X] T027 [US1] 타임존/언어 불일치 검사 로직 구현 in services/fds/src/engines/fingerprint_engine.py
+- [X] T028 [US1] 블랙리스트 조회 API 구현 (GET /v1/fds/blacklist/device/{device_id}) in services/fds/src/api/blacklist.py
+- [X] T029 [US1] 블랙리스트 등록/해제 API 구현 (POST/DELETE /v1/fds/blacklist) in services/fds/src/api/blacklist.py
+- [X] T030 [US1] Redis 캐싱 적용 (디바이스 ID 조회 TTL 24시간)
+- [X] T031 [US1] 프론트엔드 통합 (사용자 접속 시 자동 핑거프린팅 수집) in services/ecommerce/frontend/src/App.tsx
 
 **Checkpoint**: US1 완료 - 디바이스 핑거프린팅 시스템이 독립적으로 작동하며 95% 정확도로 디바이스 재식별
 
