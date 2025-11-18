@@ -249,16 +249,16 @@
 
 ### Implementation for User Story 9
 
-- [ ] T098 [P] [US9] EmailRep API 통합 (이메일 평판 조회) in services/fds/src/services/emailrep_service.py
-- [ ] T099 [P] [US9] Numverify API 통합 (전화번호 검증) in services/fds/src/services/numverify_service.py
-- [ ] T100 [P] [US9] BIN Database API 통합 (카드 발급국 조회) in services/fds/src/services/bin_service.py
-- [ ] T101 [P] [US9] HaveIBeenPwned API 통합 (유출 이메일 확인) in services/fds/src/services/hibp_service.py
-- [ ] T102 [US9] 외부 API 통합 서비스 구현 (Fallback 로직, 5초 타임아웃) in services/fds/src/services/external_verification_service.py
-- [ ] T103 [US9] 외부 서비스 호출 로그 저장 로직 구현 (ExternalServiceLog 엔티티)
-- [ ] T104 [US9] 이메일 검증 API 구현 (POST /v1/fds/verify/email) in services/fds/src/api/verification.py
-- [ ] T105 [US9] 전화번호 검증 API 구현 (POST /v1/fds/verify/phone) in services/fds/src/api/verification.py
-- [ ] T106 [US9] 카드 BIN 검증 API 구현 (POST /v1/fds/verify/card-bin) in services/fds/src/api/verification.py
-- [ ] T107 [US9] 외부 API 재시도 로직 구현 (3회 재시도, 지수 백오프)
+- [X] T098 [P] [US9] EmailRep API 통합 (이메일 평판 조회) in services/fds/src/services/emailrep_service.py
+- [X] T099 [P] [US9] Numverify API 통합 (전화번호 검증) in services/fds/src/services/numverify_service.py
+- [X] T100 [P] [US9] BIN Database API 통합 (카드 발급국 조회) in services/fds/src/services/bin_service.py
+- [X] T101 [P] [US9] HaveIBeenPwned API 통합 (유출 이메일 확인) in services/fds/src/services/hibp_service.py
+- [X] T102 [US9] 외부 API 통합 서비스 구현 (Fallback 로직, 5초 타임아웃) in services/fds/src/services/external_verification_service.py
+- [X] T103 [US9] 외부 서비스 호출 로그 저장 로직 구현 (ExternalServiceLog 엔티티)
+- [X] T104 [US9] 이메일 검증 API 구현 (POST /v1/fds/verify/email) in services/fds/src/api/verification.py
+- [X] T105 [US9] 전화번호 검증 API 구현 (POST /v1/fds/verify/phone) in services/fds/src/api/verification.py
+- [X] T106 [US9] 카드 BIN 검증 API 구현 (POST /v1/fds/verify/card-bin) in services/fds/src/api/verification.py
+- [X] T107 [US9] 외부 API 재시도 로직 구현 (3회 재시도, 지수 백오프)
 
 **Checkpoint**: US9 완료 - 외부 서비스 통합으로 계정 탈취 사기 80% 감소, API 실패 시 Fallback 자동 실행
 

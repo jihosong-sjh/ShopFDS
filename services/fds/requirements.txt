@@ -29,6 +29,7 @@ joblib
 
 # Utilities
 python-dotenv
+python-dateutil
 
 # Testing
 pytest
