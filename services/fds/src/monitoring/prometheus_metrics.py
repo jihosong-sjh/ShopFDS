@@ -16,9 +16,8 @@ FDS 평가 성능, 사기 탐지율, 시스템 메트릭을 Prometheus 형식으
 - GET /metrics - Prometheus scrape 엔드포인트
 """
 
-import time
 import logging
-from typing import Dict, Any
+from typing import Dict
 from prometheus_client import (
     Counter,
     Histogram,

@@ -41,14 +41,12 @@ export class WasmModelLoader {
   private session: ort.InferenceSession | null = null;
   private modelPath: string;
   private executionProvider: 'wasm' | 'webgl';
-  private cacheDuration: number;
   private enableLogging: boolean;
   private isInitialized = false;
 
   constructor(options: WasmModelLoaderOptions) {
     this.modelPath = options.modelPath;
     this.executionProvider = options.executionProvider || 'wasm';
-    this.cacheDuration = options.cacheDuration || 3600000; // 1시간
     this.enableLogging = options.enableLogging || false;
   }
 
@@ -410,7 +408,7 @@ export async function initializeModelLoader(modelPath: string): Promise<boolean>
   const loader = getModelLoader({
     modelPath,
     executionProvider: 'wasm',
-    enableLogging: process.env.NODE_ENV === 'development',
+    enableLogging: import.meta.env.MODE === 'development',
   });
 
   return await loader.initialize();

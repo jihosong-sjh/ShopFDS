@@ -5,7 +5,6 @@ Celery Tasks for FDS Service
 """
 
 from celery import Celery
-import os
 
 # Celery 애플리케이션 인스턴스 생성
 app = Celery("fds_tasks")

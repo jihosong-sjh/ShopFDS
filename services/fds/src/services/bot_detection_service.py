@@ -63,7 +63,6 @@ class BotDetectionService:
             risk_level = "critical"
             requires_auth = True
             auth_method = AuthMethod.OTP  # 가장 강력한 인증
-            should_block = True
             return {
                 "requires_auth": requires_auth,
                 "auth_method": auth_method.value,

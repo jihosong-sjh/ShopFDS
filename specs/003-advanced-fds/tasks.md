@@ -280,7 +280,7 @@
 - [X] T117 quickstart.md 검증 및 업데이트
 - [X] T118 보안 감사 (GDPR/CCPA/PCI-DSS 준수 확인)
 - [X] T119 코드 리뷰 및 리팩토링
-- [ ] T120 최종 배포 준비 (Docker 이미지 빌드, Kubernetes 매니페스트)
+- [X] T120 최종 배포 준비 (Docker 이미지 빌드, Kubernetes 매니페스트)
 
 ---
 

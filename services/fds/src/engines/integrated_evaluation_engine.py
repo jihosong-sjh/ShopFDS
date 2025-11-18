@@ -28,8 +28,7 @@
 
 import time
 import logging
-from typing import Dict, List, Optional, Any, Tuple
-from uuid import UUID
+from typing import Dict, List, Optional, Any
 from datetime import datetime
 from decimal import Decimal
 

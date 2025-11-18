@@ -14,7 +14,6 @@ from sqlalchemy import (
     Index,
     UUID,
 )
-from sqlalchemy import String  # String(45) -> String for SQLite compatibility
 from src.models.base import Base
 
 

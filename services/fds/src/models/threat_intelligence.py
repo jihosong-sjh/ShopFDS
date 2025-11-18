@@ -16,7 +16,10 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSON  # JSON -> JSON for SQLite compatibility
+from sqlalchemy.dialects.postgresql import (
+    UUID as PGUUID,
+    JSON,
+)  # JSON -> JSON for SQLite compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 

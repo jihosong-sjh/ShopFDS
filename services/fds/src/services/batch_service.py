@@ -5,10 +5,9 @@ Batch Service for FDS
 """
 
 import logging
-from typing import Dict, Any, List
-from datetime import datetime, timedelta
+from typing import Dict, Any
+from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
 
 logger = logging.getLogger(__name__)
 

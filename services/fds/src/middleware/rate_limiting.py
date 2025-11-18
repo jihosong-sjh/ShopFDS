@@ -18,7 +18,7 @@ DDoS 방어, API 남용 방지, 공정한 리소스 사용을 보장합니다.
 import time
 import logging
 from typing import Optional, Callable
-from fastapi import Request, Response, HTTPException, status
+from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from redis import asyncio as aioredis

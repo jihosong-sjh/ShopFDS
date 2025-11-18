@@ -14,7 +14,7 @@ export interface MouseMovement {
   curvature: number;
 }
 
-export interface KeyboardEvent {
+export interface BehaviorKeyboardEvent {
   timestamp: number;
   key: string;
   duration: number;
@@ -29,14 +29,14 @@ export interface ClickstreamEvent {
 export interface BehaviorPattern {
   sessionId: string;
   mouseMovements: MouseMovement[];
-  keyboardEvents: KeyboardEvent[];
+  keyboardEvents: BehaviorKeyboardEvent[];
   clickstream: ClickstreamEvent[];
   collectDuration: number;
 }
 
 class BehaviorTracker {
   private mouseMovements: MouseMovement[] = [];
-  private keyboardEvents: KeyboardEvent[] = [];
+  private keyboardEvents: BehaviorKeyboardEvent[] = [];
   private clickstream: ClickstreamEvent[] = [];
   private sessionId: string;
   private isTracking: boolean = false;
@@ -139,10 +139,6 @@ class BehaviorTracker {
         // 곡률 계산 (0 = 직선, 1 = 완전한 곡선)
         // 곡률 = 각도 변화율 / 이동 거리
         const curvature = this.calculateCurvature(
-          this.lastMousePosition.x,
-          this.lastMousePosition.y,
-          currentX,
-          currentY,
           deltaX,
           deltaY,
           distance
@@ -179,10 +175,6 @@ class BehaviorTracker {
    * 사람은 곡선 움직임 (curvature > 0.1)
    */
   private calculateCurvature(
-    prevX: number,
-    prevY: number,
-    currX: number,
-    currY: number,
     deltaX: number,
     deltaY: number,
     distance: number

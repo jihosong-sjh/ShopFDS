@@ -191,7 +191,7 @@ export class ClientSideBotBlocker {
   /**
    * 스크롤 핸들러
    */
-  private handleScroll(event: Event): void {
+  private handleScroll(): void {
     this.behaviorCollector.scrolls.push({
       deltaY: window.scrollY,
       timestamp: Date.now(),

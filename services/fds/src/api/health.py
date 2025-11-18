@@ -3,7 +3,6 @@ Enhanced Health Check API for ShopFDS Ecommerce Service
 Checks: DB connection, Redis PING, disk space, replication lag
 """
 
-import os
 import shutil
 from datetime import datetime
 from typing import Dict, Any
@@ -11,7 +10,6 @@ from typing import Dict, Any
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.connection import get_write_db, get_read_db, get_redis
 

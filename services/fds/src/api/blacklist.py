@@ -235,7 +235,7 @@ async def get_blacklist_entries(
     """
     result = await db.execute(
         select(DeviceFingerprint)
-        .where(DeviceFingerprint.blacklisted == True)
+        .where(DeviceFingerprint.blacklisted)
         .order_by(DeviceFingerprint.updated_at.desc())
         .offset(skip)
         .limit(limit)
@@ -285,14 +285,14 @@ async def get_blacklist_stats(db: AsyncSession = Depends(get_db)):
 
     # 총 블랙리스트 개수
     total_result = await db.execute(
-        select(func.count()).where(DeviceFingerprint.blacklisted == True)
+        select(func.count()).where(DeviceFingerprint.blacklisted)
     )
     total_blacklisted = total_result.scalar_one()
 
     # 오늘 등록된 개수
     today_result = await db.execute(
         select(func.count()).where(
-            DeviceFingerprint.blacklisted == True,
+            DeviceFingerprint.blacklisted,
             DeviceFingerprint.updated_at >= today_start,
         )
     )
@@ -301,7 +301,7 @@ async def get_blacklist_stats(db: AsyncSession = Depends(get_db)):
     # 이번주 등록된 개수
     week_result = await db.execute(
         select(func.count()).where(
-            DeviceFingerprint.blacklisted == True,
+            DeviceFingerprint.blacklisted,
             DeviceFingerprint.updated_at >= week_start,
         )
     )
@@ -310,7 +310,7 @@ async def get_blacklist_stats(db: AsyncSession = Depends(get_db)):
     # 이번달 등록된 개수
     month_result = await db.execute(
         select(func.count()).where(
-            DeviceFingerprint.blacklisted == True,
+            DeviceFingerprint.blacklisted,
             DeviceFingerprint.updated_at >= month_start,
         )
     )

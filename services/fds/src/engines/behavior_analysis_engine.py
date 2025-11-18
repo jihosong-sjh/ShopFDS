@@ -4,9 +4,8 @@ Behavior Analysis Engine
 마우스 움직임, 키보드 타이핑, 클릭스트림 분석으로 봇 탐지
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Any
 import statistics
-import math
 
 
 class BehaviorAnalysisEngine:

@@ -38,7 +38,7 @@ export function useDeviceFingerprint(): DeviceFingerprintResult {
 
         // 디바이스 핑거프린트 생성
         const fingerprint = await generateDeviceFingerprint();
-        const calculatedDeviceId = await calculateDeviceId(fingerprint);
+        await calculateDeviceId(fingerprint);
 
         if (!mounted) return;
 

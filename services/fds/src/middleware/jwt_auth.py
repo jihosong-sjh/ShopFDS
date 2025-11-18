@@ -16,11 +16,10 @@ JWT 인증 미들웨어
 """
 
 import os
-import time
 import logging
 from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
-from fastapi import Request, HTTPException, status, Depends
+from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 

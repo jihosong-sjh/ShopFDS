@@ -11,7 +11,6 @@ Prometheus가 스크래핑할 수 있는 메트릭 엔드포인트를 제공합�
 import logging
 from fastapi import APIRouter, Response
 from ..monitoring.prometheus_metrics import get_metrics_response, registry
-from prometheus_client import CONTENT_TYPE_LATEST
 
 logger = logging.getLogger(__name__)
 

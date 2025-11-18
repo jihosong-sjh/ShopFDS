@@ -8,6 +8,7 @@ pydantic-settings
 sqlalchemy
 asyncpg
 psycopg[binary]
+aiosqlite
 
 # Redis
 redis

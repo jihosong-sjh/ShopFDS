@@ -10,7 +10,7 @@ import { useDeviceFingerprint } from '../hooks/useDeviceFingerprint';
 export const DeviceFingerprintProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { deviceId, isBlacklisted, isLoading } = useDeviceFingerprint();
+  const { deviceId, isBlacklisted } = useDeviceFingerprint();
 
   // 블랙리스트된 디바이스 경고 표시 (옵션)
   if (isBlacklisted && deviceId) {

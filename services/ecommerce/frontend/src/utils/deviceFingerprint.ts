@@ -78,24 +78,27 @@ function getWebGLFingerprint(): string {
 
     if (!gl) return 'webgl_not_supported';
 
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    // Type assertion for WebGL context
+    const webglContext = gl as WebGLRenderingContext;
+
+    const debugInfo = webglContext.getExtension('WEBGL_debug_renderer_info');
     const params: string[] = [];
 
     // GPU information
     if (debugInfo) {
-      params.push(`renderer:${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)}`);
-      params.push(`vendor:${gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)}`);
+      params.push(`renderer:${webglContext.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)}`);
+      params.push(`vendor:${webglContext.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)}`);
     }
 
     // WebGL parameters
-    params.push(`version:${gl.getParameter(gl.VERSION)}`);
-    params.push(`shading:${gl.getParameter(gl.SHADING_LANGUAGE_VERSION)}`);
-    params.push(`max_texture:${gl.getParameter(gl.MAX_TEXTURE_SIZE)}`);
-    params.push(`max_vertex:${gl.getParameter(gl.MAX_VERTEX_ATTRIBS)}`);
-    params.push(`max_viewport:${JSON.stringify(gl.getParameter(gl.MAX_VIEWPORT_DIMS))}`);
+    params.push(`version:${webglContext.getParameter(webglContext.VERSION)}`);
+    params.push(`shading:${webglContext.getParameter(webglContext.SHADING_LANGUAGE_VERSION)}`);
+    params.push(`max_texture:${webglContext.getParameter(webglContext.MAX_TEXTURE_SIZE)}`);
+    params.push(`max_vertex:${webglContext.getParameter(webglContext.MAX_VERTEX_ATTRIBS)}`);
+    params.push(`max_viewport:${JSON.stringify(webglContext.getParameter(webglContext.MAX_VIEWPORT_DIMS))}`);
 
     // Supported extensions
-    const extensions = gl.getSupportedExtensions();
+    const extensions = webglContext.getSupportedExtensions();
     if (extensions) {
       params.push(`extensions:${extensions.sort().join(',')}`);
     }

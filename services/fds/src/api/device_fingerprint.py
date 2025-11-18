@@ -15,8 +15,6 @@ from src.models.device_fingerprint import DeviceFingerprint
 from src.utils.cache_utils import (
     get_cached_device_fingerprint,
     cache_device_fingerprint,
-    get_cache,
-    CacheKeys,
 )
 from sqlalchemy import select
 

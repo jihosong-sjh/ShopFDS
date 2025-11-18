@@ -10,9 +10,7 @@ Fingerprint Engine
 import hashlib
 import logging
 from typing import Dict, Optional, Any
-from datetime import datetime
 import pycountry
-import pytz
 
 logger = logging.getLogger(__name__)
 

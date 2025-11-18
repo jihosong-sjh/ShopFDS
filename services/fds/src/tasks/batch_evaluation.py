@@ -6,7 +6,6 @@ Batch Evaluation Tasks for FDS Service
 
 from src.tasks import app
 import logging
-from typing import Dict, Any
 from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
