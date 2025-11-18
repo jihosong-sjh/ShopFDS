@@ -18,6 +18,12 @@ load_dotenv(dotenv_path=env_path)
 from .models import init_db, close_db
 from .api.evaluation import router as evaluation_router
 from .api.threat import router as threat_router
+from .api.device_fingerprint import router as device_fingerprint_router
+from .api.behavior_pattern import router as behavior_pattern_router
+from .api.blacklist import router as blacklist_router
+from .api.network_analysis import router as network_analysis_router
+from .api.health import router as health_router
+from .api.metrics import router as metrics_router
 
 # 로깅 설정
 logging.basicConfig(
@@ -84,6 +90,12 @@ app.add_middleware(
 # 라우터 등록
 app.include_router(evaluation_router)
 app.include_router(threat_router)
+app.include_router(device_fingerprint_router)
+app.include_router(behavior_pattern_router)
+app.include_router(blacklist_router)
+app.include_router(network_analysis_router)
+app.include_router(health_router)
+app.include_router(metrics_router)
 
 
 @app.get("/", tags=["Root"])

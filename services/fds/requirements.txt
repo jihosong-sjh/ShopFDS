@@ -16,6 +16,9 @@ redis
 celery[redis]
 
 # HTTP Client (CTI 연동용)
+# GeoIP (네트워크 분석용)
+geoip2
+
 httpx
 
 # ML Libraries (기본 모델)

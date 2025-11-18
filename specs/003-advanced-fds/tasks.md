@@ -113,14 +113,14 @@
 
 ### Implementation for User Story 3
 
-- [ ] T040 [P] [US3] TOR Exit Node 리스트 데이터 로더 구현 (https://check.torproject.org/torbulkexitlist) in services/fds/src/engines/network_analysis_engine.py
-- [ ] T041 [P] [US3] GeoIP 데이터베이스 통합 (MaxMind GeoIP2) in services/fds/src/engines/network_analysis_engine.py
-- [ ] T042 [US3] ASN 평판 조회 로직 구현 (WHOIS 데이터베이스) in services/fds/src/engines/network_analysis_engine.py
-- [ ] T043 [US3] DNS PTR 역방향 조회 로직 구현 (프록시 키워드 탐지) in services/fds/src/engines/network_analysis_engine.py
-- [ ] T044 [US3] 네트워크 분석 종합 엔진 구현 (TOR/VPN/Proxy 판정) in services/fds/src/engines/network_analysis_engine.py
-- [ ] T045 [US3] 국가 불일치 검사 로직 구현 (GeoIP vs 결제 카드 발급국) in services/fds/src/engines/network_analysis_engine.py
-- [ ] T046 [US3] 네트워크 분석 API 구현 (POST /v1/fds/network-analysis) in services/fds/src/api/network_analysis.py
-- [ ] T047 [US3] Redis 캐싱 적용 (IP 주소별 TTL 1시간)
+- [X] T040 [P] [US3] TOR Exit Node 리스트 데이터 로더 구현 (https://check.torproject.org/torbulkexitlist) in services/fds/src/engines/network_analysis_engine.py
+- [X] T041 [P] [US3] GeoIP 데이터베이스 통합 (MaxMind GeoIP2) in services/fds/src/engines/network_analysis_engine.py
+- [X] T042 [US3] ASN 평판 조회 로직 구현 (WHOIS 데이터베이스) in services/fds/src/engines/network_analysis_engine.py
+- [X] T043 [US3] DNS PTR 역방향 조회 로직 구현 (프록시 키워드 탐지) in services/fds/src/engines/network_analysis_engine.py
+- [X] T044 [US3] 네트워크 분석 종합 엔진 구현 (TOR/VPN/Proxy 판정) in services/fds/src/engines/network_analysis_engine.py
+- [X] T045 [US3] 국가 불일치 검사 로직 구현 (GeoIP vs 결제 카드 발급국) in services/fds/src/engines/network_analysis_engine.py
+- [X] T046 [US3] 네트워크 분석 API 구현 (POST /v1/fds/network-analysis) in services/fds/src/api/network_analysis.py
+- [X] T047 [US3] Redis 캐싱 적용 (IP 주소별 TTL 1시간)
 
 **Checkpoint**: US3 완료 - 네트워크 분석이 TOR 95%, VPN/Proxy 85% 정확도로 탐지
 
