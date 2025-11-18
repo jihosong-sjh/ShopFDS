@@ -134,16 +134,16 @@
 
 ### Implementation for User Story 4
 
-- [ ] T048 [P] [US4] 결제 관련 룰 10개 구현 (테스트 카드, BIN 불일치 등) in services/fds/src/engines/fraud_rule_engine.py
-- [ ] T049 [P] [US4] 계정 탈취 관련 룰 10개 구현 (비밀번호 실패, 세션 하이재킹 등) in services/fds/src/engines/fraud_rule_engine.py
-- [ ] T050 [P] [US4] 배송지 사기 관련 룰 10개 구현 (화물 전달 주소, 일회용 이메일 등) in services/fds/src/engines/fraud_rule_engine.py
-- [ ] T051 [US4] 룰 우선순위 실행 엔진 구현 (차단 > 수동 검토 > 위험 점수) in services/fds/src/engines/fraud_rule_engine.py
-- [ ] T052 [US4] 테스트 카드 리스트 데이터 로더 구현 (4111111111111111 등) in services/fds/src/data/test_cards.json
-- [ ] T053 [US4] 화물 전달 주소 DB 로더 구현 in services/fds/src/data/freight_forwarders.json
-- [ ] T054 [US4] 일회용 이메일 도메인 리스트 로더 구현 in services/fds/src/data/disposable_emails.json
-- [ ] T055 [US4] 룰 관리 API 구현 (POST/PUT/DELETE /v1/fds/rules) in services/fds/src/api/rules.py
-- [ ] T056 [US4] 룰 실행 결과 저장 로직 구현 (RuleExecution 엔티티)
-- [ ] T057 [US4] 룰 DB 초기 데이터 시드 스크립트 생성 in services/fds/scripts/seed_fraud_rules.py
+- [X] T048 [P] [US4] 결제 관련 룰 10개 구현 (테스트 카드, BIN 불일치 등) in services/fds/src/engines/fraud_rule_engine.py
+- [X] T049 [P] [US4] 계정 탈취 관련 룰 10개 구현 (비밀번호 실패, 세션 하이재킹 등) in services/fds/src/engines/fraud_rule_engine.py
+- [X] T050 [P] [US4] 배송지 사기 관련 룰 10개 구현 (화물 전달 주소, 일회용 이메일 등) in services/fds/src/engines/fraud_rule_engine.py
+- [X] T051 [US4] 룰 우선순위 실행 엔진 구현 (차단 > 수동 검토 > 위험 점수) in services/fds/src/engines/fraud_rule_engine.py
+- [X] T052 [US4] 테스트 카드 리스트 데이터 로더 구현 (4111111111111111 등) in services/fds/src/data/test_cards.json
+- [X] T053 [US4] 화물 전달 주소 DB 로더 구현 in services/fds/src/data/freight_forwarders.json
+- [X] T054 [US4] 일회용 이메일 도메인 리스트 로더 구현 in services/fds/src/data/disposable_emails.json
+- [X] T055 [US4] 룰 관리 API 구현 (POST/PUT/DELETE /v1/fds/rules) in services/fds/src/api/rules.py
+- [X] T056 [US4] 룰 실행 결과 저장 로직 구현 (RuleExecution 엔티티)
+- [X] T057 [US4] 룰 DB 초기 데이터 시드 스크립트 생성 in services/fds/scripts/seed_fraud_rules.py
 
 **Checkpoint**: US4 완료 - 30개 룰이 테스트 카드 등 명백한 사기 패턴을 100% 정확도로 차단
 
@@ -157,18 +157,18 @@
 
 ### Implementation for User Story 5
 
-- [ ] T058 [P] [US5] Random Forest 모델 학습 코드 구현 in services/ml-service/src/models/random_forest_model.py
-- [ ] T059 [P] [US5] XGBoost 모델 학습 코드 구현 (GPU 가속) in services/ml-service/src/models/xgboost_model.py
-- [ ] T060 [P] [US5] Autoencoder 모델 학습 코드 구현 (PyTorch) in services/ml-service/src/models/autoencoder_model.py
-- [ ] T061 [P] [US5] LSTM 모델 학습 코드 구현 (시계열 패턴) in services/ml-service/src/models/lstm_model.py
-- [ ] T062 [US5] SMOTE 데이터 불균형 처리 로직 구현 (사기 5% → 40%) in services/ml-service/src/training/data_resampler.py
-- [ ] T063 [US5] Feature Engineering 파이프라인 구현 in services/ml-service/src/training/feature_engineering.py
-- [ ] T064 [US5] 앙상블 가중 투표 로직 구현 (RF 30%, XGB 35%, AE 25%, LSTM 10%) in services/ml-service/src/models/ensemble_model.py
-- [ ] T065 [US5] Feature Importance 분석 코드 구현 (Random Forest) in services/ml-service/src/training/feature_importance_analyzer.py
-- [ ] T066 [US5] MLflow 실험 추적 통합 in services/ml-service/src/training/mlflow_tracker.py
-- [ ] T067 [US5] 모델 학습 API 구현 (POST /v1/ml/ensemble/train) in services/ml-service/src/api/training.py
-- [ ] T068 [US5] 학습 진행 상황 모니터링 API 구현 (GET /v1/ml/ensemble/status/{job_id}) in services/ml-service/src/api/training.py
-- [ ] T069 [US5] 모델 평가 메트릭 계산 로직 구현 (Precision, Recall, F1 Score) in services/ml-service/src/training/evaluator.py
+- [X] T058 [P] [US5] Random Forest 모델 학습 코드 구현 in services/ml-service/src/models/random_forest_model.py
+- [X] T059 [P] [US5] XGBoost 모델 학습 코드 구현 (GPU 가속) in services/ml-service/src/models/xgboost_model.py
+- [X] T060 [P] [US5] Autoencoder 모델 학습 코드 구현 (PyTorch) in services/ml-service/src/models/autoencoder_model.py
+- [X] T061 [P] [US5] LSTM 모델 학습 코드 구현 (시계열 패턴) in services/ml-service/src/models/lstm_model.py
+- [X] T062 [US5] SMOTE 데이터 불균형 처리 로직 구현 (사기 5% → 40%) in services/ml-service/src/training/data_resampler.py
+- [X] T063 [US5] Feature Engineering 파이프라인 구현 in services/ml-service/src/training/feature_engineering.py
+- [X] T064 [US5] 앙상블 가중 투표 로직 구현 (RF 30%, XGB 35%, AE 25%, LSTM 10%) in services/ml-service/src/models/ensemble_model.py
+- [X] T065 [US5] Feature Importance 분석 코드 구현 (Random Forest) in services/ml-service/src/training/feature_importance_analyzer.py
+- [X] T066 [US5] MLflow 실험 추적 통합 in services/ml-service/src/training/mlflow_tracker.py
+- [X] T067 [US5] 모델 학습 API 구현 (POST /v1/ml/ensemble/train) in services/ml-service/src/api/training.py
+- [X] T068 [US5] 학습 진행 상황 모니터링 API 구현 (GET /v1/ml/ensemble/status/{job_id}) in services/ml-service/src/api/training.py
+- [X] T069 [US5] 모델 평가 메트릭 계산 로직 구현 (Precision, Recall, F1 Score) in services/ml-service/src/training/evaluator.py
 
 **Checkpoint**: US5 완료 - 앙상블 모델이 F1 Score 0.95, 오탐률 6%, 미탐률 12.6% 달성
 
