@@ -15,7 +15,7 @@ from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.replication import ReplicationStatus, ReplicationState, SyncState
+from src.models.replication import ReplicationState, SyncState
 from src.db.connection import get_write_session_maker
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,8 @@ async def check_replication_lag(db: Optional[AsyncSession] = None) -> Dict:
 
     try:
         # Query pg_stat_replication view on master
-        query = text("""
+        query = text(
+            """
             SELECT
                 application_name,
                 client_addr::text,
@@ -87,7 +88,8 @@ async def check_replication_lag(db: Optional[AsyncSession] = None) -> Dict:
             FROM pg_stat_replication
             WHERE state IS NOT NULL
             ORDER BY application_name;
-        """)
+        """
+        )
 
         result = await db.execute(query)
         rows = result.fetchall()
@@ -116,7 +118,7 @@ async def check_replication_lag(db: Optional[AsyncSession] = None) -> Dict:
             lag_bytes = int(row[7] or 0)
 
             # Determine health status
-            is_healthy = (state == "streaming" and replay_lag_seconds < 10.0)
+            is_healthy = state == "streaming" and replay_lag_seconds < 10.0
             max_lag = max(max_lag, replay_lag_seconds)
 
             replica_info = {
@@ -137,8 +139,12 @@ async def check_replication_lag(db: Optional[AsyncSession] = None) -> Dict:
                 db=db,
                 replica_name=replica_name,
                 client_addr=client_addr,
-                state=ReplicationState(state) if state in [s.value for s in ReplicationState] else ReplicationState.UNKNOWN,
-                sync_state=SyncState(sync_state) if sync_state in [s.value for s in SyncState] else SyncState.ASYNC,
+                state=ReplicationState(state)
+                if state in [s.value for s in ReplicationState]
+                else ReplicationState.UNKNOWN,
+                sync_state=SyncState(sync_state)
+                if sync_state in [s.value for s in SyncState]
+                else SyncState.ASYNC,
                 write_lag_seconds=write_lag_seconds,
                 flush_lag_seconds=flush_lag_seconds,
                 replay_lag_seconds=replay_lag_seconds,
@@ -200,11 +206,13 @@ async def _update_replication_status(
         is_healthy: Health status
     """
     # Check if record exists
-    query = text("""
+    query = text(
+        """
         SELECT id FROM replication_status
         WHERE replica_name = :replica_name
         FOR UPDATE
-    """)
+    """
+    )
     result = await db.execute(query, {"replica_name": replica_name})
     existing = result.fetchone()
 
@@ -212,7 +220,8 @@ async def _update_replication_status(
 
     if existing:
         # Update existing record
-        update_query = text("""
+        update_query = text(
+            """
             UPDATE replication_status
             SET
                 client_addr = :client_addr,
@@ -226,7 +235,8 @@ async def _update_replication_status(
                 checked_at = :checked_at,
                 updated_at = :updated_at
             WHERE replica_name = :replica_name
-        """)
+        """
+        )
         await db.execute(
             update_query,
             {
@@ -245,7 +255,8 @@ async def _update_replication_status(
         )
     else:
         # Insert new record
-        insert_query = text("""
+        insert_query = text(
+            """
             INSERT INTO replication_status (
                 id, replica_name, client_addr, state, write_lag_seconds,
                 flush_lag_seconds, replay_lag_seconds, lag_bytes, sync_state,
@@ -255,7 +266,8 @@ async def _update_replication_status(
                 :flush_lag_seconds, :replay_lag_seconds, :lag_bytes, :sync_state,
                 :is_healthy, :checked_at, :created_at, :updated_at
             )
-        """)
+        """
+        )
         await db.execute(
             insert_query,
             {

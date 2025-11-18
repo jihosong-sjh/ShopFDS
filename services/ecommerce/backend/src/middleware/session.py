@@ -8,9 +8,11 @@ Provides session management using Redis Cluster for high availability.
 
 import json
 import uuid
-from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
+from datetime import datetime
+from typing import Optional, Dict, Any, Callable
 from redis.cluster import RedisCluster
+from fastapi import Request, HTTPException, status
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class SessionStore:
@@ -39,7 +41,9 @@ class SessionStore:
         """Generate Redis key for session"""
         return f"{self.prefix}:{session_id}"
 
-    def create_session(self, user_id: str, data: Optional[Dict[str, Any]] = None) -> str:
+    def create_session(
+        self, user_id: str, data: Optional[Dict[str, Any]] = None
+    ) -> str:
         """
         Create a new session
 
@@ -60,11 +64,7 @@ class SessionStore:
         }
 
         key = self._get_key(session_id)
-        self.redis.setex(
-            key,
-            self.ttl_seconds,
-            json.dumps(session_data)
-        )
+        self.redis.setex(key, self.ttl_seconds, json.dumps(session_data))
 
         return session_id
 
@@ -131,7 +131,9 @@ class SessionStore:
         result = self.redis.delete(key)
         return result > 0
 
-    def extend_session(self, session_id: str, ttl_minutes: Optional[int] = None) -> bool:
+    def extend_session(
+        self, session_id: str, ttl_minutes: Optional[int] = None
+    ) -> bool:
         """
         Extend session TTL
 
@@ -195,10 +197,6 @@ class SessionStore:
 
 # --- FastAPI Middleware Integration ---
 
-from fastapi import Request, HTTPException, status
-from starlette.middleware.base import BaseHTTPMiddleware
-from typing import Callable
-
 
 class SessionMiddleware(BaseHTTPMiddleware):
     """
@@ -222,7 +220,9 @@ class SessionMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable):
         """Process request with session management"""
         # Extract session ID from cookie or header
-        session_id = request.cookies.get("session_id") or request.headers.get("X-Session-ID")
+        session_id = request.cookies.get("session_id") or request.headers.get(
+            "X-Session-ID"
+        )
 
         if session_id:
             # Get session data
@@ -247,6 +247,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
 
 
 # --- Helper Functions ---
+
 
 def require_session(request: Request) -> Dict[str, Any]:
     """

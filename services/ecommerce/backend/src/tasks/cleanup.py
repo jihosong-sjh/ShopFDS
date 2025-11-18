@@ -51,9 +51,7 @@ def cleanup_old_sessions(self):
         # 플레이스홀더 카운트
         deleted_count = 0  # 실제 구현 시 삭제된 세션 수
 
-        logger.info(
-            f"[SUCCESS] Cleaned up {deleted_count} old sessions"
-        )
+        logger.info(f"[SUCCESS] Cleaned up {deleted_count} old sessions")
 
         return {
             "success": True,
@@ -63,9 +61,7 @@ def cleanup_old_sessions(self):
         }
 
     except Exception as exc:
-        logger.error(
-            f"[FAIL] Failed to cleanup old sessions: {exc}"
-        )
+        logger.error(f"[FAIL] Failed to cleanup old sessions: {exc}")
 
         # 재시도 로직
         if self.request.retries < self.max_retries:
@@ -115,9 +111,7 @@ def archive_old_logs(self):
         # 플레이스홀더 카운트
         archived_count = 0  # 실제 구현 시 아카이빙된 로그 수
 
-        logger.info(
-            f"[SUCCESS] Archived {archived_count} old logs"
-        )
+        logger.info(f"[SUCCESS] Archived {archived_count} old logs")
 
         return {
             "success": True,
@@ -127,9 +121,7 @@ def archive_old_logs(self):
         }
 
     except Exception as exc:
-        logger.error(
-            f"[FAIL] Failed to archive old logs: {exc}"
-        )
+        logger.error(f"[FAIL] Failed to archive old logs: {exc}")
 
         # 재시도 로직
         if self.request.retries < self.max_retries:
