@@ -184,3 +184,5 @@ export const AddressManagementPage: React.FC = () => {
     </div>
   );
 };
+
+export default AddressManagementPage;

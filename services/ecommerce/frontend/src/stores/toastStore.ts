@@ -30,14 +30,14 @@ export const useToastStore = create<ToastState>((set) => ({
 
   addToast: (toast) => {
     const id = Math.random().toString(36).substr(2, 9);
-    const newToast: Toast = { id, ...toast, duration: toast.duration || 3000 };
+    const newToast: Toast = { id, ...toast, duration: toast.duration ?? 3000 };
 
     set((state) => ({
       toasts: [...state.toasts, newToast],
     }));
 
     // 자동 제거
-    if (newToast.duration > 0) {
+    if (newToast.duration !== undefined && newToast.duration > 0) {
       setTimeout(() => {
         set((state) => ({
           toasts: state.toasts.filter((t) => t.id !== id),

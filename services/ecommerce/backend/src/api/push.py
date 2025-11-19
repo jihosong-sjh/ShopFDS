@@ -17,7 +17,7 @@ from src.models.user import User
 from src.services.push_notification_service import (
     get_push_notification_service,
 )
-from src.database import get_db
+from src.db.connection import get_db
 
 logger = logging.getLogger(__name__)
 

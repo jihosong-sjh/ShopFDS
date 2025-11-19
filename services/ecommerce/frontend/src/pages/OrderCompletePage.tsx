@@ -4,7 +4,6 @@
  * 주문 번호, 예상 배송일, 주문 상세 정보를 표시합니다.
  */
 
-import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function OrderCompletePage() {

@@ -149,6 +149,7 @@ export interface Product {
   stock_quantity: number;
   category: string;
   image_url?: string;
+  images?: string[];
   status: string;
   is_available: boolean;
 }
@@ -429,3 +430,6 @@ export const uploadFiles = async (files: File[], endpoint: string): Promise<{ ur
 
   return response.data;
 };
+
+// Default export for backward compatibility
+export default apiClient;

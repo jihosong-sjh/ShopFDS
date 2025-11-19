@@ -183,3 +183,5 @@ export function OfflinePage() {
     </div>
   );
 }
+
+export default OfflinePage;

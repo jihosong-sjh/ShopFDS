@@ -7,7 +7,7 @@
  * - In-stock only checkbox
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface FilterValues {
   minPrice?: number;

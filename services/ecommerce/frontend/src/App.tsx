@@ -23,15 +23,15 @@ const Orders = lazy(() => import('./pages/Orders').then(module => ({ default: mo
 const OrderTracking = lazy(() => import('./pages/OrderTracking').then(module => ({ default: module.OrderTracking })));
 
 // Phase 10에서 추가된 페이지들 (Lazy Loading)
-const SearchPage = lazy(() => import('./pages/SearchPage').catch(() => ({ default: () => <div>Search Page</div> })));
-const WishlistPage = lazy(() => import('./pages/WishlistPage').catch(() => ({ default: () => <div>Wishlist Page</div> })));
-const ComparisonPage = lazy(() => import('./pages/ComparisonPage').catch(() => ({ default: () => <div>Comparison Page</div> })));
-const MyPage = lazy(() => import('./pages/MyPage').catch(() => ({ default: () => <div>My Page</div> })));
-const AddressManagementPage = lazy(() => import('./pages/AddressManagementPage').catch(() => ({ default: () => <div>Address Management</div> })));
-const PointsCouponsPage = lazy(() => import('./pages/PointsCouponsPage').catch(() => ({ default: () => <div>Points & Coupons</div> })));
-const CheckoutPage = lazy(() => import('./pages/CheckoutPage').catch(() => ({ default: () => <div>Checkout Page</div> })));
-const OrderCompletePage = lazy(() => import('./pages/OrderCompletePage').catch(() => ({ default: () => <div>Order Complete</div> })));
-const OfflinePage = lazy(() => import('./pages/OfflinePage').catch(() => ({ default: () => <div>Offline</div> })));
+const SearchPage = lazy(() => import('./pages/SearchPage'));
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const ComparisonPage = lazy(() => import('./pages/ComparisonPage'));
+const MyPage = lazy(() => import('./pages/MyPage'));
+const AddressManagementPage = lazy(() => import('./pages/AddressManagementPage'));
+const PointsCouponsPage = lazy(() => import('./pages/PointsCouponsPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderCompletePage = lazy(() => import('./pages/OrderCompletePage'));
+const OfflinePage = lazy(() => import('./pages/OfflinePage'));
 
 // React Query 클라이언트 설정
 const queryClient = new QueryClient({

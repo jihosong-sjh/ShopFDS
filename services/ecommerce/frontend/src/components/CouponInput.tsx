@@ -4,7 +4,7 @@
  * 쿠폰 코드 입력, 적용, 제거 기능을 제공합니다.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useValidateCoupon, useAvailableCoupons } from '../hooks/useCoupons';
 
 interface CouponInputProps {

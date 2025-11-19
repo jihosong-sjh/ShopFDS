@@ -5,7 +5,7 @@
  * Uses LocalStorage for quick access + backend sync for authenticated users.
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import type { Product } from '../hooks/useSearch';

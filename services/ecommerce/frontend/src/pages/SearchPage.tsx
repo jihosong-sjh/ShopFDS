@@ -9,7 +9,7 @@
  * - URL query parameter synchronization
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useProductSearch, SearchFilters as FilterValues } from '../hooks/useSearch';
 import SearchFilters from '../components/SearchFilters';
@@ -56,14 +56,14 @@ export function SearchPage() {
     const params = new URLSearchParams(searchParams);
 
     // Update filters
-    if (newFilters.minPrice !== undefined) {
-      params.set('min_price', newFilters.minPrice.toString());
+    if (newFilters.min_price !== undefined) {
+      params.set('min_price', newFilters.min_price.toString());
     } else {
       params.delete('min_price');
     }
 
-    if (newFilters.maxPrice !== undefined) {
-      params.set('max_price', newFilters.maxPrice.toString());
+    if (newFilters.max_price !== undefined) {
+      params.set('max_price', newFilters.max_price.toString());
     } else {
       params.delete('max_price');
     }
@@ -74,7 +74,7 @@ export function SearchPage() {
       params.delete('brand');
     }
 
-    if (newFilters.inStock) {
+    if (newFilters.in_stock) {
       params.set('in_stock', 'true');
     } else {
       params.delete('in_stock');

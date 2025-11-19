@@ -4,7 +4,7 @@
  * 신용카드, Toss Payments, Kakao Pay 중 선택할 수 있습니다.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export type PaymentMethod = 'card' | 'toss' | 'kakao';
 

@@ -40,3 +40,5 @@ export const PointsCouponsPage: React.FC = () => {
     </div>
   );
 };
+
+export default PointsCouponsPage;
