@@ -4,7 +4,7 @@
  * Playwright E2E tests for search autocomplete, filtering, and sorting.
  */
 
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 test.describe('Search Autocomplete', () => {
   test('shows autocomplete suggestions while typing', async ({ page }) => {

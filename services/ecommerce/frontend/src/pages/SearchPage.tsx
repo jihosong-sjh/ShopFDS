@@ -9,7 +9,7 @@
  * - URL query parameter synchronization
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useProductSearch, SearchFilters as FilterValues } from '../hooks/useSearch';
 import SearchFilters from '../components/SearchFilters';

@@ -74,9 +74,10 @@ export function useDeviceFingerprint(): DeviceFingerprintResult {
           // 블랙리스트 알림 (옵션)
           // alert('보안 사유로 접속이 제한되었습니다. 고객센터에 문의하세요.');
         }
-      } catch (err: any) {
-        console.error('[Device Fingerprint] Error collecting fingerprint:', err);
-        setError(err.message || 'Failed to collect device fingerprint');
+      } catch (err) {
+        const error = err as Error;
+        console.error('[Device Fingerprint] Error collecting fingerprint:', error);
+        setError(error.message || 'Failed to collect device fingerprint');
       } finally {
         if (mounted) {
           setIsLoading(false);

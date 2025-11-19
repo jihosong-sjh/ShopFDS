@@ -29,10 +29,6 @@ interface WishlistResponse {
   total_count: number;
 }
 
-interface MoveToCartRequest {
-  item_ids: string[];
-}
-
 interface MoveToCartResponse {
   message: string;
   success_count: number;

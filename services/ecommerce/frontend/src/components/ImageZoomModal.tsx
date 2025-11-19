@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import LazyImage from './LazyImage';
 
 interface ImageZoomModalProps {
@@ -54,6 +54,29 @@ const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
     }
   }, [isOpen]);
 
+  const handlePrevious = useCallback(() => {
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  }, [images.length]);
+
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  }, [images.length]);
+
+  const handleZoomIn = useCallback(() => {
+    setScale((prev) => Math.min(prev + 0.5, 4));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setScale((prev) => Math.max(prev - 0.5, 1));
+    if (scale <= 1.5) {
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [scale]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -73,32 +96,9 @@ const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentIndex, scale]);
+  }, [isOpen, handleNext, handlePrevious, handleZoomIn, handleZoomOut, onClose]);
 
   if (!isOpen) return null;
-
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
-  };
-
-  const handleZoomIn = () => {
-    setScale((prev) => Math.min(prev + 0.5, 4));
-  };
-
-  const handleZoomOut = () => {
-    setScale((prev) => Math.max(prev - 0.5, 1));
-    if (scale <= 1.5) {
-      setPosition({ x: 0, y: 0 });
-    }
-  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (scale > 1) {

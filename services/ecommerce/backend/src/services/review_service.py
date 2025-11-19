@@ -7,12 +7,11 @@
 from typing import Optional, List, Dict, Any
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, case, and_, or_
+from sqlalchemy import select, func, case, and_
 from sqlalchemy.orm import selectinload
 
 from src.models.review import Review
 from src.models.review_vote import ReviewVote
-from src.models.user import User
 from src.models.product import Product
 from src.models.order import Order, OrderStatus
 from src.utils.exceptions import ValidationException, NotFoundException
@@ -112,9 +111,7 @@ class ReviewService:
                     )
                 )
             )
-            orders_with_product_result = await self.db.execute(
-                orders_with_product_stmt
-            )
+            orders_with_product_result = await self.db.execute(orders_with_product_stmt)
             orders_with_product = orders_with_product_result.scalars().all()
 
             if not orders_with_product:
@@ -227,7 +224,9 @@ class ReviewService:
             "total_count": total_count,
             "page": page,
             "total_pages": (total_count + limit - 1) // limit,
-            "average_rating": float(stats.average_rating) if stats.average_rating else 0.0,
+            "average_rating": float(stats.average_rating)
+            if stats.average_rating
+            else 0.0,
             "rating_distribution": {
                 "5": stats.rating_5,
                 "4": stats.rating_4,

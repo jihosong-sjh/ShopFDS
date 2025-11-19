@@ -111,7 +111,7 @@ export default function CouponInput({
               className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm"
               data-testid="coupon-error"
             >
-              {(validateCoupon.error as any)?.response?.data?.detail || '쿠폰 적용에 실패했습니다'}
+              {(validateCoupon.error as Error & { response?: { data?: { detail?: string } } })?.response?.data?.detail || '쿠폰 적용에 실패했습니다'}
             </div>
           )}
 

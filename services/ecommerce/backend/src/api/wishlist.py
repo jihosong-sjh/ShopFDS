@@ -91,9 +91,7 @@ async def add_to_wishlist(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return AddToWishlistResponse(
-        id=str(wishlist_item.id), message="위시리스트에 추가되었습니다"
-    )
+    return AddToWishlistResponse(id=str(wishlist_item.id), message="위시리스트에 추가되었습니다")
 
 
 @router.delete("/{item_id}")

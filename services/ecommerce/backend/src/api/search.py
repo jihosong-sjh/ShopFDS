@@ -6,9 +6,8 @@ Provides REST API for product search, autocomplete, and search history.
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from typing import Optional
-from uuid import UUID
 
 from src.models.base import get_db
 from src.services.search_service import SearchService, get_search_service

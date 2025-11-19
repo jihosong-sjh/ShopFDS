@@ -21,8 +21,15 @@ class ReviewVote(Base, TimestampMixin):
 
     __tablename__ = "review_votes"
 
-    review_id = Column(UUID(as_uuid=True), ForeignKey("reviews.id", ondelete="CASCADE"), nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    review_id = Column(
+        UUID(as_uuid=True), ForeignKey("reviews.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
 
     # Relationships
     review = relationship("Review", back_populates="votes")

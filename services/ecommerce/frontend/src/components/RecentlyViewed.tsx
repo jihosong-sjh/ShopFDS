@@ -9,63 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import type { Product } from '../hooks/useSearch';
-
-const STORAGE_KEY = 'recently-viewed';
-const MAX_ITEMS = 10;
-
-interface RecentlyViewedItem {
-  product_id: string;
-  viewed_at: number;
-}
-
-/**
- * Load recently viewed from LocalStorage
- */
-function loadRecentlyViewed(): RecentlyViewedItem[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return [];
-    return JSON.parse(stored);
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Save recently viewed to LocalStorage
- */
-function saveRecentlyViewed(items: RecentlyViewedItem[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch (error) {
-    console.error('[RecentlyViewed] Failed to save:', error);
-  }
-}
-
-/**
- * Add product to recently viewed
- */
-export function addToRecentlyViewed(productId: string, syncBackend: boolean = false): void {
-  const items = loadRecentlyViewed();
-
-  // Remove duplicate if exists
-  const filtered = items.filter((item) => item.product_id !== productId);
-
-  // Add to beginning
-  const updated = [{ product_id: productId, viewed_at: Date.now() }, ...filtered];
-
-  // Keep only MAX_ITEMS
-  const limited = updated.slice(0, MAX_ITEMS);
-
-  saveRecentlyViewed(limited);
-
-  // Sync with backend (optional)
-  if (syncBackend) {
-    api.post('/v1/recommendations/recently-viewed', { product_id: productId }).catch(() => {
-      // Silently fail - LocalStorage is primary
-    });
-  }
-}
+import { loadRecentlyViewed, addToRecentlyViewed } from '../utils/recentlyViewed';
 
 interface RecentlyViewedProps {
   limit?: number;

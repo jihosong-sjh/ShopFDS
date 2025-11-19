@@ -34,9 +34,10 @@ export const AddressManagementPage: React.FC = () => {
         setShowForm(false);
         alert("배송지가 추가되었습니다.");
       },
-      onError: (error: any) => {
+      onError: (error) => {
+        const err = error as { response?: { data?: { detail?: string } } };
         alert(
-          error.response?.data?.detail ||
+          err.response?.data?.detail ||
             "배송지 추가에 실패했습니다."
         );
       },
@@ -55,9 +56,10 @@ export const AddressManagementPage: React.FC = () => {
           setShowForm(false);
           alert("배송지가 수정되었습니다.");
         },
-        onError: (error: any) => {
+        onError: (error) => {
+          const err = error as { response?: { data?: { detail?: string } } };
           alert(
-            error.response?.data?.detail ||
+            err.response?.data?.detail ||
               "배송지 수정에 실패했습니다."
           );
         },
@@ -73,9 +75,10 @@ export const AddressManagementPage: React.FC = () => {
       onSuccess: () => {
         alert("배송지가 삭제되었습니다.");
       },
-      onError: (error: any) => {
+      onError: (error) => {
+        const err = error as { response?: { data?: { detail?: string } } };
         alert(
-          error.response?.data?.detail ||
+          err.response?.data?.detail ||
             "배송지 삭제에 실패했습니다."
         );
       },
@@ -88,9 +91,10 @@ export const AddressManagementPage: React.FC = () => {
       onSuccess: () => {
         alert("기본 배송지로 설정되었습니다.");
       },
-      onError: (error: any) => {
+      onError: (error) => {
+        const err = error as { response?: { data?: { detail?: string } } };
         alert(
-          error.response?.data?.detail ||
+          err.response?.data?.detail ||
             "기본 배송지 설정에 실패했습니다."
         );
       },

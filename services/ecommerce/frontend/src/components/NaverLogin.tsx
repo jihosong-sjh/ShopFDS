@@ -7,11 +7,11 @@
 import React from 'react';
 
 interface NaverLoginProps {
-  onSuccess?: (response: any) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (response: unknown) => void;
+  onError?: (error: unknown) => void;
 }
 
-const NaverLogin: React.FC<NaverLoginProps> = ({ onSuccess, onError }) => {
+const NaverLogin: React.FC<NaverLoginProps> = () => {
   const handleNaverLogin = () => {
     // Naver OAuth 로그인 URL로 리다이렉트
     const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';

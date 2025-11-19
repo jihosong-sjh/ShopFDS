@@ -51,6 +51,14 @@ def generate_sales_report(
 
         # 포맷에 따라 변환
         if report_format == "csv":
+            _convert_to_csv(report_data)
+            report_path = f"/tmp/sales_report_{start_date}_to_{end_date}.csv"
+        elif report_format == "pdf":
+            _convert_to_pdf(report_data)
+            report_path = f"/tmp/sales_report_{start_date}_to_{end_date}.pdf"
+        else:
+            json.dumps(report_data, indent=2)
+            report_path = f"/tmp/sales_report_{start_date}_to_{end_date}.json"
 
         logger.info(f"[SUCCESS] Sales report generated: {report_path}")
 

@@ -27,7 +27,7 @@ export function PWAInstallPrompt() {
   }, []);
 
   // iOS 감지
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as { MSStream?: unknown }).MSStream;
 
   // 이미 설치되었거나 닫혔으면 표시하지 않음
   if (isInstalled || isDismissed) {

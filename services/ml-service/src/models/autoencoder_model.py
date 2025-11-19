@@ -311,7 +311,7 @@ class AutoencoderFraudModel:
 
         # 예측
         predictions = self.predict(X_test)
-        probabilities = self.predict_proba(X_test)
+        self.predict_proba(X_test)
 
         # Confusion Matrix
         cm = confusion_matrix(y_test, predictions)

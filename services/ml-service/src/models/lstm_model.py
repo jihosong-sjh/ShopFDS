@@ -228,9 +228,7 @@ class LSTMFraudModel:
 
         # 클래스 불균형 대응 가중치
         pos_weight = (y_seq == 0).sum() / (y_seq == 1).sum()
-        criterion_weighted = nn.BCEWithLogitsLoss(
-            pos_weight=torch.tensor([pos_weight]).to(self.device)
-        )
+        nn.BCEWithLogitsLoss(pos_weight=torch.tensor([pos_weight]).to(self.device))
 
         # 학습 루프
         self.model.train()

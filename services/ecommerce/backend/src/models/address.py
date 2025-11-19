@@ -18,7 +18,9 @@ class Address(Base):
     __tablename__ = "addresses"
 
     id = Column(Uuid, primary_key=True, default=uuid.uuid4, index=True)
-    user_id = Column(Uuid, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(
+        Uuid, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     address_name = Column(String(100), nullable=False)  # 예: "집", "회사"
     recipient_name = Column(String(100), nullable=False)
     phone = Column(String(20), nullable=False)
@@ -27,7 +29,9 @@ class Address(Base):
     address_detail = Column(String(500), nullable=True)
     is_default = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     # Relationships
     user = relationship("User", back_populates="addresses")

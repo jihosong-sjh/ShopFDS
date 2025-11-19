@@ -59,9 +59,7 @@ class Coupon(Base):
     # 제약 조건
     __table_args__ = (
         CheckConstraint("discount_value > 0", name="check_discount_value_positive"),
-        CheckConstraint(
-            "valid_until > valid_from", name="check_valid_date_range"
-        ),
+        CheckConstraint("valid_until > valid_from", name="check_valid_date_range"),
         CheckConstraint(
             "min_purchase_amount >= 0", name="check_min_purchase_non_negative"
         ),
@@ -78,12 +76,12 @@ class Coupon(Base):
     )
 
     # Relationships
-    user_coupons = relationship(
-        "UserCoupon", back_populates="coupon", lazy="dynamic"
-    )
+    user_coupons = relationship("UserCoupon", back_populates="coupon", lazy="dynamic")
 
     def __repr__(self):
-        return f"<Coupon(id={self.id}, code={self.coupon_code}, name={self.coupon_name})>"
+        return (
+            f"<Coupon(id={self.id}, code={self.coupon_code}, name={self.coupon_name})>"
+        )
 
     def is_valid(self) -> bool:
         """쿠폰이 현재 유효한지 확인"""

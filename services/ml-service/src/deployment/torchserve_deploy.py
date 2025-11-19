@@ -114,7 +114,7 @@ class TorchServeDeployer:
             cmd.extend(["--requirements-file", str(requirements_file)])
 
         try:
-            result = subprocess.run(
+            subprocess.run(
                 cmd, capture_output=True, text=True, check=True, encoding="utf-8"
             )
             logger.info(f"[OK] Model archive created: {mar_path}")

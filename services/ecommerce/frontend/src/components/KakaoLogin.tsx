@@ -7,11 +7,11 @@
 import React from 'react';
 
 interface KakaoLoginProps {
-  onSuccess?: (response: any) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (response: unknown) => void;
+  onError?: (error: unknown) => void;
 }
 
-const KakaoLogin: React.FC<KakaoLoginProps> = ({ onSuccess, onError }) => {
+const KakaoLogin: React.FC<KakaoLoginProps> = () => {
   const handleKakaoLogin = () => {
     // Kakao OAuth 로그인 URL로 리다이렉트
     const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';

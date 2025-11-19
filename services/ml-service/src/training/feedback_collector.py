@@ -138,7 +138,7 @@ class FeedbackCollector:
             dict: Processing results
         """
         # Find unprocessed feedback
-        feedback_query = select(FraudFeedback).where(FraudFeedback.processed == False)
+        feedback_query = select(FraudFeedback).where(FraudFeedback.processed.is_(False))
         feedback_result = await self.db_session.execute(feedback_query)
         feedbacks = feedback_result.scalars().all()
 
@@ -225,7 +225,7 @@ class FeedbackCollector:
         processed_query = select(func.count(FraudFeedback.id)).where(
             and_(
                 FraudFeedback.reported_at >= start_date,
-                FraudFeedback.processed == True,
+                FraudFeedback.processed.is_(True),
             )
         )
         processed_result = await self.db_session.execute(processed_query)
@@ -234,7 +234,7 @@ class FeedbackCollector:
         unprocessed_query = select(func.count(FraudFeedback.id)).where(
             and_(
                 FraudFeedback.reported_at >= start_date,
-                FraudFeedback.processed == False,
+                FraudFeedback.processed.is_(False),
             )
         )
         unprocessed_result = await self.db_session.execute(unprocessed_query)
@@ -281,8 +281,8 @@ class FeedbackCollector:
             .where(
                 and_(
                     FraudLabel.label_source == LabelSource.ML_PREDICTION,
-                    FraudLabel.is_fraud == False,
-                    Transaction.fraud_reported == True,
+                    FraudLabel.is_fraud.is_(False),
+                    Transaction.fraud_reported.is_(True),
                 )
             )
         )
@@ -315,7 +315,7 @@ class FeedbackCollector:
             dict: Retraining threshold status
         """
         unprocessed_query = select(func.count(FraudFeedback.id)).where(
-            FraudFeedback.processed == False
+            FraudFeedback.processed.is_(False)
         )
         unprocessed_result = await self.db_session.execute(unprocessed_query)
         unprocessed_count = unprocessed_result.scalar() or 0

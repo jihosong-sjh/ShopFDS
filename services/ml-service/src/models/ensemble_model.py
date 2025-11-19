@@ -232,7 +232,7 @@ class EnsembleFraudModel:
 
         # 앙상블 예측
         ensemble_predictions = self.predict(X_test)
-        ensemble_proba = self.predict_proba(X_test)
+        self.predict_proba(X_test)
 
         # Confusion Matrix
         from sklearn.metrics import confusion_matrix

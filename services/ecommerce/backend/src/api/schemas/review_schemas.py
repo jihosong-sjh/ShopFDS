@@ -5,9 +5,8 @@
 """
 
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 from uuid import UUID
-from datetime import datetime
 
 
 class ReviewCreateRequest(BaseModel):

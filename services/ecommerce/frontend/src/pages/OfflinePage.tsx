@@ -8,9 +8,15 @@ import { usePWA } from '../hooks/usePWA';
  * - 최근 본 상품 10개 표시 (캐시에서)
  * - 온라인 복구 시 자동으로 새로고침
  */
+interface RecentlyViewedProduct {
+  product_id: string;
+  viewed_at: number;
+  name?: string;
+}
+
 export function OfflinePage() {
   const { isOnline } = usePWA();
-  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
+  const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewedProduct[]>([]);
 
   // 최근 본 상품 로드 (LocalStorage에서)
   useEffect(() => {

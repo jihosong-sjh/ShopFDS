@@ -30,9 +30,22 @@ interface BehaviorAnalysisResult {
   bot_score: number;
   risk_level: string;
   requires_additional_auth: boolean;
-  mouse_analysis: any;
-  keyboard_analysis: any;
-  clickstream_analysis: any;
+  mouse_analysis: {
+    avg_speed: number;
+    avg_acceleration: number;
+    straight_line_ratio: number;
+    pause_count: number;
+  };
+  keyboard_analysis: {
+    avg_typing_speed: number;
+    avg_key_hold_time: number;
+    backspace_ratio: number;
+  };
+  clickstream_analysis: {
+    total_clicks: number;
+    avg_time_between_clicks: number;
+    unique_pages: number;
+  };
   risk_factors: string[];
 }
 

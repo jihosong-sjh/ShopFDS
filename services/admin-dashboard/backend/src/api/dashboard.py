@@ -8,39 +8,40 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from datetime import datetime, timedelta
-import sys
-import os
 
 # FDS 모델 정의 (로컬 복사)
 from enum import Enum
-from sqlalchemy import Column, String, Float, DateTime, JSON, Uuid, Integer
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
-import uuid
 
 Base = declarative_base()
+
 
 class RiskLevel(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
 
+
 class EvaluationStatus(str, Enum):
     APPROVED = "approved"
     DECLINED = "declined"
     REVIEW_REQUIRED = "review_required"
+
 
 class ReviewStatus(str, Enum):
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
 
+
 # 실제 모델은 별도 테이블에서 조회
 class Transaction:
     __tablename__ = "transactions"
 
+
 class ReviewQueue:
     __tablename__ = "review_queue"
+
 
 from src.database import get_db
 

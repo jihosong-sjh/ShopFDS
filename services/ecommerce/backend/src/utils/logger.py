@@ -77,14 +77,10 @@ class SensitiveDataMasker:
         )
 
         # 이메일
-        masked = cls.PATTERNS["email"].sub(
-            lambda m: cls.mask_email(m.group(0)), masked
-        )
+        masked = cls.PATTERNS["email"].sub(lambda m: cls.mask_email(m.group(0)), masked)
 
         # 전화번호
-        masked = cls.PATTERNS["phone"].sub(
-            lambda m: cls.mask_phone(m.group(0)), masked
-        )
+        masked = cls.PATTERNS["phone"].sub(lambda m: cls.mask_phone(m.group(0)), masked)
 
         # 비밀번호, 토큰
         masked = cls.PATTERNS["password"].sub("[REDACTED]", masked)
@@ -116,7 +112,10 @@ class SensitiveDataMasker:
             elif isinstance(value, dict):
                 masked[key] = cls.mask_dict(value)
             elif isinstance(value, list):
-                masked[key] = [cls.mask_dict(item) if isinstance(item, dict) else item for item in value]
+                masked[key] = [
+                    cls.mask_dict(item) if isinstance(item, dict) else item
+                    for item in value
+                ]
             elif isinstance(value, str):
                 masked[key] = cls.mask_text(value)
             else:

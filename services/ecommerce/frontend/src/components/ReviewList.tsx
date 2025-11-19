@@ -88,7 +88,6 @@ const ReviewList: React.FC<ReviewListProps> = ({
   };
 
   const renderRatingDistribution = () => {
-    const maxCount = Math.max(...Object.values(ratingDistribution));
 
     return (
       <div className="space-y-2">

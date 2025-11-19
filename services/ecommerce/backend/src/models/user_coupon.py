@@ -29,9 +29,7 @@ class UserCoupon(Base):
     coupon_id = Column(
         Uuid, ForeignKey("coupons.id", ondelete="CASCADE"), nullable=False
     )
-    order_id = Column(
-        Uuid, ForeignKey("orders.id", ondelete="SET NULL"), nullable=True
-    )
+    order_id = Column(Uuid, ForeignKey("orders.id", ondelete="SET NULL"), nullable=True)
     issued_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     used_at = Column(DateTime, nullable=True)
 

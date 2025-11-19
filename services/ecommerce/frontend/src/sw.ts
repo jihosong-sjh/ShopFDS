@@ -158,7 +158,7 @@ async function syncPendingWishlist() {
 }
 
 // Service Worker 설치 완료
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   console.log('[SW] Service Worker installing...');
   self.skipWaiting();
 });

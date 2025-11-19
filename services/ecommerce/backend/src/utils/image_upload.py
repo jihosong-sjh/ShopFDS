@@ -6,7 +6,6 @@ S3/R2 또는 로컬 저장소에 이미지를 업로드합니다.
 
 import os
 import uuid
-from typing import Optional
 from fastapi import UploadFile
 
 
@@ -113,20 +112,16 @@ def validate_image_size(file: UploadFile, max_size_mb: int = 5) -> bool:
     Returns:
         유효 여부
     """
-    # 파일 크기를 읽어서 확인 (단위: 바이트)
-    max_size_bytes = max_size_mb * 1024 * 1024
-
     # FastAPI의 UploadFile은 파일 크기를 직접 제공하지 않으므로
     # 실제 구현에서는 파일을 읽으면서 크기를 확인해야 합니다.
     # 여기서는 간단한 구현만 제공합니다.
+    # TODO: max_size_mb를 사용한 실제 파일 크기 검증 로직 구현 필요
 
     return True  # 실제로는 파일 크기 검증 로직 구현 필요
 
 
 # S3/R2 업로드 함수 (프로덕션용)
-async def upload_to_s3(
-    file: UploadFile, bucket: str, folder: str = "reviews"
-) -> str:
+async def upload_to_s3(file: UploadFile, bucket: str, folder: str = "reviews") -> str:
     """
     S3/R2에 이미지 업로드 (구현 예정)
 

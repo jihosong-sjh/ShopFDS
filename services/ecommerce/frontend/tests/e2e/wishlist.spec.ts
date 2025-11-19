@@ -4,7 +4,7 @@
  * Playwright E2E tests for wishlist functionality including add, remove, and move to cart.
  */
 
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 test.describe('Wishlist Management', () => {
   test.beforeEach(async ({ page }) => {

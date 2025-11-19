@@ -5,7 +5,7 @@ Wishlist Service
 """
 
 import uuid
-from typing import List, Dict, Optional
+from typing import List, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
@@ -97,9 +97,7 @@ class WishlistService:
             ValueError: 이미 위시리스트에 있거나 상품이 존재하지 않는 경우
         """
         # 1. 상품 존재 여부 확인
-        result = await self.db.execute(
-            select(Product).where(Product.id == product_id)
-        )
+        result = await self.db.execute(select(Product).where(Product.id == product_id))
         product = result.scalar_one_or_none()
         if not product:
             raise ValueError("상품을 찾을 수 없습니다")
@@ -160,9 +158,7 @@ class WishlistService:
 
         return True
 
-    async def move_to_cart(
-        self, user_id: uuid.UUID, item_ids: List[uuid.UUID]
-    ) -> Dict:
+    async def move_to_cart(self, user_id: uuid.UUID, item_ids: List[uuid.UUID]) -> Dict:
         """
         위시리스트 항목을 장바구니로 이동
 
@@ -210,9 +206,7 @@ class WishlistService:
                 # 2. 상품 재고 확인
                 product = wishlist_item.product
                 if product.stock <= 0:
-                    failed_items.append(
-                        {"item_id": item_id, "reason": "재고가 없습니다"}
-                    )
+                    failed_items.append({"item_id": item_id, "reason": "재고가 없습니다"})
                     continue
 
                 # 3. 장바구니에 추가 (기존 항목 있으면 수량 증가)

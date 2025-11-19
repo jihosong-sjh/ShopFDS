@@ -4,11 +4,18 @@
 사용자가 구매한 상품에 대한 리뷰를 관리합니다.
 """
 
-from sqlalchemy import Column, String, Integer, Text, Boolean, ForeignKey, CheckConstraint
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    Text,
+    Boolean,
+    ForeignKey,
+    CheckConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import JSON as JSONB
 from sqlalchemy.orm import relationship
-from datetime import datetime
 import uuid
 
 from src.models.base import Base, TimestampMixin
@@ -25,9 +32,21 @@ class Review(Base, TimestampMixin):
     __tablename__ = "reviews"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    product_id = Column(UUID(as_uuid=True), ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True)
-    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id", ondelete="SET NULL"), nullable=True)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    product_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("products.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    order_id = Column(
+        UUID(as_uuid=True), ForeignKey("orders.id", ondelete="SET NULL"), nullable=True
+    )
 
     # 리뷰 내용
     rating = Column(Integer, nullable=False)  # 1-5점
@@ -45,7 +64,9 @@ class Review(Base, TimestampMixin):
     user = relationship("User", back_populates="reviews")
     product = relationship("Product", back_populates="reviews")
     order = relationship("Order", back_populates="reviews")
-    votes = relationship("ReviewVote", back_populates="review", cascade="all, delete-orphan")
+    votes = relationship(
+        "ReviewVote", back_populates="review", cascade="all, delete-orphan"
+    )
 
     # Constraints
     __table_args__ = (

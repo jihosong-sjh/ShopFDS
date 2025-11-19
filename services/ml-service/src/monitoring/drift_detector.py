@@ -379,7 +379,7 @@ class DriftDetector:
         drift_count_query = select(func.count(DataDriftLog.id)).where(
             and_(
                 DataDriftLog.detected_at >= recent_date,
-                DataDriftLog.drift_detected == True,
+                DataDriftLog.drift_detected.is_(True),
             )
         )
         drift_count_result = await self.db_session.execute(drift_count_query)
@@ -388,7 +388,7 @@ class DriftDetector:
         # Get last drift
         last_drift_query = (
             select(DataDriftLog)
-            .where(DataDriftLog.drift_detected == True)
+            .where(DataDriftLog.drift_detected.is_(True))
             .order_by(DataDriftLog.detected_at.desc())
             .limit(1)
         )

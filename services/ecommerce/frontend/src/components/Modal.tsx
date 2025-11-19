@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef } from "react";
-import { useFocusTrap, handleEscapeKey } from "../utils/accessibility";
+import { useFocusTrap } from "../utils/accessibility";
 
 interface ModalProps {
   isOpen: boolean;
@@ -203,25 +203,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       <p className="text-gray-700 dark:text-gray-300">{message}</p>
     </Modal>
   );
-};
-
-/**
- * useModal Hook
- * 모달 상태 관리 Hook
- */
-export const useModal = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-  const toggle = () => setIsOpen((prev) => !prev);
-
-  return {
-    isOpen,
-    open,
-    close,
-    toggle,
-  };
 };
 
 /**

@@ -6,7 +6,7 @@
 import { useThemeStore } from "../stores/themeStore";
 
 export const ThemeToggle = () => {
-  const { theme, resolvedTheme, setTheme } = useThemeStore();
+  const { resolvedTheme, setTheme } = useThemeStore();
 
   const handleToggle = () => {
     const newTheme = resolvedTheme === "light" ? "dark" : "light";

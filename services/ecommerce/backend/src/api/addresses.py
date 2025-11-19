@@ -23,7 +23,9 @@ router = APIRouter(prefix="/v1/addresses", tags=["Addresses"])
 class CreateAddressRequest(BaseModel):
     """배송지 추가 요청"""
 
-    address_name: str = Field(..., min_length=1, max_length=100, description="배송지 별칭 (예: 집, 회사)")
+    address_name: str = Field(
+        ..., min_length=1, max_length=100, description="배송지 별칭 (예: 집, 회사)"
+    )
     recipient_name: str = Field(..., min_length=1, max_length=100, description="수령인 이름")
     phone: str = Field(..., description="수령인 전화번호")
     zipcode: str = Field(..., min_length=5, max_length=10, description="우편번호")

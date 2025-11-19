@@ -9,7 +9,6 @@ from typing import List, Dict, Any, Optional
 from sqlalchemy import select, func, or_, and_, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
-from uuid import UUID
 
 from src.models.product import Product
 from src.models.base import get_db

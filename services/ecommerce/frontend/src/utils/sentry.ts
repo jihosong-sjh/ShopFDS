@@ -37,7 +37,7 @@ export function initSentry() {
     replaysOnErrorSampleRate: 1.0, // 에러 발생 시 100%
 
     // 민감 정보 필터링
-    beforeSend(event, hint) {
+    beforeSend(event) {
       // 로컬스토리지 정보 제거
       if (event.breadcrumbs) {
         event.breadcrumbs = event.breadcrumbs.filter(
@@ -90,7 +90,7 @@ export function initSentry() {
  */
 export function captureError(
   error: Error,
-  context?: Record<string, any>
+  context?: Record<string, unknown>
 ) {
   Sentry.captureException(error, {
     contexts: context,

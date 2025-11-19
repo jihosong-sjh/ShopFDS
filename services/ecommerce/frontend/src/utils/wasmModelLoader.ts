@@ -183,7 +183,7 @@ export class WasmModelLoader {
    * @param behaviorData 행동 패턴 데이터
    * @returns 모델 예측 결과
    */
-  async predict(behaviorData: any): Promise<ModelPrediction> {
+  async predict(behaviorData: { mouseMovements: unknown[]; keyboardEvents: unknown[]; clickstream: unknown[] }): Promise<ModelPrediction> {
     if (!this.isInitialized || !this.session) {
       throw new Error('[ERROR] Model not initialized. Call initialize() first.');
     }

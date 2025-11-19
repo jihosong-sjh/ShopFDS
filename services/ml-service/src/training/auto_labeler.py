@@ -55,7 +55,7 @@ class AutoLabeler:
         # Count unlabeled chargebacks
         query = select(func.count(Transaction.id)).where(
             and_(
-                Transaction.is_chargeback == True,
+                Transaction.is_chargeback.is_(True),
                 Transaction.fraud_label_id.is_(None),
             )
         )
@@ -64,7 +64,7 @@ class AutoLabeler:
 
         # Count total chargebacks
         total_query = select(func.count(Transaction.id)).where(
-            Transaction.is_chargeback == True
+            Transaction.is_chargeback.is_(True)
         )
         total_result = await self.db_session.execute(total_query)
         total_count = total_result.scalar() or 0
@@ -93,7 +93,7 @@ class AutoLabeler:
         # Find unlabeled chargebacks
         query = select(Transaction).where(
             and_(
-                Transaction.is_chargeback == True,
+                Transaction.is_chargeback.is_(True),
                 Transaction.fraud_label_id.is_(None),
             )
         )
@@ -132,7 +132,7 @@ class AutoLabeler:
         # Find transactions with fraud reports but no label
         query = select(Transaction).where(
             and_(
-                Transaction.fraud_reported == True,
+                Transaction.fraud_reported.is_(True),
                 Transaction.fraud_label_id.is_(None),
             )
         )
@@ -174,8 +174,8 @@ class AutoLabeler:
         query = select(Transaction).where(
             and_(
                 Transaction.created_at < safe_date,
-                Transaction.is_chargeback == False,
-                Transaction.fraud_reported == False,
+                Transaction.is_chargeback.is_(False),
+                Transaction.fraud_reported.is_(False),
                 Transaction.fraud_label_id.is_(None),
             )
         )

@@ -116,7 +116,7 @@ function getWebGLFingerprint(): string {
 function getAudioFingerprint(): Promise<string> {
   return new Promise((resolve) => {
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContext = window.AudioContext || (window as typeof window.AudioContext & { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext;
       if (!AudioContext) {
         resolve('audio_not_supported');
         return;
@@ -176,7 +176,7 @@ function getCPUCores(): number {
  * Returns approximate memory size in MB
  */
 function getMemorySize(): number {
-  const deviceMemory = (navigator as any).deviceMemory;
+  const deviceMemory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
   if (deviceMemory) {
     return deviceMemory * 1024; // Convert GB to MB
   }

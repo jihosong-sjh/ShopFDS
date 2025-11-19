@@ -243,9 +243,7 @@ class AddressService:
             기본 배송지 객체 또는 None
         """
         result = await self.db.execute(
-            select(Address).where(
-                and_(Address.user_id == user_id, Address.is_default == True)
-            )
+            select(Address).where(and_(Address.user_id == user_id, Address.is_default))
         )
         return result.scalar_one_or_none()
 
@@ -258,7 +256,7 @@ class AddressService:
         """
         await self.db.execute(
             update(Address)
-            .where(and_(Address.user_id == user_id, Address.is_default == True))
+            .where(and_(Address.user_id == user_id, Address.is_default))
             .values(is_default=False)
         )
         await self.db.flush()

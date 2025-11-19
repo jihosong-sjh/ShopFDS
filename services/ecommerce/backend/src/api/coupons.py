@@ -51,7 +51,9 @@ async def get_user_coupons(
     return {"coupons": coupons}
 
 
-@router.post("/issue", response_model=CouponIssueResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/issue", response_model=CouponIssueResponse, status_code=status.HTTP_201_CREATED
+)
 async def issue_coupon(
     request: CouponIssueRequest,
     db: AsyncSession = Depends(get_db),

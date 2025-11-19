@@ -65,19 +65,17 @@ export function useAutocomplete(query: string, limit: number = 10) {
   const [debouncedQuery, setDebouncedQuery] = useState(query);
 
   // Debounce search query (300ms delay)
-  const debouncedSetQuery = useCallback(
-    debounce((value: string) => {
-      setDebouncedQuery(value);
-    }, 300),
-    []
-  );
-
   useEffect(() => {
-    debouncedSetQuery(query);
+    const debounceFn = debounce((value: string) => {
+      setDebouncedQuery(value);
+    }, 300);
+
+    debounceFn(query);
+
     return () => {
-      debouncedSetQuery.cancel();
+      debounceFn.cancel();
     };
-  }, [query, debouncedSetQuery]);
+  }, [query]);
 
   // Fetch autocomplete suggestions
   const { data, isLoading, error } = useQuery<AutocompleteResponse>({

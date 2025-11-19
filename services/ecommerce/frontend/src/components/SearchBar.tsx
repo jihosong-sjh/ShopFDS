@@ -35,7 +35,7 @@ export function SearchBar({
 
   // Hooks
   const { suggestions, isLoading } = useAutocomplete(query);
-  const { history, addSearch, getRecentSearches } = useSearchHistory();
+  const { addSearch, getRecentSearches } = useSearchHistory();
 
   // Handle search submission
   const handleSubmit = (searchQuery: string) => {

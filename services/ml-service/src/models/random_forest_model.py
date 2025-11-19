@@ -98,7 +98,7 @@ class RandomForestFraudModel:
 
         # 학습 데이터 성능 평가
         train_predictions = self.model.predict(X_train)
-        train_proba = self.model.predict_proba(X_train)[:, 1]
+        self.model.predict_proba(X_train)[:, 1]
 
         # Feature Importance 추출
         feature_importances = self._get_feature_importances()
@@ -164,7 +164,7 @@ class RandomForestFraudModel:
 
         # 예측
         predictions = self.predict(X_test)
-        probabilities = self.predict_proba(X_test)
+        self.predict_proba(X_test)
 
         # Confusion Matrix
         cm = confusion_matrix(y_test, predictions)

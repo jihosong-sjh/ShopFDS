@@ -9,6 +9,7 @@ Sends notifications to Slack for important ML events:
 """
 
 import logging
+from datetime import datetime
 from typing import Dict, Optional
 import requests
 

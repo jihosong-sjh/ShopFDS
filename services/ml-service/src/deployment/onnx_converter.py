@@ -327,7 +327,6 @@ class ONNXConverter:
         )
 
         results = []
-        num_batches = (len(batch_data) + batch_size - 1) // batch_size
 
         for i in range(0, len(batch_data), batch_size):
             batch = batch_data[i : i + batch_size]

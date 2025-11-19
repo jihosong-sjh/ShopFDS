@@ -50,8 +50,8 @@ export function usePWA(): PWAState {
 
   // Vite PWA Plugin의 Service Worker 등록 Hook
   const {
-    needRefresh: [needRefresh, setNeedRefresh],
-    offlineReady: [offlineReady, setOfflineReady],
+    needRefresh: [needRefresh],
+    offlineReady: [offlineReady],
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(registration) {
@@ -80,16 +80,22 @@ export function usePWA(): PWAState {
   useEffect(() => {
     const checkInstalled = () => {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-      const isIOSStandalone = (window.navigator as any).standalone === true;
+      const isIOSStandalone = (window.navigator as { standalone?: boolean }).standalone === true;
       setIsInstalled(isStandalone || isIOSStandalone);
     };
 
     checkInstalled();
 
-    window.addEventListener('appinstalled', () => {
+    const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-    });
+    };
+
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
 
   // 알림 권한 상태 감지

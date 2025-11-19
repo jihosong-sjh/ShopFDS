@@ -31,7 +31,9 @@ async def get_product_reviews(
     product_id: UUID,
     page: int = Query(1, ge=1, description="페이지 번호"),
     limit: int = Query(10, ge=1, le=100, description="페이지당 개수"),
-    sort: str = Query("recent", description="정렬 방식 (recent, helpful, rating_desc, rating_asc)"),
+    sort: str = Query(
+        "recent", description="정렬 방식 (recent, helpful, rating_desc, rating_asc)"
+    ),
     rating: Optional[int] = Query(None, ge=1, le=5, description="별점 필터 (1-5)"),
     has_images: Optional[bool] = Query(None, description="사진 리뷰만 보기"),
     db: AsyncSession = Depends(get_db),
@@ -63,7 +65,9 @@ async def get_product_reviews(
     return result
 
 
-@router.post("/reviews", response_model=ReviewCreateResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/reviews", response_model=ReviewCreateResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_review(
     request: ReviewCreateRequest,
     db: AsyncSession = Depends(get_db),
