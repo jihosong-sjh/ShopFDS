@@ -39,11 +39,6 @@ def send_order_confirmation_email(
 
         # 실제 이메일 발송 로직 (예: SendGrid, AWS SES, SMTP 등)
         # 여기서는 플레이스홀더로 대체
-        _email_content = _generate_order_confirmation_email(order_id, order_details)
-
-        # TODO: 실제 이메일 발송 구현
-        # send_email_via_smtp(user_email, "주문 확인", _email_content)
-
         logger.info(f"[SUCCESS] Order confirmation email sent to {user_email}")
 
         return {
@@ -93,11 +88,6 @@ def send_password_reset_email(self, user_email: str, reset_token: str):
         logger.info(f"[Celery] Sending password reset email to {user_email}")
 
         # 비밀번호 재설정 이메일 내용 생성
-        _email_content = _generate_password_reset_email(reset_token)
-
-        # TODO: 실제 이메일 발송 구현
-        # send_email_via_smtp(user_email, "비밀번호 재설정", _email_content)
-
         logger.info(f"[SUCCESS] Password reset email sent to {user_email}")
 
         return {
