@@ -160,13 +160,13 @@
 
 ### Frontend Implementation for User Story 3
 
-- [ ] T068 [US3] CheckoutPage 구현 (3단계 스텝 인디케이터) in services/ecommerce/frontend/src/pages/CheckoutPage.tsx
-- [ ] T069 [US3] CheckoutStep 컴포넌트 구현 (배송 정보 → 결제 → 주문 확인) in services/ecommerce/frontend/src/components/CheckoutStep.tsx
-- [ ] T070 [US3] CouponInput 컴포넌트 구현 (쿠폰 코드 입력, 적용) in services/ecommerce/frontend/src/components/CouponInput.tsx
-- [ ] T071 [US3] PaymentMethodSelector 컴포넌트 구현 (신용카드, 토스페이, 카카오페이) in services/ecommerce/frontend/src/components/PaymentMethodSelector.tsx
-- [ ] T072 [US3] OrderSummary 컴포넌트 구현 (총 금액, 할인 금액 표시) in services/ecommerce/frontend/src/components/OrderSummary.tsx
-- [ ] T073 [US3] OrderCompletePage 구현 (주문 번호, 배송 예정일 표시) in services/ecommerce/frontend/src/pages/OrderCompletePage.tsx
-- [ ] T074 [US3] useCoupons Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useCoupons.ts
+- [X] T068 [US3] CheckoutPage 구현 (3단계 스텝 인디케이터) in services/ecommerce/frontend/src/pages/CheckoutPage.tsx
+- [X] T069 [US3] CheckoutStep 컴포넌트 구현 (배송 정보 → 결제 → 주문 확인) in services/ecommerce/frontend/src/components/CheckoutStep.tsx
+- [X] T070 [US3] CouponInput 컴포넌트 구현 (쿠폰 코드 입력, 적용) in services/ecommerce/frontend/src/components/CouponInput.tsx
+- [X] T071 [US3] PaymentMethodSelector 컴포넌트 구현 (신용카드, 토스페이, 카카오페이) in services/ecommerce/frontend/src/components/PaymentMethodSelector.tsx
+- [X] T072 [US3] OrderSummary 컴포넌트 구현 (총 금액, 할인 금액 표시) in services/ecommerce/frontend/src/components/OrderSummary.tsx
+- [X] T073 [US3] OrderCompletePage 구현 (주문 번호, 배송 예정일 표시) in services/ecommerce/frontend/src/pages/OrderCompletePage.tsx
+- [X] T074 [US3] useCoupons Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useCoupons.ts
 - [ ] T075 [US3] Toss Payments SDK 통합 in services/ecommerce/frontend/src/utils/tossPayments.ts
 
 **Checkpoint**: User Story 1, 2, 3 모두 독립적으로 동작
