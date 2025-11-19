@@ -4,8 +4,7 @@
 사용자가 리뷰에 "도움돼요" 투표한 이력을 관리합니다.
 """
 
-from sqlalchemy import Column, ForeignKey, PrimaryKeyConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, ForeignKey, PrimaryKeyConstraint, Uuid
 from sqlalchemy.orm import relationship
 
 from src.models.base import Base, TimestampMixin
@@ -22,10 +21,10 @@ class ReviewVote(Base, TimestampMixin):
     __tablename__ = "review_votes"
 
     review_id = Column(
-        UUID(as_uuid=True), ForeignKey("reviews.id", ondelete="CASCADE"), nullable=False
+        Uuid, ForeignKey("reviews.id", ondelete="CASCADE"), nullable=False
     )
     user_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

@@ -45,10 +45,8 @@ class TestReviewCreation:
             name="갤럭시 S24 Ultra",
             description="Samsung Galaxy S24 Ultra 512GB",
             price=1690000,
-            discounted_price=1590000,
             category="smartphone",
-            brand="Samsung",
-            stock=100,
+            stock_quantity=100,
         )
         db_session.add(product)
         await db_session.commit()

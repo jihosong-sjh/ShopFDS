@@ -4,8 +4,7 @@ OAuthAccount Model
 소셜 로그인(Google, Kakao, Naver) 연동 정보를 저장하는 모델
 """
 
-from sqlalchemy import Column, String, Text, ForeignKey, Enum as SQLEnum, DateTime
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, ForeignKey, Enum as SQLEnum, DateTime, Uuid
 from sqlalchemy import JSON as JSONB
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -34,10 +33,8 @@ class OAuthAccount(Base):
 
     __tablename__ = "oauth_accounts"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id = Column(Uuid, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     provider = Column(SQLEnum(OAuthProvider), nullable=False)
     provider_user_id = Column(
         String(200), nullable=False, comment="OAuth 제공자의 사용자 고유 ID"

@@ -4,8 +4,7 @@ WishlistItem Model
 사용자의 찜한 상품(위시리스트) 정보를 저장하는 모델
 """
 
-from sqlalchemy import Column, ForeignKey, DateTime, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, ForeignKey, DateTime, UniqueConstraint, Uuid
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
@@ -25,12 +24,10 @@ class WishlistItem(Base):
 
     __tablename__ = "wishlist_items"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id = Column(Uuid, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     product_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("products.id", ondelete="CASCADE"),
         nullable=False,
     )

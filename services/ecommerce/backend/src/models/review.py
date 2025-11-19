@@ -12,8 +12,8 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     CheckConstraint,
+    Uuid,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import JSON as JSONB
 from sqlalchemy.orm import relationship
 import uuid
@@ -31,22 +31,20 @@ class Review(Base, TimestampMixin):
 
     __tablename__ = "reviews"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     user_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     product_id = Column(
-        UUID(as_uuid=True),
+        Uuid,
         ForeignKey("products.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
-    order_id = Column(
-        UUID(as_uuid=True), ForeignKey("orders.id", ondelete="SET NULL"), nullable=True
-    )
+    order_id = Column(Uuid, ForeignKey("orders.id", ondelete="SET NULL"), nullable=True)
 
     # 리뷰 내용
     rating = Column(Integer, nullable=False)  # 1-5점
