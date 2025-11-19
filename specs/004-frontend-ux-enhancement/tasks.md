@@ -122,15 +122,15 @@
 
 ### Frontend Implementation for User Story 2
 
-- [ ] T049 [P] [US2] LazyImage 컴포넌트 구현 (Intersection Observer) in services/ecommerce/frontend/src/components/LazyImage.tsx
-- [ ] T050 [P] [US2] ImageGallery 컴포넌트 구현 (썸네일, 메인 이미지 전환) in services/ecommerce/frontend/src/components/ImageGallery.tsx
-- [ ] T051 [US2] ImageZoomModal 컴포넌트 구현 (확대 보기 2배) in services/ecommerce/frontend/src/components/ImageZoomModal.tsx
-- [ ] T052 [US2] ReviewForm 컴포넌트 구현 (별점, 텍스트, 사진 업로드) in services/ecommerce/frontend/src/components/ReviewForm.tsx
-- [ ] T053 [US2] ReviewList 컴포넌트 구현 (정렬, 필터) in services/ecommerce/frontend/src/components/ReviewList.tsx
-- [ ] T054 [US2] ReviewCard 컴포넌트 구현 (도움돼요 버튼, 사진 리뷰) in services/ecommerce/frontend/src/components/ReviewCard.tsx
-- [ ] T055 [US2] useReviews Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useReviews.ts
-- [ ] T056 [US2] 상품 상세 페이지 업데이트 (이미지 갤러리, 리뷰 섹션) in services/ecommerce/frontend/src/pages/ProductDetailPage.tsx
-- [ ] T057 [US2] 상품 목록 카드에 평균 평점 및 리뷰 수 표시 in services/ecommerce/frontend/src/components/ProductCard.tsx
+- [X] T049 [P] [US2] LazyImage 컴포넌트 구현 (Intersection Observer) in services/ecommerce/frontend/src/components/LazyImage.tsx
+- [X] T050 [P] [US2] ImageGallery 컴포넌트 구현 (썸네일, 메인 이미지 전환) in services/ecommerce/frontend/src/components/ImageGallery.tsx
+- [X] T051 [US2] ImageZoomModal 컴포넌트 구현 (확대 보기 2배) in services/ecommerce/frontend/src/components/ImageZoomModal.tsx
+- [X] T052 [US2] ReviewForm 컴포넌트 구현 (별점, 텍스트, 사진 업로드) in services/ecommerce/frontend/src/components/ReviewForm.tsx
+- [X] T053 [US2] ReviewList 컴포넌트 구현 (정렬, 필터) in services/ecommerce/frontend/src/components/ReviewList.tsx
+- [X] T054 [US2] ReviewCard 컴포넌트 구현 (도움돼요 버튼, 사진 리뷰) in services/ecommerce/frontend/src/components/ReviewCard.tsx
+- [X] T055 [US2] useReviews Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useReviews.ts
+- [X] T056 [US2] 상품 상세 페이지 업데이트 (이미지 갤러리, 리뷰 섹션) in services/ecommerce/frontend/src/pages/ProductDetailPage.tsx
+- [X] T057 [US2] 상품 목록 카드에 평균 평점 및 리뷰 수 표시 in services/ecommerce/frontend/src/components/ProductCard.tsx
 
 **Checkpoint**: User Story 1, 2 모두 독립적으로 동작
 
