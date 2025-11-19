@@ -92,9 +92,7 @@ export function captureError(
   error: Error,
   context?: Record<string, unknown>
 ) {
-  Sentry.captureException(error, {
-    contexts: context,
-  });
+  Sentry.captureException(error, context ? { extra: context } : undefined);
 }
 
 /**

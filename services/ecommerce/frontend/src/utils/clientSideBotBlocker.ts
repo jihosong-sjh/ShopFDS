@@ -226,7 +226,11 @@ export class ClientSideBotBlocker {
       const timeOnPage = Date.now() - this.behaviorCollector.startTime;
 
       const prediction = await loader.predict({
-        ...this.behaviorCollector,
+        mouseMoves: this.behaviorCollector.mouseMoves,
+        keystrokes: this.behaviorCollector.keystrokes,
+        clicks: this.behaviorCollector.clicks,
+        scrolls: this.behaviorCollector.scrolls,
+        pageLoadTime: this.behaviorCollector.pageLoadTime,
         timeOnPage,
       });
 

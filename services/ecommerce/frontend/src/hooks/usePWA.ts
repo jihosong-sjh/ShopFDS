@@ -54,10 +54,10 @@ export function usePWA(): PWAState {
     offlineReady: [offlineReady],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(registration) {
+    onRegistered(registration: ServiceWorkerRegistration | undefined) {
       console.log('[PWA] Service Worker registered:', registration);
     },
-    onRegisterError(error) {
+    onRegisterError(error: unknown) {
       console.error('[PWA] Service Worker registration error:', error);
     },
   });
@@ -180,7 +180,7 @@ export function usePWA(): PWAState {
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as BufferSource,
       });
 
       // 백엔드에 구독 정보 전송

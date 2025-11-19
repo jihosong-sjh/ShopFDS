@@ -96,7 +96,7 @@ self.addEventListener('push', (event) => {
   }
 
   const data = event.data.json();
-  const options: NotificationOptions = {
+  const options = {
     body: data.body || 'ShopFDS 알림',
     icon: '/pwa-192x192.png',
     badge: '/pwa-192x192.png',
@@ -106,7 +106,7 @@ self.addEventListener('push', (event) => {
       primaryKey: data.primaryKey || '1',
       url: data.url || '/',
     },
-  };
+  } as NotificationOptions;
 
   event.waitUntil(
     self.registration.showNotification(data.title || 'ShopFDS', options)

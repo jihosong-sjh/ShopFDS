@@ -13,6 +13,14 @@ export function PWAInstallPrompt() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
+  // handleDismiss 함수를 먼저 정의
+  const handleDismiss = () => {
+    setIsDismissed(true);
+    const dismissUntil = new Date();
+    dismissUntil.setDate(dismissUntil.getDate() + 7); // 7일 동안 표시하지 않음
+    localStorage.setItem('pwa-install-dismissed-until', dismissUntil.toISOString());
+  };
+
   // 배너 표시 여부 확인
   useEffect(() => {
     const dismissedUntil = localStorage.getItem('pwa-install-dismissed-until');
@@ -149,13 +157,6 @@ export function PWAInstallPrompt() {
 
   const handleInstall = async () => {
     await promptInstall();
-  };
-
-  const handleDismiss = () => {
-    setIsDismissed(true);
-    const dismissUntil = new Date();
-    dismissUntil.setDate(dismissUntil.getDate() + 7); // 7일 동안 표시하지 않음
-    localStorage.setItem('pwa-install-dismissed-until', dismissUntil.toISOString());
   };
 
   return (

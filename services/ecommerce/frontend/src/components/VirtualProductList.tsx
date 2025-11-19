@@ -137,7 +137,7 @@ export const VirtualGridProductList: React.FC<VirtualGridProductListProps> = ({
   itemHeight = 280,
 }) => {
   // 열 단위로 상품 그룹화
-  const rows = [];
+  const rows: Product[][] = [];
   for (let i = 0; i < products.length; i += columns) {
     rows.push(products.slice(i, i + columns));
   }
@@ -148,7 +148,7 @@ export const VirtualGridProductList: React.FC<VirtualGridProductListProps> = ({
     return (
       <div style={style} className="px-4 py-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {rowProducts.map((product) => (
+          {rowProducts.map((product: Product) => (
             <div
               key={product.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer p-4"

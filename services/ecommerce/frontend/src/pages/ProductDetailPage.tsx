@@ -371,7 +371,7 @@ export const ProductDetailPage: React.FC = () => {
                 onFilterChange={setReviewFilters}
                 onSortChange={setReviewSort}
                 onHelpfulClick={handleHelpfulClick}
-                onImageClick={(images, index) => {
+                onImageClick={(_images, index) => {
                   setZoomImageIndex(index);
                   setZoomModalOpen(true);
                 }}

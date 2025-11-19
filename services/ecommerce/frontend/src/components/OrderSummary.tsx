@@ -4,8 +4,6 @@
  * 상품 금액, 할인, 배송비, 총 금액을 표시합니다.
  */
 
-import React from 'react';
-
 interface OrderSummaryProps {
   subtotal: number;
   discountAmount?: number;

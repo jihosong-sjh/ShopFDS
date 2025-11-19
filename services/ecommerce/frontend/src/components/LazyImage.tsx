@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-interface LazyImageProps {
+export interface LazyImageProps {
   src: string;
   alt: string;
   className?: string;
   placeholderSrc?: string;
   onLoad?: () => void;
   onError?: () => void;
+  onClick?: () => void;
 }
 
 /**
@@ -29,6 +30,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   placeholderSrc = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23f0f0f0" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle"%3ELoading...%3C/text%3E%3C/svg%3E',
   onLoad,
   onError,
+  onClick,
 }) => {
   const [imageSrc, setImageSrc] = useState<string>(placeholderSrc);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -101,6 +103,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
       } transition-opacity duration-300`}
       onLoad={handleLoad}
       onError={handleError}
+      onClick={onClick}
       loading="lazy"
     />
   );

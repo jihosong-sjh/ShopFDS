@@ -116,7 +116,7 @@ function getWebGLFingerprint(): string {
 function getAudioFingerprint(): Promise<string> {
   return new Promise((resolve) => {
     try {
-      const AudioContext = window.AudioContext || (window as typeof window.AudioContext & { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext;
+      const AudioContext = window.AudioContext || (window as { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext;
       if (!AudioContext) {
         resolve('audio_not_supported');
         return;

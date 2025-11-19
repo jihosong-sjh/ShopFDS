@@ -216,7 +216,7 @@ export const useReviews = ({
 
       return { previousData };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       // 에러 발생 시 이전 데이터로 복구
       if (context?.previousData) {
         queryClient.setQueryData(
