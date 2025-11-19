@@ -68,28 +68,28 @@
 
 > **NOTE: 테스트를 먼저 작성하고, 구현 전에 FAIL 확인**
 
-- [ ] T020 [P] [US1] 검색 자동완성 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_search.py
-- [ ] T021 [P] [US1] 검색 필터링 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/search.spec.ts
+- [X] T020 [P] [US1] 검색 자동완성 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_search.py
+- [X] T021 [P] [US1] 검색 필터링 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/search.spec.ts
 
 ### Backend Implementation for User Story 1
 
-- [ ] T022 [P] [US1] 검색 자동완성 API 엔드포인트 구현 (GET /v1/search/autocomplete) in services/ecommerce/backend/src/api/search.py
-- [ ] T023 [P] [US1] 상품 검색 API 엔드포인트 구현 (GET /v1/search/products) in services/ecommerce/backend/src/api/search.py
-- [ ] T024 [US1] PostgreSQL Trigram 유사도 검색 서비스 로직 구현 in services/ecommerce/backend/src/services/search_service.py
-- [ ] T025 [US1] 검색 히스토리 저장 API 엔드포인트 (POST /v1/search/history) in services/ecommerce/backend/src/api/search.py
-- [ ] T026 [US1] FastAPI 메인 앱에 검색 라우터 등록 in services/ecommerce/backend/src/main.py
+- [X] T022 [P] [US1] 검색 자동완성 API 엔드포인트 구현 (GET /v1/search/autocomplete) in services/ecommerce/backend/src/api/search.py
+- [X] T023 [P] [US1] 상품 검색 API 엔드포인트 구현 (GET /v1/search/products) in services/ecommerce/backend/src/api/search.py
+- [X] T024 [US1] PostgreSQL Trigram 유사도 검색 서비스 로직 구현 in services/ecommerce/backend/src/services/search_service.py
+- [X] T025 [US1] 검색 히스토리 저장 API 엔드포인트 (POST /v1/search/history) in services/ecommerce/backend/src/api/search.py
+- [X] T026 [US1] FastAPI 메인 앱에 검색 라우터 등록 in services/ecommerce/backend/src/main.py
 
 ### Frontend Implementation for User Story 1
 
-- [ ] T027 [P] [US1] useSearch Hook 구현 (디바운싱, React Query) in services/ecommerce/frontend/src/hooks/useSearch.ts
-- [ ] T028 [P] [US1] SearchBar 컴포넌트 구현 (자동완성 드롭다운) in services/ecommerce/frontend/src/components/SearchBar.tsx
-- [ ] T029 [US1] SearchPage 구현 (검색 결과 목록, 필터, 정렬) in services/ecommerce/frontend/src/pages/SearchPage.tsx
-- [ ] T030 [US1] 검색어 하이라이트 유틸리티 함수 구현 in services/ecommerce/frontend/src/utils/highlightText.ts
-- [ ] T031 [US1] 검색 필터 컴포넌트 구현 (가격 범위, 브랜드, 재고 여부) in services/ecommerce/frontend/src/components/SearchFilters.tsx
-- [ ] T032 [US1] URL 쿼리 파라미터 동기화 (React Router) in services/ecommerce/frontend/src/pages/SearchPage.tsx
-- [ ] T033 [US1] 최근 검색어 LocalStorage 관리 Hook in services/ecommerce/frontend/src/hooks/useSearchHistory.ts
+- [X] T027 [P] [US1] useSearch Hook 구현 (디바운싱, React Query) in services/ecommerce/frontend/src/hooks/useSearch.ts
+- [X] T028 [P] [US1] SearchBar 컴포넌트 구현 (자동완성 드롭다운) in services/ecommerce/frontend/src/components/SearchBar.tsx
+- [X] T029 [US1] SearchPage 구현 (검색 결과 목록, 필터, 정렬) in services/ecommerce/frontend/src/pages/SearchPage.tsx
+- [X] T030 [US1] 검색어 하이라이트 유틸리티 함수 구현 in services/ecommerce/frontend/src/utils/highlightText.ts
+- [X] T031 [US1] 검색 필터 컴포넌트 구현 (가격 범위, 브랜드, 재고 여부) in services/ecommerce/frontend/src/components/SearchFilters.tsx
+- [X] T032 [US1] URL 쿼리 파라미터 동기화 (React Router) in services/ecommerce/frontend/src/pages/SearchPage.tsx
+- [X] T033 [US1] 최근 검색어 LocalStorage 관리 Hook in services/ecommerce/frontend/src/hooks/useSearchHistory.ts
 - [ ] T034 [US1] 추천 상품 섹션 (홈 페이지) in services/ecommerce/frontend/src/pages/HomePage.tsx
-- [ ] T035 [US1] 최근 본 상품 섹션 (LocalStorage + 백엔드 동기화) in services/ecommerce/frontend/src/components/RecentlyViewed.tsx
+- [X] T035 [US1] 최근 본 상품 섹션 (LocalStorage + 백엔드 동기화) in services/ecommerce/frontend/src/components/RecentlyViewed.tsx
 
 **Checkpoint**: User Story 1 완전 기능, 독립 테스트 가능
 

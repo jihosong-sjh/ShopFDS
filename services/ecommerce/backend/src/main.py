@@ -23,6 +23,7 @@ from src.api.auth import router as auth_router
 from src.api.products import router as products_router
 from src.api.cart import router as cart_router
 from src.api.orders import router as orders_router
+from src.api.search import router as search_router
 
 # Admin API 라우터
 from src.api.admin.products import router as admin_products_router
@@ -165,6 +166,7 @@ app.include_router(auth_router)
 app.include_router(products_router)
 app.include_router(cart_router)
 app.include_router(orders_router)
+app.include_router(search_router)
 
 # Admin 라우터 등록
 app.include_router(admin_products_router)
