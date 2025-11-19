@@ -1,0 +1,14 @@
+# PWA Icons Placeholder
+#
+# This directory should contain the following PWA icon files:
+# - pwa-64x64.png
+# - pwa-192x192.png
+# - pwa-512x512.png
+# - apple-touch-icon.png
+# - favicon.ico
+#
+# Please generate these icons using the instructions in PWA_ICONS_README.md
+# or use the pwa-icon-template.svg as a starting point.
+#
+# For production, replace these with professionally designed icons
+# that match your brand identity.

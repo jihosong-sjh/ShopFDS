@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- ShopFDS PWA Icon Template -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bgGradient)"/>
+
+  <!-- Shopping Cart Icon -->
+  <g transform="translate(128, 128)">
+    <path d="M0 24C0 10.7 10.7 0 24 0H40c4.4 0 8 3.6 8 8v8c0 4.4-3.6 8-8 8H24c-4.4 0-8 3.6-8 8v96c0 4.4 3.6 8 8 8h208c4.4 0 8-3.6 8-8V32c0-4.4-3.6-8-8-8H216c-4.4 0-8-3.6-8-8V8c0-4.4 3.6-8 8-8h16c13.3 0 24 10.7 24 24v96c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24z"
+          fill="#ffffff" transform="scale(1.2)"/>
+    <circle cx="72" cy="224" r="16" fill="#ffffff"/>
+    <circle cx="184" cy="224" r="16" fill="#ffffff"/>
+  </g>
+
+  <!-- FDS Shield -->
+  <g transform="translate(340, 360)">
+    <path d="M24 0C10.7 0 0 10.7 0 24v48c0 28.7 23.3 52 52 52h8c28.7 0 52-23.3 52-52V24c0-13.3-10.7-24-24-24H24z"
+          fill="#10b981" transform="scale(0.7)"/>
+    <path d="M32 48l16 16 32-32"
+          stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(8, 8) scale(0.5)"/>
+  </g>
+</svg>

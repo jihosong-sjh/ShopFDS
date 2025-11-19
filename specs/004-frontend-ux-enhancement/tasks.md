@@ -290,14 +290,14 @@
 
 ### Frontend Implementation for User Story 7
 
-- [ ] T131 [US7] Service Worker 등록 및 Workbox 설정 in services/ecommerce/frontend/src/sw.ts
-- [ ] T132 [US7] Manifest.json 설정 (아이콘, 테마 색상) in services/ecommerce/frontend/public/manifest.json
-- [ ] T133 [US7] usePWA Hook 구현 (설치 프롬프트, 알림 권한) in services/ecommerce/frontend/src/hooks/usePWA.ts
-- [ ] T134 [US7] PWAInstallPrompt 컴포넌트 구현 (설치 배너) in services/ecommerce/frontend/src/components/PWAInstallPrompt.tsx
-- [ ] T135 [US7] 푸시 알림 권한 요청 컴포넌트 in services/ecommerce/frontend/src/components/PushNotificationPrompt.tsx
-- [ ] T136 [US7] 오프라인 폴백 페이지 in services/ecommerce/frontend/src/pages/OfflinePage.tsx
-- [ ] T137 [US7] Service Worker 캐싱 전략 설정 (API, 정적 에셋) in services/ecommerce/frontend/vite.config.ts
-- [ ] T138 [US7] PWA 아이콘 및 스플래시 스크린 이미지 생성 in services/ecommerce/frontend/public/
+- [X] T131 [US7] Service Worker 등록 및 Workbox 설정 in services/ecommerce/frontend/src/sw.ts
+- [X] T132 [US7] Manifest.json 설정 (아이콘, 테마 색상) in services/ecommerce/frontend/public/manifest.json
+- [X] T133 [US7] usePWA Hook 구현 (설치 프롬프트, 알림 권한) in services/ecommerce/frontend/src/hooks/usePWA.ts
+- [X] T134 [US7] PWAInstallPrompt 컴포넌트 구현 (설치 배너) in services/ecommerce/frontend/src/components/PWAInstallPrompt.tsx
+- [X] T135 [US7] 푸시 알림 권한 요청 컴포넌트 in services/ecommerce/frontend/src/components/PushNotificationPrompt.tsx
+- [X] T136 [US7] 오프라인 폴백 페이지 in services/ecommerce/frontend/src/pages/OfflinePage.tsx
+- [X] T137 [US7] Service Worker 캐싱 전략 설정 (API, 정적 에셋) in services/ecommerce/frontend/vite.config.ts
+- [X] T138 [US7] PWA 아이콘 및 스플래시 스크린 이미지 생성 in services/ecommerce/frontend/public/
 
 **Checkpoint**: 모든 User Story 독립적으로 기능
 
