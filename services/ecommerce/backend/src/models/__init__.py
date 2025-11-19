@@ -11,6 +11,8 @@ from .product import Product, ProductStatus
 from .cart import Cart, CartItem
 from .order import Order, OrderItem, OrderStatus
 from .payment import Payment, PaymentMethod, PaymentStatus
+from .review import Review
+from .review_vote import ReviewVote
 
 __all__ = [
     "Base",
@@ -32,4 +34,6 @@ __all__ = [
     "Payment",
     "PaymentMethod",
     "PaymentStatus",
+    "Review",
+    "ReviewVote",
 ]

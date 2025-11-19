@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional
 from uuid import UUID
 
-from src.database import get_db
+from src.models.base import get_db
 from src.services.search_service import SearchService, get_search_service
 from src.models.user import User
 from src.middleware.auth import get_current_user

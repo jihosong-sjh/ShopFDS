@@ -75,6 +75,7 @@ class Order(Base):
         "OrderItem", back_populates="order", cascade="all, delete-orphan"
     )
     payment = relationship("Payment", back_populates="order", uselist=False)
+    reviews = relationship("Review", back_populates="order", lazy="dynamic")
 
     # 제약 조건
     __table_args__ = (

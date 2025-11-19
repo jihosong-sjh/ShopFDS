@@ -103,22 +103,22 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T036 [P] [US2] 리뷰 작성 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_reviews.py
-- [ ] T037 [P] [US2] 리뷰 작성 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/review.spec.ts
+- [X] T036 [P] [US2] 리뷰 작성 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_reviews.py
+- [X] T037 [P] [US2] 리뷰 작성 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/review.spec.ts
 
 ### Backend Implementation for User Story 2
 
-- [ ] T038 [P] [US2] Review 모델 생성 in services/ecommerce/backend/src/models/review.py
-- [ ] T039 [P] [US2] ReviewVote 모델 생성 in services/ecommerce/backend/src/models/review_vote.py
-- [ ] T040 [US2] 리뷰 서비스 로직 구현 (작성 권한 검증, 이미지 업로드) in services/ecommerce/backend/src/services/review_service.py
-- [ ] T041 [US2] 리뷰 목록 조회 API (GET /v1/products/{id}/reviews) in services/ecommerce/backend/src/api/reviews.py
-- [ ] T042 [P] [US2] 리뷰 작성 API (POST /v1/reviews) in services/ecommerce/backend/src/api/reviews.py
-- [ ] T043 [P] [US2] 리뷰 수정 API (PUT /v1/reviews/{id}) in services/ecommerce/backend/src/api/reviews.py
-- [ ] T044 [P] [US2] 리뷰 삭제 API (DELETE /v1/reviews/{id}) in services/ecommerce/backend/src/api/reviews.py
-- [ ] T045 [P] [US2] 리뷰 도움돼요 투표 API (POST /v1/reviews/{id}/vote) in services/ecommerce/backend/src/api/reviews.py
-- [ ] T046 [P] [US2] 리뷰 도움돼요 취소 API (DELETE /v1/reviews/{id}/vote) in services/ecommerce/backend/src/api/reviews.py
-- [ ] T047 [US2] S3/R2 이미지 업로드 유틸리티 in services/ecommerce/backend/src/utils/image_upload.py
-- [ ] T048 [US2] FastAPI 메인 앱에 리뷰 라우터 등록 in services/ecommerce/backend/src/main.py
+- [X] T038 [P] [US2] Review 모델 생성 in services/ecommerce/backend/src/models/review.py
+- [X] T039 [P] [US2] ReviewVote 모델 생성 in services/ecommerce/backend/src/models/review_vote.py
+- [X] T040 [US2] 리뷰 서비스 로직 구현 (작성 권한 검증, 이미지 업로드) in services/ecommerce/backend/src/services/review_service.py
+- [X] T041 [US2] 리뷰 목록 조회 API (GET /v1/products/{id}/reviews) in services/ecommerce/backend/src/api/reviews.py
+- [X] T042 [P] [US2] 리뷰 작성 API (POST /v1/reviews) in services/ecommerce/backend/src/api/reviews.py
+- [X] T043 [P] [US2] 리뷰 수정 API (PUT /v1/reviews/{id}) in services/ecommerce/backend/src/api/reviews.py
+- [X] T044 [P] [US2] 리뷰 삭제 API (DELETE /v1/reviews/{id}) in services/ecommerce/backend/src/api/reviews.py
+- [X] T045 [P] [US2] 리뷰 도움돼요 투표 API (POST /v1/reviews/{id}/vote) in services/ecommerce/backend/src/api/reviews.py
+- [X] T046 [P] [US2] 리뷰 도움돼요 취소 API (DELETE /v1/reviews/{id}/vote) in services/ecommerce/backend/src/api/reviews.py
+- [X] T047 [US2] S3/R2 이미지 업로드 유틸리티 in services/ecommerce/backend/src/utils/image_upload.py
+- [X] T048 [US2] FastAPI 메인 앱에 리뷰 라우터 등록 in services/ecommerce/backend/src/main.py
 
 ### Frontend Implementation for User Story 2
 

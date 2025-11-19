@@ -6,10 +6,14 @@ import asyncio
 import pytest
 import pytest_asyncio
 from typing import AsyncGenerator
+from uuid import uuid4
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from src.models import Base
+from src.models.user import User
+from src.main import app
 
 
 # Test database URL (in-memory SQLite)
@@ -74,3 +78,58 @@ def mock_redis():
     mock.expire.return_value = True
 
     return mock
+
+
+@pytest_asyncio.fixture(scope="function")
+async def async_client() -> AsyncGenerator[AsyncClient, None]:
+    """
+    Create an async HTTP client for testing FastAPI endpoints.
+    """
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        yield client
+
+
+@pytest_asyncio.fixture(scope="function")
+async def test_user(db_session: AsyncSession):
+    """
+    Create a test user for authentication.
+    """
+    user = User(
+        id=uuid4(),
+        email="test@example.com",
+        password_hash="hashed_password",
+        name="Test User",
+        role="customer",
+        status="active",
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
+
+
+@pytest.fixture(scope="function")
+def auth_headers(test_user: User) -> dict:
+    """
+    Create mock authentication headers for testing.
+    
+    Note: This is a simplified version. In production, you would use actual JWT tokens.
+    """
+    from jose import jwt
+    import os
+    from datetime import datetime, timedelta
+    
+    # Create a JWT token for the test user
+    token_data = {
+        "sub": str(test_user.id),
+        "email": test_user.email,
+        "role": test_user.role,
+        "exp": datetime.utcnow() + timedelta(hours=24),
+    }
+    
+    secret_key = os.getenv("JWT_SECRET_KEY", "test_secret_key_12345")
+    token = jwt.encode(token_data, secret_key, algorithm="HS256")
+    
+    return {"Authorization": f"Bearer {token}"}
