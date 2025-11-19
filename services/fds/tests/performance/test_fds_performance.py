@@ -56,7 +56,7 @@ class TestFDSPerformance:
             ip_address="211.234.123.45",
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             device_fingerprint=DeviceFingerprint(
-                device_type=DeviceTypeEnum.WEB,
+                device_type=DeviceTypeEnum.DESKTOP,
                 device_id="perf-test-device",
                 browser="Chrome",
                 os="Windows",
@@ -160,7 +160,7 @@ class TestFDSPerformance:
                 ip_address="211.234.123.45",
                 user_agent="Mozilla/5.0",
                 device_fingerprint=DeviceFingerprint(
-                    device_type=DeviceTypeEnum.WEB,
+                    device_type=DeviceTypeEnum.DESKTOP,
                     device_id=f"device-{uuid4()}",
                     browser="Chrome",
                     os="Windows",
@@ -263,7 +263,7 @@ class TestFDSPerformance:
                     ip_address="211.234.123.45",
                     user_agent="Mozilla/5.0",
                     device_fingerprint=DeviceFingerprint(
-                        device_type=DeviceTypeEnum.WEB,
+                        device_type=DeviceTypeEnum.DESKTOP,
                         device_id=f"device-{i}",
                         browser="Chrome",
                         os="Windows",
@@ -344,7 +344,7 @@ class TestFDSPerformance:
             ip_address="211.234.123.45",
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
-                device_type=DeviceTypeEnum.WEB,
+                device_type=DeviceTypeEnum.DESKTOP,
                 device_id="cti-perf-test",
                 browser="Chrome",
                 os="Windows",
@@ -420,7 +420,7 @@ class TestFDSPerformance:
             ip_address="211.234.123.45",
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
-                device_type=DeviceTypeEnum.WEB,
+                device_type=DeviceTypeEnum.DESKTOP,
                 device_id="summary-test",
                 browser="Chrome",
                 os="Windows",
