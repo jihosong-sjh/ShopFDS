@@ -19,7 +19,9 @@
     "zustand": "^4.4.7",
     "axios": "^1.6.5",
     "zod": "^3.22.4",
-    "onnxruntime-web": "^1.16.0"
+    "onnxruntime-web": "^1.16.0",
+    "react-dropzone": "^14.2.3",
+    "lodash.debounce": "^4.0.8"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
@@ -27,6 +29,7 @@
     "@testing-library/user-event": "^14.5.1",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "@types/lodash.debounce": "^4.0.9",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
     "@vitejs/plugin-react": "^4.2.1",
@@ -41,6 +44,7 @@
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.8",
+    "vite-plugin-pwa": "^0.17.4",
     "vitest": "^1.1.3"
   }
 }

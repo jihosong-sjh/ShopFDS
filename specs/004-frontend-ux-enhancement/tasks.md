@@ -25,12 +25,12 @@
 
 **목적**: 프로젝트 초기화 및 기본 구조 설정
 
-- [ ] T001 Git 브랜치 생성 및 전환 (004-frontend-ux-enhancement)
-- [ ] T002 [P] 백엔드 의존성 업데이트 (authlib, python-multipart 추가) in services/ecommerce/backend/requirements.txt
-- [ ] T003 [P] 프론트엔드 의존성 설치 (react-query, zustand, react-dropzone, vite-plugin-pwa, lodash.debounce) in services/ecommerce/frontend/package.json
-- [ ] T004 프론트엔드 Vite PWA 플러그인 설정 in services/ecommerce/frontend/vite.config.ts
-- [ ] T005 [P] 프론트엔드 React Query Provider 설정 in services/ecommerce/frontend/src/main.tsx
-- [ ] T006 [P] 프론트엔드 API 클라이언트 유틸리티 생성 in services/ecommerce/frontend/src/services/api.ts
+- [X] T001 Git 브랜치 생성 및 전환 (004-frontend-ux-enhancement)
+- [X] T002 [P] 백엔드 의존성 업데이트 (authlib, python-multipart 추가) in services/ecommerce/backend/requirements.txt
+- [X] T003 [P] 프론트엔드 의존성 설치 (react-query, zustand, react-dropzone, vite-plugin-pwa, lodash.debounce) in services/ecommerce/frontend/package.json
+- [X] T004 프론트엔드 Vite PWA 플러그인 설정 in services/ecommerce/frontend/vite.config.ts
+- [X] T005 [P] 프론트엔드 React Query Provider 설정 in services/ecommerce/frontend/src/main.tsx
+- [X] T006 [P] 프론트엔드 API 클라이언트 유틸리티 생성 in services/ecommerce/frontend/src/services/api.ts
 
 ---
 
