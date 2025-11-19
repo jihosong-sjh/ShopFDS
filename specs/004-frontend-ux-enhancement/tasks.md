@@ -228,11 +228,11 @@
 
 ### Frontend Implementation for User Story 5 (LocalStorage 기반)
 
-- [ ] T104 [P] [US5] useComparison Hook 구현 (Zustand + LocalStorage) in services/ecommerce/frontend/src/hooks/useComparison.ts
-- [ ] T105 [US5] ComparisonFloatingButton 컴포넌트 구현 (화면 하단 플로팅) in services/ecommerce/frontend/src/components/ComparisonFloatingButton.tsx
-- [ ] T106 [US5] ComparisonPage 구현 (상품 비교 테이블) in services/ecommerce/frontend/src/pages/ComparisonPage.tsx
-- [ ] T107 [US5] CompareButton 컴포넌트 구현 (상품 카드에 추가) in services/ecommerce/frontend/src/components/CompareButton.tsx
-- [ ] T108 [US5] 비교 목록 상태 관리 (Zustand store) in services/ecommerce/frontend/src/stores/comparisonStore.ts
+- [X] T104 [P] [US5] useComparison Hook 구현 (Zustand + LocalStorage) in services/ecommerce/frontend/src/hooks/useComparison.ts
+- [X] T105 [US5] ComparisonFloatingButton 컴포넌트 구현 (화면 하단 플로팅) in services/ecommerce/frontend/src/components/ComparisonFloatingButton.tsx
+- [X] T106 [US5] ComparisonPage 구현 (상품 비교 테이블) in services/ecommerce/frontend/src/pages/ComparisonPage.tsx
+- [X] T107 [US5] CompareButton 컴포넌트 구현 (상품 카드에 추가) in services/ecommerce/frontend/src/components/CompareButton.tsx
+- [X] T108 [US5] 비교 목록 상태 관리 (Zustand store) in services/ecommerce/frontend/src/stores/comparisonStore.ts
 
 **Checkpoint**: User Story 1-5 모두 독립적으로 동작
 
