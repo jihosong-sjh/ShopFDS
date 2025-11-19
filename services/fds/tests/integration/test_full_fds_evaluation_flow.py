@@ -20,6 +20,8 @@ from src.models.schemas import (
     FDSEvaluationRequest,
     DeviceFingerprint,
     DeviceTypeEnum,
+    ShippingInfo,
+    PaymentInfo,
 )
 from src.engines.evaluation_engine import EvaluationEngine
 from src.engines.cti_connector import CTICheckResult
@@ -66,11 +68,20 @@ class TestFullFDSEvaluationFlow:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="normal-device-001",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         # Redis Mock
@@ -172,11 +183,20 @@ class TestFullFDSEvaluationFlow:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="normal-device-002",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         mock_redis = AsyncMock()
@@ -278,11 +298,20 @@ class TestFullFDSEvaluationFlow:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="suspicious-device-001",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         mock_redis = AsyncMock()
@@ -419,11 +448,20 @@ class TestFullFDSEvaluationFlow:
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 device_fingerprint=DeviceFingerprint(
                     device_type=DeviceTypeEnum.DESKTOP,
-                    device_id="test-device-001",
                     browser="Chrome",
                     os="Windows",
-                    screen_resolution="1920x1080",
                 ),
+                shipping_info=ShippingInfo(
+                    name="홍길동",
+                    address="서울특별시 강남구",
+                    phone="010-1234-5678",
+                ),
+                payment_info=PaymentInfo(
+                    method="credit_card",
+                    card_last_four="1234",
+                    card_bin="123456",
+                ),
+                timestamp=datetime.utcnow(),
             )
 
             first_result = await engine.evaluate(first_request)
@@ -442,11 +480,20 @@ class TestFullFDSEvaluationFlow:
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 device_fingerprint=DeviceFingerprint(
                     device_type=DeviceTypeEnum.DESKTOP,
-                    device_id="test-device-001",
                     browser="Chrome",
                     os="Windows",
-                    screen_resolution="1920x1080",
                 ),
+                shipping_info=ShippingInfo(
+                    name="홍길동",
+                    address="서울특별시 강남구",
+                    phone="010-1234-5678",
+                ),
+                payment_info=PaymentInfo(
+                    method="credit_card",
+                    card_last_four="1234",
+                    card_bin="123456",
+                ),
+                timestamp=datetime.utcnow(),
             )
 
             second_result = await engine.evaluate(second_request)
@@ -502,11 +549,20 @@ class TestFullFDSEvaluationFlow:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="perf-test-device",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         mock_redis = AsyncMock()
@@ -584,11 +640,20 @@ class TestFullFDSEvaluationFlow:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="e2e-test-device",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         mock_redis = AsyncMock()

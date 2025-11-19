@@ -68,7 +68,7 @@ class FDSUser(HttpUser):
             "ip_address": "211.234.123.45",
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "device_fingerprint": {
-                "device_type": "web",
+                "device_type": "desktop",
                 "device_id": f"device-{self.user_id}",
                 "browser": "Chrome",
                 "os": "Windows",
@@ -130,7 +130,7 @@ class FDSUser(HttpUser):
             "ip_address": "211.234.123.45",
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "device_fingerprint": {
-                "device_type": "web",
+                "device_type": "desktop",
                 "device_id": f"device-{self.user_id}",
                 "browser": "Chrome",
                 "os": "Windows",
@@ -173,7 +173,7 @@ class FDSUser(HttpUser):
             "ip_address": "185.220.100.45",  # 의심스러운 IP (TOR)
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "device_fingerprint": {
-                "device_type": "web",
+                "device_type": "desktop",
                 "device_id": f"suspicious-device-{uuid4()}",  # 매번 다른 디바이스
                 "browser": "Chrome",
                 "os": "Windows",
@@ -218,7 +218,7 @@ class FDSUser(HttpUser):
                 "ip_address": "211.234.123.45",
                 "user_agent": "Mozilla/5.0",
                 "device_fingerprint": {
-                    "device_type": "web",
+                    "device_type": "desktop",
                     "device_id": f"device-{self.user_id}",
                     "browser": "Chrome",
                     "os": "Windows",

@@ -21,6 +21,8 @@ from src.models.schemas import (
     DeviceTypeEnum,
     DecisionEnum,
     RiskLevelEnum,
+    ShippingInfo,
+    PaymentInfo,
 )
 from src.engines.evaluation_engine import EvaluationEngine
 from src.engines.cti_connector import CTICheckResult
@@ -57,11 +59,20 @@ class TestHighRiskAutoBlockSimplified:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="test-device-001",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         # Mock Redis 및 Database
@@ -157,11 +168,20 @@ class TestHighRiskAutoBlockSimplified:
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="test-device-002",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         # === Act ===
@@ -182,11 +202,20 @@ class TestHighRiskAutoBlockSimplified:
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="test-device-002",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         second_result = await evaluation_engine.evaluate(second_request)
@@ -265,11 +294,20 @@ class TestHighRiskAutoBlockSimplified:
                 user_agent="Mozilla/5.0",
                 device_fingerprint=DeviceFingerprint(
                     device_type=DeviceTypeEnum.DESKTOP,
-                    device_id=f"test-device-{idx}",
                     browser="Chrome",
                     os="Windows",
-                    screen_resolution="1920x1080",
                 ),
+                shipping_info=ShippingInfo(
+                    name="홍길동",
+                    address="서울특별시 강남구",
+                    phone="010-1234-5678",
+                ),
+                payment_info=PaymentInfo(
+                    method="credit_card",
+                    card_last_four="1234",
+                    card_bin="123456",
+                ),
+                timestamp=datetime.utcnow(),
             )
 
             result = await evaluation_engine.evaluate(request)
@@ -367,11 +405,20 @@ async def test_complete_high_risk_flow_without_db():
         user_agent="Mozilla/5.0",
         device_fingerprint=DeviceFingerprint(
             device_type=DeviceTypeEnum.DESKTOP,
-            device_id="test-device-001",
             browser="Chrome",
             os="Windows",
-            screen_resolution="1920x1080",
         ),
+        shipping_info=ShippingInfo(
+            name="홍길동",
+            address="서울특별시 강남구",
+            phone="010-1234-5678",
+        ),
+        payment_info=PaymentInfo(
+            method="credit_card",
+            card_last_four="1234",
+            card_bin="123456",
+        ),
+        timestamp=datetime.utcnow(),
     )
 
     mock_redis = AsyncMock()

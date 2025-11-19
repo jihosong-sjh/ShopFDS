@@ -89,9 +89,9 @@ export const XAIDashboard: React.FC = () => {
 
       const data: XAIResponse = await response.json();
       setXaiData(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to fetch XAI data:", err);
-      setError(err.message || "Failed to fetch XAI explanation");
+      setError(err instanceof Error ? err.message : "Failed to fetch XAI explanation");
     } finally {
       setLoading(false);
     }

@@ -75,7 +75,24 @@ const transformToWaterfallData = (shapValues: SHAPValue[]) => {
 /**
  * 커스텀 툴팁
  */
-const CustomTooltip = ({ active, payload }: any) => {
+interface WaterfallDataPoint {
+  name: string;
+  contribution: number;
+  start: number;
+  end: number;
+  value: number;
+  isBase: boolean;
+  isPositive: boolean;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: WaterfallDataPoint;
+  }>;
+}
+
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
 
