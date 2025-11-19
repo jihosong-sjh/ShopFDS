@@ -1,0 +1,28 @@
+{
+  "name": "post-implement-ci-validation",
+  "description": "Automatically run CI validation after /speckit.implement completes",
+  "trigger": "post-implement",
+  "enabled": true,
+  "script": ".claude/scripts/auto_validate_ci.py",
+  "options": {
+    "fix_auto": true,
+    "verbose": false,
+    "continue_on_failure": false
+  },
+  "notifications": {
+    "on_success": {
+      "message": "[SUCCESS] All CI checks passed! Safe to commit and push.",
+      "color": "green"
+    },
+    "on_failure": {
+      "message": "[FAILURE] Some CI checks failed. Please review and fix before committing.",
+      "color": "red"
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "author": "ShopFDS Team",
+    "created": "2025-11-20",
+    "last_updated": "2025-11-20"
+  }
+}
