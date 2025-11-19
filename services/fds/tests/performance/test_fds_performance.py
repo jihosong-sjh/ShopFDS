@@ -14,12 +14,15 @@ import pytest
 import asyncio
 from uuid import uuid4
 from unittest.mock import AsyncMock, patch
+from datetime import datetime, timezone
 import statistics
 
 from src.models.schemas import (
     FDSEvaluationRequest,
     DeviceFingerprint,
     DeviceTypeEnum,
+    ShippingInfo,
+    PaymentInfo,
 )
 from src.engines.evaluation_engine import EvaluationEngine
 from src.engines.cti_connector import CTICheckResult
@@ -57,21 +60,31 @@ class TestFDSPerformance:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="perf-test-device",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구 테헤란로 123",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_bin="123456",
+                card_last_four="7890",
+            ),
+            timestamp=datetime.now(timezone.utc),
         )
 
         mock_redis = AsyncMock()
+        mock_redis.get.return_value = None  # No blacklist entries
 
         # CTI Mock
         cti_result = CTICheckResult(
             threat_type=ThreatType.IP,
             value=request.ip_address,
             is_threat=False,
-            threat_level=ThreatLevel.NONE,
+            threat_level=ThreatLevel.LOW,
             source=ThreatSource.ABUSEIPDB,
             description="정상 IP",
             confidence_score=5,
@@ -80,10 +93,20 @@ class TestFDSPerformance:
         # === Act ===
         async def evaluate_transaction():
             """평가 실행"""
-            with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
+            with patch(
+                "src.engines.evaluation_engine.CTIConnector"
+            ) as MockCTIConnector, patch(
+                "src.services.ab_test_service.ABTestService"
+            ) as MockABTestService:
+                # CTI Mock
                 mock_cti_instance = AsyncMock()
                 mock_cti_instance.check_ip_threat.return_value = cti_result
                 MockCTIConnector.return_value = mock_cti_instance
+
+                # AB Test Mock (no active tests)
+                mock_ab_test_instance = AsyncMock()
+                mock_ab_test_instance.get_active_test.return_value = None
+                MockABTestService.return_value = mock_ab_test_instance
 
                 engine = EvaluationEngine(db=db_session, redis=mock_redis)
                 result = await engine.evaluate(request)
@@ -138,13 +161,14 @@ class TestFDSPerformance:
         # === Arrange ===
         num_requests = 100
         mock_redis = AsyncMock()
+        mock_redis.get.return_value = None  # No blacklist entries
 
         # CTI Mock
         cti_result = CTICheckResult(
             threat_type=ThreatType.IP,
             value="211.234.123.45",
             is_threat=False,
-            threat_level=ThreatLevel.NONE,
+            threat_level=ThreatLevel.LOW,
             source=ThreatSource.ABUSEIPDB,
             description="정상 IP",
             confidence_score=5,
@@ -161,17 +185,36 @@ class TestFDSPerformance:
                 user_agent="Mozilla/5.0",
                 device_fingerprint=DeviceFingerprint(
                     device_type=DeviceTypeEnum.DESKTOP,
-                    device_id=f"device-{uuid4()}",
                     browser="Chrome",
                     os="Windows",
-                    screen_resolution="1920x1080",
                 ),
+                shipping_info=ShippingInfo(
+                    name="홍길동",
+                    address="서울특별시 강남구 테헤란로 123",
+                    phone="010-1234-5678",
+                ),
+                payment_info=PaymentInfo(
+                    method="credit_card",
+                    card_bin="123456",
+                    card_last_four="7890",
+                ),
+                timestamp=datetime.now(timezone.utc),
             )
 
-            with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
+            with patch(
+                "src.engines.evaluation_engine.CTIConnector"
+            ) as MockCTIConnector, patch(
+                "src.services.ab_test_service.ABTestService"
+            ) as MockABTestService:
+                # CTI Mock
                 mock_cti_instance = AsyncMock()
                 mock_cti_instance.check_ip_threat.return_value = cti_result
                 MockCTIConnector.return_value = mock_cti_instance
+
+                # AB Test Mock (no active tests)
+                mock_ab_test_instance = AsyncMock()
+                mock_ab_test_instance.get_active_test.return_value = None
+                MockABTestService.return_value = mock_ab_test_instance
 
                 engine = EvaluationEngine(db=db_session, redis=mock_redis)
                 result = await engine.evaluate(request)
@@ -229,13 +272,14 @@ class TestFDSPerformance:
         # === Arrange ===
         num_requests = 1000
         mock_redis = AsyncMock()
+        mock_redis.get.return_value = None  # No blacklist entries
 
         # CTI Mock
         cti_result = CTICheckResult(
             threat_type=ThreatType.IP,
             value="211.234.123.45",
             is_threat=False,
-            threat_level=ThreatLevel.NONE,
+            threat_level=ThreatLevel.LOW,
             source=ThreatSource.ABUSEIPDB,
             description="정상 IP",
             confidence_score=5,
@@ -247,10 +291,20 @@ class TestFDSPerformance:
         start_time = time.time()
         evaluation_times = []
 
-        with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
+        with patch(
+            "src.engines.evaluation_engine.CTIConnector"
+        ) as MockCTIConnector, patch(
+            "src.services.ab_test_service.ABTestService"
+        ) as MockABTestService:
+            # CTI Mock
             mock_cti_instance = AsyncMock()
             mock_cti_instance.check_ip_threat.return_value = cti_result
             MockCTIConnector.return_value = mock_cti_instance
+
+            # AB Test Mock (no active tests)
+            mock_ab_test_instance = AsyncMock()
+            mock_ab_test_instance.get_active_test.return_value = None
+            MockABTestService.return_value = mock_ab_test_instance
 
             engine = EvaluationEngine(db=db_session, redis=mock_redis)
 
@@ -264,11 +318,20 @@ class TestFDSPerformance:
                     user_agent="Mozilla/5.0",
                     device_fingerprint=DeviceFingerprint(
                         device_type=DeviceTypeEnum.DESKTOP,
-                        device_id=f"device-{i}",
                         browser="Chrome",
                         os="Windows",
-                        screen_resolution="1920x1080",
                     ),
+                    shipping_info=ShippingInfo(
+                        name="홍길동",
+                        address="서울특별시 강남구 테헤란로 123",
+                        phone="010-1234-5678",
+                    ),
+                    payment_info=PaymentInfo(
+                        method="credit_card",
+                        card_bin="123456",
+                        card_last_four="7890",
+                    ),
+                    timestamp=datetime.now(timezone.utc),
                 )
 
                 result = await engine.evaluate(request)
@@ -345,21 +408,31 @@ class TestFDSPerformance:
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="cti-perf-test",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구 테헤란로 123",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_bin="123456",
+                card_last_four="7890",
+            ),
+            timestamp=datetime.now(timezone.utc),
         )
 
         mock_redis = AsyncMock()
+        mock_redis.get.return_value = None  # No blacklist entries
 
         # CTI Mock (다양한 응답 시간 시뮬레이션)
         cti_result = CTICheckResult(
             threat_type=ThreatType.IP,
             value=request.ip_address,
             is_threat=False,
-            threat_level=ThreatLevel.NONE,
+            threat_level=ThreatLevel.LOW,
             source=ThreatSource.ABUSEIPDB,
             description="정상 IP",
             confidence_score=5,
@@ -370,10 +443,20 @@ class TestFDSPerformance:
         total_times = []
 
         for _ in range(100):
-            with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
+            with patch(
+                "src.engines.evaluation_engine.CTIConnector"
+            ) as MockCTIConnector, patch(
+                "src.services.ab_test_service.ABTestService"
+            ) as MockABTestService:
+                # CTI Mock
                 mock_cti_instance = AsyncMock()
                 mock_cti_instance.check_ip_threat.return_value = cti_result
                 MockCTIConnector.return_value = mock_cti_instance
+
+                # AB Test Mock (no active tests)
+                mock_ab_test_instance = AsyncMock()
+                mock_ab_test_instance.get_active_test.return_value = None
+                MockABTestService.return_value = mock_ab_test_instance
 
                 engine = EvaluationEngine(db=db_session, redis=mock_redis)
                 result = await engine.evaluate(request)
@@ -421,19 +504,29 @@ class TestFDSPerformance:
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="summary-test",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구 테헤란로 123",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_bin="123456",
+                card_last_four="7890",
+            ),
+            timestamp=datetime.now(timezone.utc),
         )
 
         mock_redis = AsyncMock()
+        mock_redis.get.return_value = None  # No blacklist entries
         cti_result = CTICheckResult(
             threat_type=ThreatType.IP,
             value=request.ip_address,
             is_threat=False,
-            threat_level=ThreatLevel.NONE,
+            threat_level=ThreatLevel.LOW,
             source=ThreatSource.ABUSEIPDB,
             description="정상 IP",
             confidence_score=5,
@@ -441,10 +534,20 @@ class TestFDSPerformance:
 
         results = []
         for _ in range(100):
-            with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
+            with patch(
+                "src.engines.evaluation_engine.CTIConnector"
+            ) as MockCTIConnector, patch(
+                "src.services.ab_test_service.ABTestService"
+            ) as MockABTestService:
+                # CTI Mock
                 mock_cti_instance = AsyncMock()
                 mock_cti_instance.check_ip_threat.return_value = cti_result
                 MockCTIConnector.return_value = mock_cti_instance
+
+                # AB Test Mock (no active tests)
+                mock_ab_test_instance = AsyncMock()
+                mock_ab_test_instance.get_active_test.return_value = None
+                MockABTestService.return_value = mock_ab_test_instance
 
                 engine = EvaluationEngine(db=db_session, redis=mock_redis)
                 result = await engine.evaluate(request)
@@ -454,9 +557,15 @@ class TestFDSPerformance:
         p95_time = statistics.quantiles(results, n=20)[18]
 
         print("\n[목표 달성 현황]")
-        print(f"  1. 평균 응답 시간 < 100ms: {avg_time:.2f}ms {'[OK]' if avg_time < 100 else '[FAIL]'}")
-        print(f"  2. P95 응답 시간 < 100ms: {p95_time:.2f}ms {'[OK]' if p95_time < 100 else '[FAIL]'}")
-        print(f"  3. 이상적 P95 < 50ms: {p95_time:.2f}ms {'[OK]' if p95_time < 50 else '[WARNING]'}")
+        print(
+            f"  1. 평균 응답 시간 < 100ms: {avg_time:.2f}ms {'[OK]' if avg_time < 100 else '[FAIL]'}"
+        )
+        print(
+            f"  2. P95 응답 시간 < 100ms: {p95_time:.2f}ms {'[OK]' if p95_time < 100 else '[FAIL]'}"
+        )
+        print(
+            f"  3. 이상적 P95 < 50ms: {p95_time:.2f}ms {'[OK]' if p95_time < 50 else '[WARNING]'}"
+        )
 
         print("\n[권장 사항]")
         if avg_time < 50:

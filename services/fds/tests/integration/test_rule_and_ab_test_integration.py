@@ -147,7 +147,11 @@ class TestT108RuleDynamicLoading:
                 id=uuid.uuid4(),
                 name="중간 우선순위 룰",
                 rule_type=RuleType.VELOCITY,
-                condition={"window_seconds": 300, "max_transactions": 3, "scope": "ip_address"},
+                condition={
+                    "window_seconds": 300,
+                    "max_transactions": 3,
+                    "scope": "ip_address",
+                },
                 risk_score_weight=50,
                 is_active=True,
                 priority=50,
@@ -205,7 +209,11 @@ class TestT108RuleDynamicLoading:
             id=uuid.uuid4(),
             name="비활성 룰",
             rule_type=RuleType.VELOCITY,
-            condition={"window_seconds": 300, "max_transactions": 3, "scope": "user_id"},
+            condition={
+                "window_seconds": 300,
+                "max_transactions": 3,
+                "scope": "user_id",
+            },
             risk_score_weight=60,
             is_active=False,  # 비활성화
             priority=50,
@@ -278,7 +286,9 @@ class TestT109ABTestIntegration:
 
         # 모든 할당 결과가 동일한지 확인
         assert len(set(groups)) == 1, f"그룹 할당 불일치: {groups}"
-        print(f"Step 1 (T109): 그룹 할당 일관성 검증 - transaction {transaction_id} → 그룹 {groups[0]} (10회 반복 동일)")
+        print(
+            f"Step 1 (T109): 그룹 할당 일관성 검증 - transaction {transaction_id} → 그룹 {groups[0]} (10회 반복 동일)"
+        )
 
     async def test_ab_test_traffic_split_distribution(self):
         """
@@ -419,7 +429,9 @@ class TestT109ABTestIntegration:
         assert test.group_a_true_positives == 2
         expected_avg_time = (85.5 + 94.5) / 2
         assert abs(test.group_a_avg_evaluation_time_ms - expected_avg_time) < 0.01
-        print(f"Step 4 (T109): 그룹 A 평균 시간 업데이트 - {test.group_a_avg_evaluation_time_ms}ms")
+        print(
+            f"Step 4 (T109): 그룹 A 평균 시간 업데이트 - {test.group_a_avg_evaluation_time_ms}ms"
+        )
 
     async def test_ab_test_get_active_test(self):
         """

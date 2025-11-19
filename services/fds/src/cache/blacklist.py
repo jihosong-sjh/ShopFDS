@@ -182,7 +182,7 @@ class BlacklistManager:
             BlacklistEntry if found, None otherwise
         """
         key = self._get_key(entry_type, value)
-        data = self.redis.get(key)
+        data = await self.redis.get(key)
 
         if not data:
             return None

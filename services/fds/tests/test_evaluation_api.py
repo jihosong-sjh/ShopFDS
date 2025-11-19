@@ -43,20 +43,20 @@ def test_normal_transaction_should_be_approved():
         "device_fingerprint": {
             "device_type": "desktop",
             "os": "Windows 10",
-            "browser": "Chrome 120.0"
+            "browser": "Chrome 120.0",
         },
         "shipping_info": {
             "name": "홍길동",
             "address": "서울특별시 강남구 테헤란로 123",
-            "phone": "010-1234-5678"
+            "phone": "010-1234-5678",
         },
         "payment_info": {
             "method": "credit_card",
             "card_bin": "541234",
-            "card_last_four": "5678"
+            "card_last_four": "5678",
         },
         "session_context": None,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     # FDS API 호출 (직접 테스트)
@@ -64,14 +64,10 @@ def test_normal_transaction_should_be_approved():
     from src.main import app
 
     with TestClient(app) as client:
-        headers = {
-            "X-Service-Token": "dev-service-token-12345"
-        }
+        headers = {"X-Service-Token": "dev-service-token-12345"}
 
         response = client.post(
-            "/internal/fds/evaluate",
-            json=request_data,
-            headers=headers
+            "/internal/fds/evaluate", json=request_data, headers=headers
         )
 
         # 검증
@@ -80,13 +76,19 @@ def test_normal_transaction_should_be_approved():
         result = response.json()
 
         # 위험 점수 확인
-        assert 0 <= result["risk_score"] <= 30, f"예상 위험 점수: 0-30, 실제: {result['risk_score']}"
+        assert (
+            0 <= result["risk_score"] <= 30
+        ), f"예상 위험 점수: 0-30, 실제: {result['risk_score']}"
 
         # 위험 수준 확인
-        assert result["risk_level"] == "low", f"예상 위험 수준: low, 실제: {result['risk_level']}"
+        assert (
+            result["risk_level"] == "low"
+        ), f"예상 위험 수준: low, 실제: {result['risk_level']}"
 
         # 의사결정 확인
-        assert result["decision"] == "approve", f"예상 결정: approve, 실제: {result['decision']}"
+        assert (
+            result["decision"] == "approve"
+        ), f"예상 결정: approve, 실제: {result['decision']}"
 
         # 평가 시간 확인 (100ms 이내)
         eval_time = result["evaluation_metadata"]["evaluation_time_ms"]
@@ -122,23 +124,19 @@ def test_high_amount_transaction_should_be_low_risk():
         "currency": "KRW",
         "ip_address": "211.234.56.78",
         "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0",
-        "device_fingerprint": {
-            "device_type": "desktop",
-            "os": None,
-            "browser": None
-        },
+        "device_fingerprint": {"device_type": "desktop", "os": None, "browser": None},
         "shipping_info": {
             "name": "홍길동",
             "address": "서울특별시 강남구 테헤란로 123",
-            "phone": "010-1234-5678"
+            "phone": "010-1234-5678",
         },
         "payment_info": {
             "method": "credit_card",
             "card_bin": "541234",
-            "card_last_four": "5678"
+            "card_last_four": "5678",
         },
         "session_context": None,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     from fastapi.testclient import TestClient
@@ -148,9 +146,7 @@ def test_high_amount_transaction_should_be_low_risk():
         headers = {"X-Service-Token": "dev-service-token-12345"}
 
         response = client.post(
-            "/internal/fds/evaluate",
-            json=request_data,
-            headers=headers
+            "/internal/fds/evaluate", json=request_data, headers=headers
         )
 
         assert response.status_code == 200
@@ -190,23 +186,19 @@ def test_unknown_device_should_be_low_risk():
         "currency": "KRW",
         "ip_address": "211.234.56.78",
         "user_agent": "UnknownBot/1.0",
-        "device_fingerprint": {
-            "device_type": "unknown",
-            "os": None,
-            "browser": None
-        },
+        "device_fingerprint": {"device_type": "unknown", "os": None, "browser": None},
         "shipping_info": {
             "name": "홍길동",
             "address": "서울특별시 강남구 테헤란로 123",
-            "phone": "010-1234-5678"
+            "phone": "010-1234-5678",
         },
         "payment_info": {
             "method": "credit_card",
             "card_bin": "541234",
-            "card_last_four": "5678"
+            "card_last_four": "5678",
         },
         "session_context": None,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     from fastapi.testclient import TestClient
@@ -216,9 +208,7 @@ def test_unknown_device_should_be_low_risk():
         headers = {"X-Service-Token": "dev-service-token-12345"}
 
         response = client.post(
-            "/internal/fds/evaluate",
-            json=request_data,
-            headers=headers
+            "/internal/fds/evaluate", json=request_data, headers=headers
         )
 
         assert response.status_code == 200

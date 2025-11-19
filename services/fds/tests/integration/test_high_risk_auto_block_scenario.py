@@ -81,9 +81,7 @@ class TestHighRiskAutoBlockScenario:
         )
 
         # === Act: FDS 평가 실행 ===
-        with patch(
-            "src.engines.evaluation_engine.CTIConnector"
-        ) as MockCTIConnector:
+        with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
             # CTI 커넥터 인스턴스 모킹
             mock_cti_instance = AsyncMock()
             mock_cti_instance.check_ip_threat.return_value = cti_result
@@ -121,9 +119,7 @@ class TestHighRiskAutoBlockScenario:
         malicious_ip_factor = next(
             (rf for rf in risk_factors if rf.factor_type == "suspicious_ip"), None
         )
-        assert (
-            malicious_ip_factor is not None
-        ), "위험 요인에 악성 IP가 포함되어야 합니다"
+        assert malicious_ip_factor is not None, "위험 요인에 악성 IP가 포함되어야 합니다"
         assert (
             malicious_ip_factor.factor_score >= 80
         ), f"악성 IP 요인 점수는 80+ 이어야 하지만, 실제: {malicious_ip_factor.factor_score}"

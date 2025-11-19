@@ -103,9 +103,15 @@ class TestFullFDSEvaluationFlow:
         print(f"  - 의사결정: {result.decision.value}")
         print(f"  - 평가 시간: {result.evaluation_metadata.evaluation_time_ms}ms")
 
-        assert result.risk_score <= 30, f"정상 거래는 저위험(0-30점)이어야 하지만, 실제: {result.risk_score}"
-        assert result.risk_level.value == "low", f"위험 수준은 low여야 하지만, 실제: {result.risk_level.value}"
-        assert result.decision.value == "approve", f"의사결정은 approve여야 하지만, 실제: {result.decision.value}"
+        assert (
+            result.risk_score <= 30
+        ), f"정상 거래는 저위험(0-30점)이어야 하지만, 실제: {result.risk_score}"
+        assert (
+            result.risk_level.value == "low"
+        ), f"위험 수준은 low여야 하지만, 실제: {result.risk_level.value}"
+        assert (
+            result.decision.value == "approve"
+        ), f"의사결정은 approve여야 하지만, 실제: {result.decision.value}"
 
         # Transaction 저장
         transaction = Transaction(
@@ -202,9 +208,15 @@ class TestFullFDSEvaluationFlow:
         print(f"  - 의사결정: {result.decision.value}")
         print(f"  - 평가 시간: {result.evaluation_metadata.evaluation_time_ms}ms")
 
-        assert 40 <= result.risk_score <= 70, f"고액 거래는 중간 위험(40-70점)이어야 하지만, 실제: {result.risk_score}"
-        assert result.risk_level.value == "medium", f"위험 수준은 medium이어야 하지만, 실제: {result.risk_level.value}"
-        assert result.decision.value == "additional_auth_required", f"의사결정은 additional_auth_required여야 하지만, 실제: {result.decision.value}"
+        assert (
+            40 <= result.risk_score <= 70
+        ), f"고액 거래는 중간 위험(40-70점)이어야 하지만, 실제: {result.risk_score}"
+        assert (
+            result.risk_level.value == "medium"
+        ), f"위험 수준은 medium이어야 하지만, 실제: {result.risk_level.value}"
+        assert (
+            result.decision.value == "additional_auth_required"
+        ), f"의사결정은 additional_auth_required여야 하지만, 실제: {result.decision.value}"
 
         # Transaction 저장
         transaction = Transaction(
@@ -303,9 +315,15 @@ class TestFullFDSEvaluationFlow:
         print(f"  - 평가 시간: {result.evaluation_metadata.evaluation_time_ms}ms")
         print(f"  - CTI 체크 시간: {result.evaluation_metadata.cti_check_time_ms}ms")
 
-        assert result.risk_score >= 80, f"악성 IP는 고위험(80+점)이어야 하지만, 실제: {result.risk_score}"
-        assert result.risk_level.value == "high", f"위험 수준은 high여야 하지만, 실제: {result.risk_level.value}"
-        assert result.decision.value == "blocked", f"의사결정은 blocked여야 하지만, 실제: {result.decision.value}"
+        assert (
+            result.risk_score >= 80
+        ), f"악성 IP는 고위험(80+점)이어야 하지만, 실제: {result.risk_score}"
+        assert (
+            result.risk_level.value == "high"
+        ), f"위험 수준은 high여야 하지만, 실제: {result.risk_level.value}"
+        assert (
+            result.decision.value == "blocked"
+        ), f"의사결정은 blocked여야 하지만, 실제: {result.decision.value}"
 
         # Transaction 저장
         transaction = Transaction(
@@ -441,10 +459,14 @@ class TestFullFDSEvaluationFlow:
         print(f"  - 위험 요인 개수: {len(second_result.risk_factors)}")
 
         for factor in second_result.risk_factors:
-            print(f"    - {factor.factor_type}: {factor.factor_score}점 - {factor.description}")
+            print(
+                f"    - {factor.factor_type}: {factor.factor_score}점 - {factor.description}"
+            )
 
         # 고액 거래 + Velocity Check = 80점 이상
-        assert second_result.risk_score >= 80, f"복합 위험 요인은 고위험(80+점)이어야 하지만, 실제: {second_result.risk_score}"
+        assert (
+            second_result.risk_score >= 80
+        ), f"복합 위험 요인은 고위험(80+점)이어야 하지만, 실제: {second_result.risk_score}"
         assert second_result.decision.value == "blocked"
         assert len(second_result.risk_factors) >= 2, "위험 요인이 2개 이상이어야 합니다"
 
@@ -504,7 +526,9 @@ class TestFullFDSEvaluationFlow:
         evaluation_times = []
 
         for i in range(10):  # 10회 반복 측정
-            with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
+            with patch(
+                "src.engines.evaluation_engine.CTIConnector"
+            ) as MockCTIConnector:
                 mock_cti_instance = AsyncMock()
                 mock_cti_instance.check_ip_threat.return_value = cti_result
                 MockCTIConnector.return_value = mock_cti_instance
@@ -650,7 +674,9 @@ class TestFullFDSEvaluationFlow:
 
         # ReviewQueue 조회
         pending_reviews = await review_queue_service.get_pending_reviews()
-        matching_reviews = [r for r in pending_reviews if r.transaction_id == transaction_id]
+        matching_reviews = [
+            r for r in pending_reviews if r.transaction_id == transaction_id
+        ]
         assert len(matching_reviews) == 1
 
         print("  [OK] 데이터베이스 일관성 검증 완료")

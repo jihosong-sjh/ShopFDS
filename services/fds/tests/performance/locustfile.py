@@ -103,9 +103,7 @@ class FDSUser(HttpUser):
                             response.success()
                             performance_metrics["success_requests"] += 1
                         else:
-                            response.failure(
-                                f"예상치 못한 위험 점수: {result['risk_score']}"
-                            )
+                            response.failure(f"예상치 못한 위험 점수: {result['risk_score']}")
                             performance_metrics["failed_requests"] += 1
                     else:
                         response.failure("응답에 필수 필드 누락")
@@ -155,15 +153,10 @@ class FDSUser(HttpUser):
                 try:
                     result = response.json()
                     # 고액 거래는 중간 위험 점수 예상
-                    if (
-                        "risk_score" in result
-                        and 40 <= result["risk_score"] <= 70
-                    ):
+                    if "risk_score" in result and 40 <= result["risk_score"] <= 70:
                         response.success()
                     else:
-                        response.failure(
-                            f"예상 범위 밖의 위험 점수: {result.get('risk_score')}"
-                        )
+                        response.failure(f"예상 범위 밖의 위험 점수: {result.get('risk_score')}")
                 except json.JSONDecodeError:
                     response.failure("JSON 파싱 실패")
             else:
