@@ -181,8 +181,8 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T076 [P] [US4] OAuth 로그인 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_oauth.py
-- [ ] T077 [P] [US4] 위시리스트 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/wishlist.spec.ts
+- [X] T076 [P] [US4] OAuth 로그인 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_oauth.py
+- [X] T077 [P] [US4] 위시리스트 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/wishlist.spec.ts
 
 ### Backend Implementation for User Story 4
 
