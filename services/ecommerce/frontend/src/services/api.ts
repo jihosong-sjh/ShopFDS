@@ -29,7 +29,7 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터: 에러 처리
+// 응답 인터셉터: 에러 처리 (개선된 버전)
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -75,6 +75,43 @@ apiClient.interceptors.response.use(
     // 네트워크 에러 처리
     if (!error.response) {
       console.error('[NETWORK ERROR] Unable to reach server');
+
+      // 토스트 알림 (전역 에러 핸들러)
+      if (typeof window !== 'undefined' && (window as any).showToast) {
+        (window as any).showToast('error', '서버에 연결할 수 없습니다. 네트워크를 확인해주세요.');
+      }
+    }
+
+    // 403 Forbidden: 권한 없음
+    if (error.response?.status === 403) {
+      console.error('[ACCESS DENIED] Insufficient permissions');
+      if (typeof window !== 'undefined' && (window as any).showToast) {
+        (window as any).showToast('error', '접근 권한이 없습니다.');
+      }
+    }
+
+    // 404 Not Found
+    if (error.response?.status === 404) {
+      console.error('[NOT FOUND] Resource not found');
+      if (typeof window !== 'undefined' && (window as any).showToast) {
+        (window as any).showToast('error', '요청한 리소스를 찾을 수 없습니다.');
+      }
+    }
+
+    // 429 Too Many Requests: Rate Limiting
+    if (error.response?.status === 429) {
+      console.error('[RATE LIMIT] Too many requests');
+      if (typeof window !== 'undefined' && (window as any).showToast) {
+        (window as any).showToast('warning', '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.');
+      }
+    }
+
+    // 500 Internal Server Error
+    if (error.response?.status && error.response.status >= 500) {
+      console.error('[SERVER ERROR] Internal server error');
+      if (typeof window !== 'undefined' && (window as any).showToast) {
+        (window as any).showToast('error', '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
     }
 
     return Promise.reject(error);

@@ -68,13 +68,60 @@ async def lifespan(app: FastAPI):
 
 # FastAPI 애플리케이션 인스턴스
 app = FastAPI(
-    title="이커머스 플랫폼 API",
-    description="FDS 통합 이커머스 플랫폼 - 실시간 사기 거래 탐지 시스템",
+    title="ShopFDS - 이커머스 플랫폼 API",
+    description="""
+## FDS 통합 이커머스 플랫폼
+
+AI/ML 기반 실시간 사기 거래 탐지 시스템이 통합된 전자상거래 플랫폼입니다.
+
+### 주요 기능
+
+- [OK] **인증 및 권한 관리**: JWT 기반 인증, OAuth 2.0 소셜 로그인 (Google, Kakao, Naver)
+- [OK] **상품 관리**: 상품 조회, 검색, 자동완성, 추천 시스템
+- [OK] **리뷰 시스템**: 별점, 사진 리뷰, 도움돼요 투표
+- [OK] **장바구니 & 주문**: 실시간 FDS 평가, OTP 추가 인증
+- [OK] **쿠폰 시스템**: 할인 쿠폰 발급 및 적용
+- [OK] **위시리스트**: 관심 상품 저장 및 관리
+- [OK] **배송지 관리**: 다중 배송지, 기본 배송지 설정
+- [OK] **푸시 알림**: 주문 상태 변경 알림 (FCM)
+- [OK] **관리자 대시보드**: 상품, 주문, 회원, 매출 통계
+
+### 성능 지표
+
+- FDS 평가: P95 100ms 이하
+- API 응답: P95 200ms 이하
+- 동시 사용자: 10,000 DAU 지원
+
+### 보안
+
+- PCI-DSS 준수 (결제 정보 토큰화)
+- OWASP Top 10 대응
+- Rate Limiting 적용
+- 민감 정보 자동 마스킹
+
+### 기술 스택
+
+- **Backend**: Python 3.11+, FastAPI 0.104+
+- **Database**: PostgreSQL 15+, Redis 7+
+- **ML**: scikit-learn, LightGBM
+- **Monitoring**: Prometheus, Grafana, Sentry
+    """,
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
     lifespan=lifespan,
+    contact={
+        "name": "ShopFDS Team",
+        "email": "support@shopfds.com",
+    },
+    license_info={
+        "name": "MIT License",
+    },
+    servers=[
+        {"url": "http://localhost:8000", "description": "Development server"},
+        {"url": "https://api.shopfds.com", "description": "Production server"},
+    ],
 )
 
 

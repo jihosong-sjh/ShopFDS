@@ -307,25 +307,25 @@
 
 **목적**: 여러 User Story에 영향을 미치는 개선 작업
 
-- [ ] T139 [P] 다크 모드 구현 (Tailwind CSS, Zustand) in services/ecommerce/frontend/src/stores/themeStore.ts
-- [ ] T140 [P] 다크 모드 토글 컴포넌트 in services/ecommerce/frontend/src/components/ThemeToggle.tsx
-- [ ] T141 [US7] 접근성 개선 (ARIA 속성, 시맨틱 HTML) 전체 컴포넌트 리뷰
-- [ ] T142 [US7] 키보드 네비게이션 지원 (Tab, Enter, Esc) 전체 인터랙티브 요소
-- [ ] T143 [P] 성능 최적화: 코드 스플리팅 (React.lazy) in services/ecommerce/frontend/src/App.tsx
-- [ ] T144 [P] 성능 최적화: 가상 스크롤 (react-window) 긴 상품 목록
-- [ ] T145 [P] 에러 바운더리 컴포넌트 구현 in services/ecommerce/frontend/src/components/ErrorBoundary.tsx
-- [ ] T146 [P] 스켈레톤 스크린 로더 구현 in services/ecommerce/frontend/src/components/SkeletonLoader.tsx
-- [ ] T147 [P] 토스트 알림 시스템 구현 in services/ecommerce/frontend/src/components/Toast.tsx
-- [ ] T148 [P] 모달 공통 컴포넌트 개선 (포커스 트랩, ESC 키) in services/ecommerce/frontend/src/components/Modal.tsx
-- [ ] T149 [P] API 에러 핸들링 인터셉터 in services/ecommerce/frontend/src/services/api.ts
-- [ ] T150 [P] 백엔드 로깅 개선 (구조화된 로그, 민감 정보 마스킹) in services/ecommerce/backend/src/utils/logger.py
-- [ ] T151 [P] 프론트엔드 Sentry 에러 트래킹 설정 in services/ecommerce/frontend/src/main.tsx
-- [ ] T152 [P] Web Vitals 측정 및 리포팅 in services/ecommerce/frontend/src/utils/webVitals.ts
-- [ ] T153 [P] API 문서 업데이트 (Swagger UI) in services/ecommerce/backend/src/main.py
-- [ ] T154 코드 리뷰 및 리팩토링 (중복 제거, 타입 안전성 개선)
-- [ ] T155 보안 강화 (CSRF 토큰, XSS 방지, Rate Limiting)
-- [ ] T156 quickstart.md 검증 및 업데이트 in specs/004-frontend-ux-enhancement/quickstart.md
-- [ ] T157 README.md 업데이트 (기능 목록, 스크린샷) in README.md
+- [X] T139 [P] 다크 모드 구현 (Tailwind CSS, Zustand) in services/ecommerce/frontend/src/stores/themeStore.ts
+- [X] T140 [P] 다크 모드 토글 컴포넌트 in services/ecommerce/frontend/src/components/ThemeToggle.tsx
+- [X] T141 [US7] 접근성 개선 (ARIA 속성, 시맨틱 HTML) 전체 컴포넌트 리뷰
+- [X] T142 [US7] 키보드 네비게이션 지원 (Tab, Enter, Esc) 전체 인터랙티브 요소
+- [X] T143 [P] 성능 최적화: 코드 스플리팅 (React.lazy) in services/ecommerce/frontend/src/App.tsx
+- [X] T144 [P] 성능 최적화: 가상 스크롤 (react-window) 긴 상품 목록
+- [X] T145 [P] 에러 바운더리 컴포넌트 구현 in services/ecommerce/frontend/src/components/ErrorBoundary.tsx
+- [X] T146 [P] 스켈레톤 스크린 로더 구현 in services/ecommerce/frontend/src/components/SkeletonLoader.tsx
+- [X] T147 [P] 토스트 알림 시스템 구현 in services/ecommerce/frontend/src/components/Toast.tsx
+- [X] T148 [P] 모달 공통 컴포넌트 개선 (포커스 트랩, ESC 키) in services/ecommerce/frontend/src/components/Modal.tsx
+- [X] T149 [P] API 에러 핸들링 인터셉터 in services/ecommerce/frontend/src/services/api.ts
+- [X] T150 [P] 백엔드 로깅 개선 (구조화된 로그, 민감 정보 마스킹) in services/ecommerce/backend/src/utils/logger.py
+- [X] T151 [P] 프론트엔드 Sentry 에러 트래킹 설정 in services/ecommerce/frontend/src/main.tsx
+- [X] T152 [P] Web Vitals 측정 및 리포팅 in services/ecommerce/frontend/src/utils/webVitals.ts
+- [X] T153 [P] API 문서 업데이트 (Swagger UI) in services/ecommerce/backend/src/main.py
+- [X] T154 코드 리뷰 및 리팩토링 (중복 제거, 타입 안전성 개선)
+- [X] T155 보안 강화 (CSRF 토큰, XSS 방지, Rate Limiting)
+- [X] T156 quickstart.md 검증 및 업데이트 in specs/004-frontend-ux-enhancement/quickstart.md
+- [X] T157 README.md 업데이트 (기능 목록, 스크린샷) in README.md
 
 ---
 
