@@ -80,13 +80,16 @@ def mock_redis():
     return mock
 
 
-@pytest_asyncio.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function", autouse=False)
 async def async_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """
     Create an async HTTP client for testing FastAPI endpoints.
     Override the database dependency to use the test database.
     """
     from src.models.base import get_db
+
+    # Clear any existing overrides before setting new ones
+    app.dependency_overrides.clear()
 
     async def override_get_db():
         yield db_session
@@ -122,8 +125,8 @@ async def test_user(db_session: AsyncSession):
     return user
 
 
-@pytest.fixture(scope="function")
-def auth_headers(test_user: User) -> dict:
+@pytest_asyncio.fixture(scope="function")
+async def auth_headers(test_user: User) -> dict:
     """
     Create mock authentication headers for testing.
 
