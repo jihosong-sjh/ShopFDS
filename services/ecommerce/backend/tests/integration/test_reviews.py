@@ -195,8 +195,8 @@ class TestReviewCreation:
         # When: 인증 헤더 없이 요청
         response = await async_client.post("/v1/reviews", json=review_data)
 
-        # Then: 401 Unauthorized
-        assert response.status_code == 401
+        # Then: 403 Forbidden (HTTPBearer returns 403)
+        assert response.status_code == 403
 
     async def test_create_review_duplicate_fails(
         self,

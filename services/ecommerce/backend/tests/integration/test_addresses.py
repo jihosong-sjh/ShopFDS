@@ -41,8 +41,8 @@ class TestAddressListing:
         # When: Request without auth headers
         response = await async_client.get("/v1/addresses")
 
-        # Then: Unauthorized error
-        assert response.status_code == 401
+        # Then: Forbidden error (HTTPBearer returns 403)
+        assert response.status_code == 403
 
 
 @pytest.mark.asyncio

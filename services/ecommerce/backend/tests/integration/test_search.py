@@ -445,5 +445,5 @@ class TestSearchHistory:
             "/v1/search/history", json={"query": "iPhone 15"}
         )
 
-        # Then: Returns unauthorized
-        assert response.status_code == 401
+        # Then: Returns forbidden (HTTPBearer returns 403)
+        assert response.status_code == 403

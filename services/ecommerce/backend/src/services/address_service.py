@@ -38,7 +38,7 @@ class AddressService:
 
         return [
             {
-                "id": addr.id,
+                "id": str(addr.id),
                 "address_name": addr.address_name,
                 "recipient_name": addr.recipient_name,
                 "phone": addr.phone,
