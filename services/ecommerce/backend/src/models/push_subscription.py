@@ -8,8 +8,7 @@ Firebase Cloud Messaging (FCM) 기반 푸시 알림을 위한 구독 관리.
 from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import Column, String, Text, TIMESTAMP, ForeignKey, Index
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy import Column, String, Text, TIMESTAMP, ForeignKey, Index, Uuid
 from sqlalchemy.orm import relationship
 
 from src.models.base import Base
@@ -20,9 +19,9 @@ class PushSubscription(Base):
 
     __tablename__ = "push_subscriptions"
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid4)
     user_id = Column(
-        PG_UUID(as_uuid=True),
+        Uuid,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
