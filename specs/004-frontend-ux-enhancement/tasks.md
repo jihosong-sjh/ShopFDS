@@ -186,35 +186,35 @@
 
 ### Backend Implementation for User Story 4
 
-- [ ] T078 [P] [US4] OAuthAccount 모델 생성 in services/ecommerce/backend/src/models/oauth_account.py
-- [ ] T079 [P] [US4] WishlistItem 모델 생성 in services/ecommerce/backend/src/models/wishlist_item.py
-- [ ] T080 [US4] OAuth 서비스 로직 구현 (Google, Kakao, Naver) in services/ecommerce/backend/src/services/oauth_service.py
-- [ ] T081 [US4] 위시리스트 서비스 로직 구현 in services/ecommerce/backend/src/services/wishlist_service.py
-- [ ] T082 [US4] Google OAuth 로그인 API (GET /v1/auth/oauth/google, callback) in services/ecommerce/backend/src/api/oauth.py
-- [ ] T083 [P] [US4] Kakao OAuth 로그인 API (GET /v1/auth/oauth/kakao, callback) in services/ecommerce/backend/src/api/oauth.py
-- [ ] T084 [P] [US4] Naver OAuth 로그인 API (GET /v1/auth/oauth/naver, callback) in services/ecommerce/backend/src/api/oauth.py
-- [ ] T085 [US4] 위시리스트 조회 API (GET /v1/wishlist) in services/ecommerce/backend/src/api/wishlist.py
-- [ ] T086 [P] [US4] 위시리스트 추가 API (POST /v1/wishlist) in services/ecommerce/backend/src/api/wishlist.py
-- [ ] T087 [P] [US4] 위시리스트 삭제 API (DELETE /v1/wishlist/{id}) in services/ecommerce/backend/src/api/wishlist.py
-- [ ] T088 [P] [US4] 위시리스트 일괄 장바구니 담기 API (POST /v1/wishlist/move-to-cart) in services/ecommerce/backend/src/api/wishlist.py
-- [ ] T089 [US4] 추천 상품 API (GET /v1/recommendations/for-you) in services/ecommerce/backend/src/api/recommendations.py
-- [ ] T090 [P] [US4] 최근 본 상품 조회 API (GET /v1/recommendations/recently-viewed) in services/ecommerce/backend/src/api/recommendations.py
-- [ ] T091 [P] [US4] 최근 본 상품 저장 API (POST /v1/recommendations/recently-viewed) in services/ecommerce/backend/src/api/recommendations.py
-- [ ] T092 [P] [US4] 연관 상품 조회 API (GET /v1/products/{id}/related) in services/ecommerce/backend/src/api/products.py
-- [ ] T093 [US4] FastAPI 메인 앱에 OAuth, 위시리스트, 추천 라우터 등록 in services/ecommerce/backend/src/main.py
+- [X] T078 [P] [US4] OAuthAccount 모델 생성 in services/ecommerce/backend/src/models/oauth_account.py
+- [X] T079 [P] [US4] WishlistItem 모델 생성 in services/ecommerce/backend/src/models/wishlist_item.py
+- [X] T080 [US4] OAuth 서비스 로직 구현 (Google, Kakao, Naver) in services/ecommerce/backend/src/services/oauth_service.py
+- [X] T081 [US4] 위시리스트 서비스 로직 구현 in services/ecommerce/backend/src/services/wishlist_service.py
+- [X] T082 [US4] Google OAuth 로그인 API (GET /v1/auth/oauth/google, callback) in services/ecommerce/backend/src/api/oauth.py
+- [X] T083 [P] [US4] Kakao OAuth 로그인 API (GET /v1/auth/oauth/kakao, callback) in services/ecommerce/backend/src/api/oauth.py
+- [X] T084 [P] [US4] Naver OAuth 로그인 API (GET /v1/auth/oauth/naver, callback) in services/ecommerce/backend/src/api/oauth.py
+- [X] T085 [US4] 위시리스트 조회 API (GET /v1/wishlist) in services/ecommerce/backend/src/api/wishlist.py
+- [X] T086 [P] [US4] 위시리스트 추가 API (POST /v1/wishlist) in services/ecommerce/backend/src/api/wishlist.py
+- [X] T087 [P] [US4] 위시리스트 삭제 API (DELETE /v1/wishlist/{id}) in services/ecommerce/backend/src/api/wishlist.py
+- [X] T088 [P] [US4] 위시리스트 일괄 장바구니 담기 API (POST /v1/wishlist/move-to-cart) in services/ecommerce/backend/src/api/wishlist.py
+- [X] T089 [US4] 추천 상품 API (GET /v1/recommendations/for-you) in services/ecommerce/backend/src/api/recommendations.py
+- [X] T090 [P] [US4] 최근 본 상품 조회 API (GET /v1/recommendations/recently-viewed) in services/ecommerce/backend/src/api/recommendations.py
+- [X] T091 [P] [US4] 최근 본 상품 저장 API (POST /v1/recommendations/recently-viewed) in services/ecommerce/backend/src/api/recommendations.py
+- [X] T092 [P] [US4] 연관 상품 조회 API (GET /v1/products/{id}/related) in services/ecommerce/backend/src/api/products.py
+- [X] T093 [US4] FastAPI 메인 앱에 OAuth, 위시리스트, 추천 라우터 등록 in services/ecommerce/backend/src/main.py
 
 ### Frontend Implementation for User Story 4
 
-- [ ] T094 [P] [US4] GoogleLogin 컴포넌트 구현 (@react-oauth/google) in services/ecommerce/frontend/src/components/GoogleLogin.tsx
-- [ ] T095 [P] [US4] KakaoLogin 컴포넌트 구현 in services/ecommerce/frontend/src/components/KakaoLogin.tsx
-- [ ] T096 [P] [US4] NaverLogin 컴포넌트 구현 in services/ecommerce/frontend/src/components/NaverLogin.tsx
-- [ ] T097 [US4] 로그인 페이지 업데이트 (소셜 로그인 버튼 추가) in services/ecommerce/frontend/src/pages/LoginPage.tsx
-- [ ] T098 [US4] useAuth Hook 업데이트 (OAuth 로그인 처리) in services/ecommerce/frontend/src/hooks/useAuth.ts
-- [ ] T099 [US4] useWishlist Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useWishlist.ts
-- [ ] T100 [US4] WishlistPage 구현 in services/ecommerce/frontend/src/pages/WishlistPage.tsx
-- [ ] T101 [US4] WishlistButton 컴포넌트 구현 (하트 아이콘 토글) in services/ecommerce/frontend/src/components/WishlistButton.tsx
-- [ ] T102 [US4] RecommendedProducts 컴포넌트 구현 (홈 페이지) in services/ecommerce/frontend/src/components/RecommendedProducts.tsx
-- [ ] T103 [US4] RelatedProducts 컴포넌트 구현 (상품 상세 페이지) in services/ecommerce/frontend/src/components/RelatedProducts.tsx
+- [X] T094 [P] [US4] GoogleLogin 컴포넌트 구현 (@react-oauth/google) in services/ecommerce/frontend/src/components/GoogleLogin.tsx
+- [X] T095 [P] [US4] KakaoLogin 컴포넌트 구현 in services/ecommerce/frontend/src/components/KakaoLogin.tsx
+- [X] T096 [P] [US4] NaverLogin 컴포넌트 구현 in services/ecommerce/frontend/src/components/NaverLogin.tsx
+- [X] T097 [US4] 로그인 페이지 업데이트 (소셜 로그인 버튼 추가) in services/ecommerce/frontend/src/pages/LoginPage.tsx
+- [X] T098 [US4] useAuth Hook 업데이트 (OAuth 로그인 처리) in services/ecommerce/frontend/src/hooks/useAuth.ts
+- [X] T099 [US4] useWishlist Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useWishlist.ts
+- [X] T100 [US4] WishlistPage 구현 in services/ecommerce/frontend/src/pages/WishlistPage.tsx
+- [X] T101 [US4] WishlistButton 컴포넌트 구현 (하트 아이콘 토글) in services/ecommerce/frontend/src/components/WishlistButton.tsx
+- [X] T102 [US4] RecommendedProducts 컴포넌트 구현 (홈 페이지) in services/ecommerce/frontend/src/components/RecommendedProducts.tsx
+- [X] T103 [US4] RelatedProducts 컴포넌트 구현 (상품 상세 페이지) in services/ecommerce/frontend/src/components/RelatedProducts.tsx
 
 **Checkpoint**: User Story 1-4 모두 독립적으로 동작
 

@@ -26,6 +26,9 @@ from src.api.orders import router as orders_router
 from src.api.search import router as search_router
 from src.api.reviews import router as reviews_router
 from src.api.coupons import router as coupons_router
+from src.api.oauth import router as oauth_router
+from src.api.wishlist import router as wishlist_router
+from src.api.recommendations import router as recommendations_router
 
 # Admin API 라우터
 from src.api.admin.products import router as admin_products_router
@@ -171,6 +174,9 @@ app.include_router(orders_router)
 app.include_router(search_router)
 app.include_router(reviews_router)
 app.include_router(coupons_router)
+app.include_router(oauth_router)
+app.include_router(wishlist_router)
+app.include_router(recommendations_router)
 
 # Admin 라우터 등록
 app.include_router(admin_products_router)
