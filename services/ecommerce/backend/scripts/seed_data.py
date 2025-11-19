@@ -346,6 +346,110 @@ async def create_carts(session: AsyncSession, users: dict, products: list) -> No
     print("[SUCCESS] 장바구니 데이터 생성 완료")
 
 
+async def create_coupons(session: AsyncSession) -> None:
+    """쿠폰 샘플 데이터 생성"""
+    print("[INFO] 쿠폰 데이터 생성 중...")
+
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    coupons_data = [
+        {
+            'coupon_code': 'WELCOME2025',
+            'coupon_name': '신규 회원 환영 쿠폰',
+            'description': '신규 회원 가입 시 제공되는 환영 쿠폰',
+            'discount_type': 'FIXED',
+            'discount_value': Decimal('10000.00'),
+            'max_discount_amount': None,
+            'min_purchase_amount': Decimal('50000.00'),
+            'valid_from': now,
+            'valid_until': now + timedelta(days=365),
+            'max_usage_count': None,
+            'max_usage_per_user': 1,
+            'current_usage_count': 0,
+            'is_active': True,
+        },
+        {
+            'coupon_code': 'PERCENT10',
+            'coupon_name': '10% 할인 쿠폰',
+            'description': '전 상품 10% 할인 (최대 5만원)',
+            'discount_type': 'PERCENT',
+            'discount_value': Decimal('10.00'),
+            'max_discount_amount': Decimal('50000.00'),
+            'min_purchase_amount': Decimal('30000.00'),
+            'valid_from': now,
+            'valid_until': now + timedelta(days=30),
+            'max_usage_count': 1000,
+            'max_usage_per_user': 3,
+            'current_usage_count': 0,
+            'is_active': True,
+        },
+        {
+            'coupon_code': 'SPRING5000',
+            'coupon_name': '봄맞이 5천원 할인',
+            'description': '봄맞이 이벤트 쿠폰',
+            'discount_type': 'FIXED',
+            'discount_value': Decimal('5000.00'),
+            'max_discount_amount': None,
+            'min_purchase_amount': Decimal('20000.00'),
+            'valid_from': now,
+            'valid_until': now + timedelta(days=60),
+            'max_usage_count': 5000,
+            'max_usage_per_user': 2,
+            'current_usage_count': 0,
+            'is_active': True,
+        },
+        {
+            'coupon_code': 'VIP20',
+            'coupon_name': 'VIP 회원 20% 할인',
+            'description': 'VIP 회원 전용 20% 할인 쿠폰 (최대 10만원)',
+            'discount_type': 'PERCENT',
+            'discount_value': Decimal('20.00'),
+            'max_discount_amount': Decimal('100000.00'),
+            'min_purchase_amount': Decimal('100000.00'),
+            'valid_from': now,
+            'valid_until': now + timedelta(days=90),
+            'max_usage_count': 100,
+            'max_usage_per_user': 1,
+            'current_usage_count': 0,
+            'is_active': True,
+        },
+        {
+            'coupon_code': 'FREESHIP',
+            'coupon_name': '무료 배송 쿠폰',
+            'description': '3만원 이상 구매 시 무료 배송',
+            'discount_type': 'FIXED',
+            'discount_value': Decimal('3000.00'),
+            'max_discount_amount': None,
+            'min_purchase_amount': Decimal('30000.00'),
+            'valid_from': now,
+            'valid_until': now + timedelta(days=180),
+            'max_usage_count': None,
+            'max_usage_per_user': 5,
+            'current_usage_count': 0,
+            'is_active': True,
+        },
+    ]
+
+    # 쿠폰 생성
+    for coupon in coupons_data:
+        insert_query = text("""
+            INSERT INTO coupons (
+                coupon_code, coupon_name, description, discount_type,
+                discount_value, max_discount_amount, min_purchase_amount,
+                valid_from, valid_until, max_usage_count,
+                max_usage_per_user, current_usage_count, is_active
+            ) VALUES (
+                :coupon_code, :coupon_name, :description, :discount_type,
+                :discount_value, :max_discount_amount, :min_purchase_amount,
+                :valid_from, :valid_until, :max_usage_count,
+                :max_usage_per_user, :current_usage_count, :is_active
+            )
+        """)
+        await session.execute(insert_query, coupon)
+
+    await session.commit()
+    print(f"[SUCCESS] {len(coupons_data)} 개 쿠폰 생성 완료")
+
+
 async def main():
     """메인 실행 함수"""
     print("[START] 시드 데이터 생성 시작")
@@ -376,7 +480,9 @@ async def main():
                 await session.execute(text("DELETE FROM carts"))
                 await session.execute(text("DELETE FROM order_items"))
                 await session.execute(text("DELETE FROM payments"))
+                await session.execute(text("DELETE FROM user_coupons"))
                 await session.execute(text("DELETE FROM orders"))
+                await session.execute(text("DELETE FROM coupons"))
                 await session.execute(text("DELETE FROM products"))
                 await session.execute(text("DELETE FROM users"))
                 await session.commit()
@@ -385,6 +491,7 @@ async def main():
             # 데이터 생성
             users = await create_users(session)
             products = await create_products(session)
+            await create_coupons(session)
             await create_sample_orders(session, users, products)
             await create_carts(session, users, products)
 
