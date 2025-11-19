@@ -13,7 +13,6 @@ from decimal import Decimal
 
 from src.models.user import User
 from src.models.product import Product
-from src.models.cart_item import CartItem
 
 
 @pytest.mark.asyncio
