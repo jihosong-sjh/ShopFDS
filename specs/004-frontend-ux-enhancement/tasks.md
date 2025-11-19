@@ -144,19 +144,19 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T058 [P] [US3] 쿠폰 적용 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_coupons.py
-- [ ] T059 [P] [US3] 체크아웃 프로세스 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/checkout.spec.ts
+- [X] T058 [P] [US3] 쿠폰 적용 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_coupons.py
+- [X] T059 [P] [US3] 체크아웃 프로세스 E2E 테스트 (Playwright) in services/ecommerce/frontend/tests/e2e/checkout.spec.ts
 
 ### Backend Implementation for User Story 3
 
-- [ ] T060 [P] [US3] Coupon 모델 생성 in services/ecommerce/backend/src/models/coupon.py
-- [ ] T061 [P] [US3] UserCoupon 모델 생성 in services/ecommerce/backend/src/models/user_coupon.py
+- [X] T060 [P] [US3] Coupon 모델 생성 in services/ecommerce/backend/src/models/coupon.py
+- [X] T061 [P] [US3] UserCoupon 모델 생성 in services/ecommerce/backend/src/models/user_coupon.py
 - [ ] T062 [US3] 쿠폰 서비스 로직 구현 (사용 가능 여부 검증, 할인 금액 계산) in services/ecommerce/backend/src/services/coupon_service.py
-- [ ] T063 [US3] 사용자 쿠폰 목록 조회 API (GET /v1/coupons/me) in services/ecommerce/backend/src/api/coupons.py
-- [ ] T064 [P] [US3] 쿠폰 발급 API (POST /v1/coupons/issue) in services/ecommerce/backend/src/api/coupons.py
-- [ ] T065 [P] [US3] 쿠폰 사용 가능 여부 확인 API (POST /v1/coupons/validate) in services/ecommerce/backend/src/api/coupons.py
-- [ ] T066 [US3] 주문 생성 서비스 업데이트 (쿠폰 적용) in services/ecommerce/backend/src/services/order_service.py
-- [ ] T067 [US3] FastAPI 메인 앱에 쿠폰 라우터 등록 in services/ecommerce/backend/src/main.py
+- [X] T063 [US3] 사용자 쿠폰 목록 조회 API (GET /v1/coupons/me) in services/ecommerce/backend/src/api/coupons.py
+- [X] T064 [P] [US3] 쿠폰 발급 API (POST /v1/coupons/issue) in services/ecommerce/backend/src/api/coupons.py
+- [X] T065 [P] [US3] 쿠폰 사용 가능 여부 확인 API (POST /v1/coupons/validate) in services/ecommerce/backend/src/api/coupons.py
+- [X] T066 [US3] 주문 생성 서비스 업데이트 (쿠폰 적용) in services/ecommerce/backend/src/services/order_service.py
+- [X] T067 [US3] FastAPI 메인 앱에 쿠폰 라우터 등록 in services/ecommerce/backend/src/main.py
 
 ### Frontend Implementation for User Story 3
 

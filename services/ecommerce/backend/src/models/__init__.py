@@ -13,6 +13,8 @@ from .order import Order, OrderItem, OrderStatus
 from .payment import Payment, PaymentMethod, PaymentStatus
 from .review import Review
 from .review_vote import ReviewVote
+from .coupon import Coupon, DiscountType
+from .user_coupon import UserCoupon
 
 __all__ = [
     "Base",
@@ -36,4 +38,7 @@ __all__ = [
     "PaymentStatus",
     "Review",
     "ReviewVote",
+    "Coupon",
+    "DiscountType",
+    "UserCoupon",
 ]

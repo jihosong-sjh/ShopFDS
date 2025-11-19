@@ -67,6 +67,7 @@ class User(Base):
     cart = relationship("Cart", back_populates="user", uselist=False)
     reviews = relationship("Review", back_populates="user", lazy="dynamic")
     review_votes = relationship("ReviewVote", back_populates="user", lazy="dynamic")
+    user_coupons = relationship("UserCoupon", back_populates="user", lazy="dynamic")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, role={self.role})>"
