@@ -109,7 +109,15 @@ async def get_current_user(
     from sqlalchemy import select
     from src.models.user import User
 
-    result = await db.execute(select(User).where(User.id == user_id))
+    from uuid import UUID
+
+    # Convert user_id string to UUID
+    try:
+        user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
+    except ValueError:
+        raise AuthenticationError(detail="잘못된 사용자 ID 형식입니다.")
+
+    result = await db.execute(select(User).where(User.id == user_uuid))
     user = result.scalar_one_or_none()
 
     if user is None:
@@ -304,7 +312,7 @@ async def get_current_user_optional(
             return None
 
         # 데이터베이스에서 사용자 조회
-        result = await db.execute(select(User).where(User.id == user_id))
+        result = await db.execute(select(User).where(User.id == user_uuid))
         user = result.scalar_one_or_none()
 
         if user and user.status == "active":

@@ -13,7 +13,7 @@ from sqlalchemy.orm import selectinload
 from src.models.wishlist_item import WishlistItem
 from src.models.product import Product
 from src.models.cart import Cart
-from src.models.cart_item import CartItem
+from src.models.cart import CartItem
 
 
 class WishlistService:

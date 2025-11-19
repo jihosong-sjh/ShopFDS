@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from src.database import get_db
+from src.models.base import get_db
 from src.services.wishlist_service import WishlistService
 from src.middleware.auth import get_current_user
 from src.models.user import User

@@ -5,7 +5,8 @@ OAuthAccount Model
 """
 
 from sqlalchemy import Column, String, Text, ForeignKey, Enum as SQLEnum, DateTime
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import JSON as JSONB
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid

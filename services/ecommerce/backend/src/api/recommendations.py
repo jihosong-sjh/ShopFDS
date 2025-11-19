@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from pydantic import BaseModel
 
-from src.database import get_db
+from src.models.base import get_db
 from src.models.product import Product
 from src.middleware.auth import get_current_user_optional
 from src.models.user import User

@@ -29,6 +29,7 @@ from src.api.coupons import router as coupons_router
 from src.api.oauth import router as oauth_router
 from src.api.wishlist import router as wishlist_router
 from src.api.recommendations import router as recommendations_router
+from src.api.addresses import router as addresses_router
 
 # Admin API 라우터
 from src.api.admin.products import router as admin_products_router
@@ -177,6 +178,7 @@ app.include_router(coupons_router)
 app.include_router(oauth_router)
 app.include_router(wishlist_router)
 app.include_router(recommendations_router)
+app.include_router(addresses_router)
 
 # Admin 라우터 등록
 app.include_router(admin_products_router)

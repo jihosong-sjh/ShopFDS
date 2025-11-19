@@ -81,14 +81,26 @@ def mock_redis():
 
 
 @pytest_asyncio.fixture(scope="function")
-async def async_client() -> AsyncGenerator[AsyncClient, None]:
+async def async_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """
     Create an async HTTP client for testing FastAPI endpoints.
+    Override the database dependency to use the test database.
     """
+    from src.models.base import get_db
+
+    async def override_get_db():
+        yield db_session
+
+    # Override the dependency
+    app.dependency_overrides[get_db] = override_get_db
+
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
         yield client
+
+    # Clear overrides after test
+    app.dependency_overrides.clear()
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -114,22 +126,25 @@ async def test_user(db_session: AsyncSession):
 def auth_headers(test_user: User) -> dict:
     """
     Create mock authentication headers for testing.
-    
-    Note: This is a simplified version. In production, you would use actual JWT tokens.
+
+    Uses the same SECRET_KEY as the application to generate valid JWT tokens.
     """
     from jose import jwt
     import os
-    from datetime import datetime, timedelta
-    
+    from datetime import datetime, timedelta, timezone
+
+    # Use the same SECRET_KEY as the application
+    secret_key = os.getenv("SECRET_KEY", "your-secret-key-change-in-production-INSECURE")
+
     # Create a JWT token for the test user
     token_data = {
         "sub": str(test_user.id),
         "email": test_user.email,
         "role": test_user.role,
-        "exp": datetime.utcnow() + timedelta(hours=24),
+        "type": "access",
+        "exp": datetime.now(timezone.utc) + timedelta(hours=24),
     }
-    
-    secret_key = os.getenv("JWT_SECRET_KEY", "test_secret_key_12345")
+
     token = jwt.encode(token_data, secret_key, algorithm="HS256")
-    
+
     return {"Authorization": f"Bearer {token}"}

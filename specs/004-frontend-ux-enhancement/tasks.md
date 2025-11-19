@@ -246,28 +246,28 @@
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T109 [P] [US6] 배송지 관리 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_addresses.py
+- [X] T109 [P] [US6] 배송지 관리 API 통합 테스트 in services/ecommerce/backend/tests/integration/test_addresses.py
 
 ### Backend Implementation for User Story 6
 
-- [ ] T110 [P] [US6] Address 모델 생성 in services/ecommerce/backend/src/models/address.py
-- [ ] T111 [US6] 배송지 서비스 로직 구현 (기본 배송지 변경, 삭제 검증) in services/ecommerce/backend/src/services/address_service.py
-- [ ] T112 [US6] 배송지 목록 조회 API (GET /v1/addresses) in services/ecommerce/backend/src/api/addresses.py
-- [ ] T113 [P] [US6] 배송지 추가 API (POST /v1/addresses) in services/ecommerce/backend/src/api/addresses.py
-- [ ] T114 [P] [US6] 배송지 수정 API (PUT /v1/addresses/{id}) in services/ecommerce/backend/src/api/addresses.py
-- [ ] T115 [P] [US6] 배송지 삭제 API (DELETE /v1/addresses/{id}) in services/ecommerce/backend/src/api/addresses.py
-- [ ] T116 [P] [US6] 기본 배송지 설정 API (POST /v1/addresses/{id}/set-default) in services/ecommerce/backend/src/api/addresses.py
-- [ ] T117 [US6] FastAPI 메인 앱에 배송지 라우터 등록 in services/ecommerce/backend/src/main.py
+- [X] T110 [P] [US6] Address 모델 생성 in services/ecommerce/backend/src/models/address.py
+- [X] T111 [US6] 배송지 서비스 로직 구현 (기본 배송지 변경, 삭제 검증) in services/ecommerce/backend/src/services/address_service.py
+- [X] T112 [US6] 배송지 목록 조회 API (GET /v1/addresses) in services/ecommerce/backend/src/api/addresses.py
+- [X] T113 [P] [US6] 배송지 추가 API (POST /v1/addresses) in services/ecommerce/backend/src/api/addresses.py
+- [X] T114 [P] [US6] 배송지 수정 API (PUT /v1/addresses/{id}) in services/ecommerce/backend/src/api/addresses.py
+- [X] T115 [P] [US6] 배송지 삭제 API (DELETE /v1/addresses/{id}) in services/ecommerce/backend/src/api/addresses.py
+- [X] T116 [P] [US6] 기본 배송지 설정 API (POST /v1/addresses/{id}/set-default) in services/ecommerce/backend/src/api/addresses.py
+- [X] T117 [US6] FastAPI 메인 앱에 배송지 라우터 등록 in services/ecommerce/backend/src/main.py
 
 ### Frontend Implementation for User Story 6
 
-- [ ] T118 [US6] MyPage 레이아웃 구현 (사이드바, 메뉴) in services/ecommerce/frontend/src/pages/MyPage.tsx
-- [ ] T119 [US6] AddressManagementPage 구현 (배송지 목록, CRUD) in services/ecommerce/frontend/src/pages/AddressManagementPage.tsx
-- [ ] T120 [US6] AddressForm 컴포넌트 구현 (배송지 추가/수정 폼) in services/ecommerce/frontend/src/components/AddressForm.tsx
-- [ ] T121 [US6] AddressCard 컴포넌트 구현 (기본 배송지 뱃지, 수정/삭제 버튼) in services/ecommerce/frontend/src/components/AddressCard.tsx
-- [ ] T122 [US6] useAddresses Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useAddresses.ts
-- [ ] T123 [US6] PointsCouponsPage 구현 (적립금, 쿠폰 목록) in services/ecommerce/frontend/src/pages/PointsCouponsPage.tsx
-- [ ] T124 [US6] 체크아웃 페이지 업데이트 (기본 배송지 자동 선택) in services/ecommerce/frontend/src/pages/CheckoutPage.tsx
+- [X] T118 [US6] MyPage 레이아웃 구현 (사이드바, 메뉴) in services/ecommerce/frontend/src/pages/MyPage.tsx
+- [X] T119 [US6] AddressManagementPage 구현 (배송지 목록, CRUD) in services/ecommerce/frontend/src/pages/AddressManagementPage.tsx
+- [X] T120 [US6] AddressForm 컴포넌트 구현 (배송지 추가/수정 폼) in services/ecommerce/frontend/src/components/AddressForm.tsx
+- [X] T121 [US6] AddressCard 컴포넌트 구현 (기본 배송지 뱃지, 수정/삭제 버튼) in services/ecommerce/frontend/src/components/AddressCard.tsx
+- [X] T122 [US6] useAddresses Hook 구현 (React Query) in services/ecommerce/frontend/src/hooks/useAddresses.ts
+- [X] T123 [US6] PointsCouponsPage 구현 (적립금, 쿠폰 목록) in services/ecommerce/frontend/src/pages/PointsCouponsPage.tsx
+- [X] T124 [US6] 체크아웃 페이지 업데이트 (기본 배송지 자동 선택) in services/ecommerce/frontend/src/pages/CheckoutPage.tsx
 
 **Checkpoint**: User Story 1-6 모두 독립적으로 동작
 

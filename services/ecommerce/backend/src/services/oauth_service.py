@@ -14,7 +14,7 @@ from sqlalchemy import select
 
 from src.models.user import User
 from src.models.oauth_account import OAuthAccount, OAuthProvider
-from src.services.auth_service import AuthService
+from src.utils.security import create_access_token, create_refresh_token
 
 
 class OAuthService:
@@ -22,7 +22,6 @@ class OAuthService:
 
     def __init__(self, db_session: AsyncSession):
         self.db = db_session
-        self.auth_service = AuthService(db_session)
 
     # Google OAuth
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
@@ -117,8 +116,8 @@ class OAuthService:
         )
 
         # 4. JWT 토큰 생성
-        jwt_access_token = self.auth_service.create_access_token(user.id)
-        jwt_refresh_token = self.auth_service.create_refresh_token(user.id)
+        jwt_access_token = create_access_token({"sub": str(user.id)})
+        jwt_refresh_token = create_refresh_token({"sub": str(user.id)})
 
         return {
             "user_id": user.id,
@@ -203,8 +202,8 @@ class OAuthService:
         )
 
         # 4. JWT 토큰 생성
-        jwt_access_token = self.auth_service.create_access_token(user.id)
-        jwt_refresh_token = self.auth_service.create_refresh_token(user.id)
+        jwt_access_token = create_access_token({"sub": str(user.id)})
+        jwt_refresh_token = create_refresh_token({"sub": str(user.id)})
 
         return {
             "user_id": user.id,
@@ -289,8 +288,8 @@ class OAuthService:
         )
 
         # 4. JWT 토큰 생성
-        jwt_access_token = self.auth_service.create_access_token(user.id)
-        jwt_refresh_token = self.auth_service.create_refresh_token(user.id)
+        jwt_access_token = create_access_token({"sub": str(user.id)})
+        jwt_refresh_token = create_refresh_token({"sub": str(user.id)})
 
         return {
             "user_id": user.id,

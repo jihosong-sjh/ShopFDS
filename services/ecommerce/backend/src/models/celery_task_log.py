@@ -5,7 +5,8 @@ Celery 작업 로그를 추적하기 위한 데이터베이스 모델
 """
 
 from sqlalchemy import Column, String, DateTime, Integer, Text, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import JSON as JSONB
 from datetime import datetime
 import uuid
 import enum

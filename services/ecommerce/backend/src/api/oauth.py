@@ -10,7 +10,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from src.database import get_db
+from src.models.base import get_db
 from src.services.oauth_service import OAuthService
 
 
