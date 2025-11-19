@@ -281,12 +281,12 @@
 
 ### Backend Implementation for User Story 7
 
-- [ ] T125 [P] [US7] PushSubscription 모델 생성 in services/ecommerce/backend/src/models/push_subscription.py
-- [ ] T126 [US7] 푸시 알림 서비스 로직 구현 (FCM) in services/ecommerce/backend/src/services/push_notification_service.py
-- [ ] T127 [US7] 푸시 구독 등록 API (POST /v1/push/subscribe) in services/ecommerce/backend/src/api/push.py
-- [ ] T128 [P] [US7] 푸시 구독 해지 API (DELETE /v1/push/subscribe) in services/ecommerce/backend/src/api/push.py
-- [ ] T129 [US7] 주문 상태 변경 시 푸시 알림 전송 in services/ecommerce/backend/src/services/order_service.py
-- [ ] T130 [US7] FastAPI 메인 앱에 푸시 라우터 등록 in services/ecommerce/backend/src/main.py
+- [X] T125 [P] [US7] PushSubscription 모델 생성 in services/ecommerce/backend/src/models/push_subscription.py
+- [X] T126 [US7] 푸시 알림 서비스 로직 구현 (FCM) in services/ecommerce/backend/src/services/push_notification_service.py
+- [X] T127 [US7] 푸시 구독 등록 API (POST /v1/push/subscribe) in services/ecommerce/backend/src/api/push.py
+- [X] T128 [P] [US7] 푸시 구독 해지 API (DELETE /v1/push/unsubscribe) in services/ecommerce/backend/src/api/push.py
+- [X] T129 [US7] 주문 상태 변경 시 푸시 알림 전송 in services/ecommerce/backend/src/services/order_service.py
+- [X] T130 [US7] FastAPI 메인 앱에 푸시 라우터 등록 in services/ecommerce/backend/src/main.py
 
 ### Frontend Implementation for User Story 7
 

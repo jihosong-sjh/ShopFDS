@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 import httpx
+import logging
 
 from src.models.order import Order, OrderItem, OrderStatus
 from src.models.cart import Cart, CartItem
@@ -24,6 +25,9 @@ from src.utils.redis_client import get_redis
 from src.config import get_settings
 from src.tasks.email import send_order_confirmation_email
 from src.services.coupon_service import CouponService
+from src.services.push_notification_service import PushNotificationService
+
+logger = logging.getLogger(__name__)
 
 
 class OrderService:
@@ -98,22 +102,22 @@ class OrderService:
                 }
             )
 
-
         # 2.5 쿠폰 적용 (있는 경우)
         from decimal import Decimal
+
         discount_amount = 0.0
         applied_coupon_code = None
-        
+
         if coupon_code:
             coupon_service = CouponService(self.db)
-            
+
             # 쿠폰 검증
             validation_result = await coupon_service.validate_coupon(
                 user_id=user_id,
                 coupon_code=coupon_code,
                 order_amount=Decimal(str(total_amount)),
             )
-            
+
             if validation_result["is_valid"]:
                 discount_amount = validation_result["discount_amount"]
                 applied_coupon_code = coupon_code
@@ -553,6 +557,9 @@ class OrderService:
         if not order:
             raise ResourceNotFoundError(f"주문을 찾을 수 없습니다: {order_id}")
 
+        # 이전 상태 저장
+        old_status = order.status
+
         # 상태 전이 처리
         if new_status == OrderStatus.SHIPPED:
             order.mark_as_shipped()
@@ -565,6 +572,25 @@ class OrderService:
 
         await self.db.commit()
         await self.db.refresh(order)
+
+        # 주문 상태 변경 시 푸시 알림 전송
+        if old_status != new_status:
+            try:
+                push_service = PushNotificationService(self.db)
+                await push_service.send_order_status_notification(
+                    user_id=order.user_id,
+                    order_id=order.id,
+                    status=new_status.value,
+                    order_number=order.order_number,
+                )
+                logger.info(
+                    f"[OK] Push notification sent for order {order_id} status change: {old_status} -> {new_status}"
+                )
+            except Exception as e:
+                # 푸시 알림 전송 실패는 주문 상태 변경을 롤백하지 않음
+                logger.error(
+                    f"[WARN] Failed to send push notification for order {order_id}: {e}"
+                )
 
         return order
 
