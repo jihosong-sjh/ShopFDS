@@ -6,7 +6,6 @@ Batch Evaluation Tasks for FDS Service
 
 from src.tasks import app
 import logging
-from typing import Dict, Any
 from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
@@ -70,9 +69,7 @@ def batch_evaluate_transactions(self, hours_ago: int = 24):
         }
 
     except Exception as exc:
-        logger.error(
-            f"[FAIL] Failed to complete batch evaluation: {exc}"
-        )
+        logger.error(f"[FAIL] Failed to complete batch evaluation: {exc}")
 
         # 재시도 로직
         if self.request.retries < self.max_retries:

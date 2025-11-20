@@ -29,16 +29,96 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터: 에러 처리
+// 응답 인터셉터: 에러 처리 (개선된 버전)
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      // 인증 실패 시 로그아웃
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      window.location.href = '/login';
+  async (error: AxiosError) => {
+    const originalRequest = error.config;
+
+    // 401 에러: 토큰 갱신 시도
+    if (error.response?.status === 401 && originalRequest && !originalRequest.headers['X-Retry']) {
+      const refreshToken = localStorage.getItem('refresh_token');
+
+      if (refreshToken) {
+        try {
+          // 토큰 갱신 요청
+          const response = await axios.post(`${API_BASE_URL}/v1/auth/refresh`, {
+            refresh_token: refreshToken,
+          });
+
+          const { access_token, refresh_token: newRefreshToken } = response.data;
+
+          // 새 토큰 저장
+          localStorage.setItem('access_token', access_token);
+          if (newRefreshToken) {
+            localStorage.setItem('refresh_token', newRefreshToken);
+          }
+
+          // 원래 요청 재시도
+          originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+          originalRequest.headers['X-Retry'] = 'true';
+
+          return apiClient(originalRequest);
+        } catch (refreshError) {
+          // 토큰 갱신 실패 시 로그아웃
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          window.location.href = '/login';
+        }
+      } else {
+        // 리프레시 토큰이 없으면 로그아웃
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+      }
     }
+
+    // 네트워크 에러 처리
+    if (!error.response) {
+      console.error('[NETWORK ERROR] Unable to reach server');
+
+      // 토스트 알림 (전역 에러 핸들러)
+      const globalWindow = window as Window & { showToast?: (type: string, message: string) => void };
+      if (typeof window !== 'undefined' && globalWindow.showToast) {
+        globalWindow.showToast('error', '서버에 연결할 수 없습니다. 네트워크를 확인해주세요.');
+      }
+    }
+
+    // 403 Forbidden: 권한 없음
+    if (error.response?.status === 403) {
+      console.error('[ACCESS DENIED] Insufficient permissions');
+      const globalWindow = window as Window & { showToast?: (type: string, message: string) => void };
+      if (typeof window !== 'undefined' && globalWindow.showToast) {
+        globalWindow.showToast('error', '접근 권한이 없습니다.');
+      }
+    }
+
+    // 404 Not Found
+    if (error.response?.status === 404) {
+      console.error('[NOT FOUND] Resource not found');
+      const globalWindow = window as Window & { showToast?: (type: string, message: string) => void };
+      if (typeof window !== 'undefined' && globalWindow.showToast) {
+        globalWindow.showToast('error', '요청한 리소스를 찾을 수 없습니다.');
+      }
+    }
+
+    // 429 Too Many Requests: Rate Limiting
+    if (error.response?.status === 429) {
+      console.error('[RATE LIMIT] Too many requests');
+      const globalWindow = window as Window & { showToast?: (type: string, message: string) => void };
+      if (typeof window !== 'undefined' && globalWindow.showToast) {
+        globalWindow.showToast('warning', '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.');
+      }
+    }
+
+    // 500 Internal Server Error
+    if (error.response?.status && error.response.status >= 500) {
+      console.error('[SERVER ERROR] Internal server error');
+      const globalWindow = window as Window & { showToast?: (type: string, message: string) => void };
+      if (typeof window !== 'undefined' && globalWindow.showToast) {
+        globalWindow.showToast('error', '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -69,6 +149,7 @@ export interface Product {
   stock_quantity: number;
   category: string;
   image_url?: string;
+  images?: string[];
   status: string;
   is_available: boolean;
 }
@@ -289,3 +370,66 @@ export const queryKeys = {
     detail: (id: string) => ['orders', 'detail', id] as const,
   },
 };
+
+// API 에러 처리 유틸리티
+export interface ApiError {
+  message: string;
+  status?: number;
+  code?: string;
+  details?: unknown;
+}
+
+export const handleApiError = (error: unknown): ApiError => {
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
+    return {
+      message: axiosError.response?.data?.detail || axiosError.response?.data?.message || axiosError.message,
+      status: axiosError.response?.status,
+      code: axiosError.code,
+      details: axiosError.response?.data,
+    };
+  }
+
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+    };
+  }
+
+  return {
+    message: 'An unknown error occurred',
+  };
+};
+
+// 파일 업로드 유틸리티
+export const uploadFile = async (file: File, endpoint: string): Promise<{ url: string }> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await apiClient.post<{ url: string }>(endpoint, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data;
+};
+
+// 여러 파일 업로드 유틸리티
+export const uploadFiles = async (files: File[], endpoint: string): Promise<{ urls: string[] }> => {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('files', file);
+  });
+
+  const response = await apiClient.post<{ urls: string[] }>(endpoint, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data;
+};
+
+// Default export for backward compatibility
+export default apiClient;

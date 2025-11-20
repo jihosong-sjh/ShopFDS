@@ -1,0 +1,858 @@
+openapi: 3.0.0
+info:
+  title: ML Ensemble Service API
+  description: 앙상블 ML 모델 학습, 배포, 모니터링 API
+  version: 1.0.0
+  contact:
+    name: ML Engineering Team
+    email: ml@shopfds.com
+
+servers:
+  - url: http://localhost:8002/v1
+    description: 개발 서버
+  - url: https://ml-api.shopfds.com/v1
+    description: 프로덕션 서버
+
+tags:
+  - name: Training
+    description: 모델 학습 관리
+  - name: Deployment
+    description: 모델 배포 및 카나리 배포
+  - name: Monitoring
+    description: 데이터 드리프트, 성능 모니터링
+  - name: Models
+    description: 모델 버전 관리 및 평가
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          example: "ML001"
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          format: uuid
+
+    EnsembleTrainingRequest:
+      type: object
+      required:
+        - training_data_path
+        - test_data_path
+      properties:
+        training_data_path:
+          type: string
+          description: S3 또는 로컬 경로
+          example: "s3://fds-data/training/2025-11-01.csv"
+        test_data_path:
+          type: string
+          example: "s3://fds-data/testing/2025-11-01.csv"
+        validation_split:
+          type: number
+          default: 0.2
+          description: 검증 데이터 비율
+        random_seed:
+          type: integer
+          default: 42
+        hyperparameters:
+          type: object
+          description: 모델별 하이퍼파라미터 오버라이드
+          properties:
+            random_forest:
+              type: object
+              properties:
+                n_estimators: { type: integer, default: 100 }
+                max_depth: { type: integer, default: 20 }
+                min_samples_split: { type: integer, default: 5 }
+            xgboost:
+              type: object
+              properties:
+                n_estimators: { type: integer, default: 100 }
+                learning_rate: { type: number, default: 0.1 }
+                max_depth: { type: integer, default: 6 }
+                gpu_id: { type: integer, description: "GPU 장치 ID", default: 0 }
+            autoencoder:
+              type: object
+              properties:
+                hidden_layers: { type: array, items: { type: integer }, default: [128, 64, 32] }
+                epochs: { type: integer, default: 50 }
+                batch_size: { type: integer, default: 32 }
+            lstm:
+              type: object
+              properties:
+                hidden_size: { type: integer, default: 64 }
+                num_layers: { type: integer, default: 2 }
+                sequence_length: { type: integer, default: 10 }
+                epochs: { type: integer, default: 50 }
+        enable_smote:
+          type: boolean
+          default: true
+          description: 클래스 불균형 처리 (SMOTE)
+        smote_ratio:
+          type: number
+          default: 0.4
+          description: 사기:정상 비율 (0.4 = 40:60)
+
+    TrainingJob:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        progress:
+          type: integer
+          description: 0-100
+        current_step:
+          type: string
+          example: "Training XGBoost model with GPU"
+        estimated_time_remaining:
+          type: integer
+          description: 초 단위
+        created_at:
+          type: string
+          format: date-time
+
+    TrainingJobResponse:
+      allOf:
+        - $ref: '#/components/schemas/TrainingJob'
+        - type: object
+          properties:
+            job_id:
+              type: string
+              format: uuid
+
+    TrainingStatusResponse:
+      allOf:
+        - $ref: '#/components/schemas/TrainingJob'
+        - type: object
+          properties:
+            metrics:
+              type: object
+              properties:
+                overall_accuracy:
+                  type: number
+                  description: 전체 정확도
+                precision:
+                  type: number
+                recall:
+                  type: number
+                f1_score:
+                  type: number
+                model_metrics:
+                  type: object
+                  properties:
+                    random_forest:
+                      type: object
+                      properties:
+                        accuracy: { type: number }
+                        precision: { type: number }
+                        recall: { type: number }
+                        f1_score: { type: number }
+                    xgboost:
+                      type: object
+                      properties:
+                        accuracy: { type: number }
+                        precision: { type: number }
+                        recall: { type: number }
+                        f1_score: { type: number }
+                    autoencoder:
+                      type: object
+                      properties:
+                        auc_score: { type: number }
+                        reconstruction_error_threshold: { type: number }
+                    lstm:
+                      type: object
+                      properties:
+                        accuracy: { type: number }
+                        precision: { type: number }
+                        recall: { type: number }
+                        f1_score: { type: number }
+            new_model_version:
+              type: object
+              properties:
+                version_id:
+                  type: string
+                  format: uuid
+                version_number:
+                  type: string
+                  example: "2.0.0"
+                model_path:
+                  type: string
+            error_message:
+              type: string
+              description: 실패 시만 포함
+
+    EnsemblePredictRequest:
+      type: object
+      required:
+        - features
+      properties:
+        features:
+          type: object
+          description: 입력 특징 (거래 데이터)
+          example:
+            device_id: "a1b2c3d4-e5f6-47a8-9b0c-1d2e3f4a5b6c"
+            is_tor: false
+            is_vpn: false
+            country_mismatch: true
+            order_amount: 150000
+            card_failures_in_1h: 2
+            bot_score: 15
+        use_gpu:
+          type: boolean
+          default: true
+        batch_size:
+          type: integer
+          default: 1
+        model_version:
+          type: string
+          description: 특정 모델 버전 사용 (기본값: 프로덕션 모델)
+
+    EnsemblePredictResponse:
+      type: object
+      properties:
+        prediction_id:
+          type: string
+          format: uuid
+        model_version:
+          type: string
+          example: "1.5.0"
+        individual_scores:
+          type: object
+          properties:
+            random_forest:
+              type: number
+              minimum: 0
+              maximum: 1
+            xgboost:
+              type: number
+              minimum: 0
+              maximum: 1
+            autoencoder:
+              type: number
+              minimum: 0
+              maximum: 1
+            lstm:
+              type: number
+              minimum: 0
+              maximum: 1
+        ensemble_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: 가중 투표 결과
+        decision:
+          type: string
+          enum: [allow, additional_auth_required, block, manual_review]
+        confidence:
+          type: number
+          description: 예측 신뢰도 (0-1)
+        inference_time_ms:
+          type: integer
+        predicted_at:
+          type: string
+          format: date-time
+
+    FeatureImportance:
+      type: object
+      properties:
+        feature_name:
+          type: string
+          example: "country_mismatch"
+        importance_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        rank:
+          type: integer
+          example: 1
+        impact_description:
+          type: string
+          example: "국가 불일치는 사기 위험을 3배 증가시킴"
+
+    FeatureImportanceResponse:
+      type: object
+      properties:
+        model_version:
+          type: string
+          example: "1.5.0"
+        analysis_timestamp:
+          type: string
+          format: date-time
+        top_features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureImportance'
+          description: 상위 20개 중요 특징
+        feature_count:
+          type: integer
+          example: 120
+
+    DataDriftCheckRequest:
+      type: object
+      required:
+        - test_data_path
+      properties:
+        test_data_path:
+          type: string
+          description: 최근 거래 데이터 경로
+          example: "s3://fds-data/recent/2025-11-18.csv"
+        baseline_period_days:
+          type: integer
+          default: 30
+          description: 베이스라인으로 사용할 과거 데이터 기간
+        drift_threshold_percentage:
+          type: number
+          default: 30
+          description: 드리프트 경고 임계값 (%)
+        metrics_to_check:
+          type: array
+          items:
+            type: string
+            enum: [mean, variance, distribution, outlier_ratio]
+          default: [mean, distribution]
+
+    DataDriftCheckResponse:
+      type: object
+      properties:
+        check_timestamp:
+          type: string
+          format: date-time
+        drift_detected:
+          type: boolean
+        drift_metrics:
+          type: array
+          items:
+            type: object
+            properties:
+              feature_name:
+                type: string
+              baseline_value:
+                type: number
+              current_value:
+                type: number
+              drift_percentage:
+                type: number
+              exceeds_threshold:
+                type: boolean
+              statistical_test:
+                type: string
+                example: "Kolmogorov-Smirnov"
+              p_value:
+                type: number
+        overall_drift_percentage:
+          type: number
+          description: 평균 드리프트 비율
+        recommendation:
+          type: string
+          enum: [no_action, investigate, retrain_immediately]
+        affected_features:
+          type: array
+          items:
+            type: string
+          description: 드리프트가 감지된 특징 목록
+
+    RetrainingTriggerRequest:
+      type: object
+      required:
+        - trigger_reason
+      properties:
+        trigger_reason:
+          type: string
+          enum: [data_drift, performance_degradation, manual_request, scheduled]
+        performance_drop_percentage:
+          type: number
+          description: "성능 저하율 (trigger_reason='performance_degradation'일 때)"
+          example: 3.5
+        description:
+          type: string
+          description: 상세 설명
+
+    RetrainingTriggerResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, started]
+        scheduled_start:
+          type: string
+          format: date-time
+        estimated_duration_minutes:
+          type: integer
+          example: 120
+        notification_slack_channel:
+          type: string
+          description: 완료 알림을 받을 Slack 채널
+
+    CanaryDeploymentRequest:
+      type: object
+      required:
+        - source_model_version
+        - target_model_version
+        - initial_traffic_percentage
+      properties:
+        source_model_version:
+          type: string
+          example: "1.5.0"
+        target_model_version:
+          type: string
+          example: "1.6.0"
+        initial_traffic_percentage:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+          description: 초기 트래픽 비율 (%)
+        canary_duration_minutes:
+          type: integer
+          default: 60
+          description: 카나리 배포 기간
+        success_criteria:
+          type: object
+          properties:
+            min_f1_score:
+              type: number
+              default: 0.93
+            max_false_positive_rate:
+              type: number
+              default: 0.06
+            max_p95_latency_ms:
+              type: integer
+              default: 100
+
+    CanaryDeploymentResponse:
+      type: object
+      properties:
+        deployment_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [in_progress, completed, rolled_back]
+        source_model_version:
+          type: string
+        target_model_version:
+          type: string
+        current_traffic_percentage:
+          type: integer
+        started_at:
+          type: string
+          format: date-time
+        progress:
+          type: object
+          properties:
+            transactions_processed:
+              type: integer
+            current_metrics:
+              type: object
+              properties:
+                f1_score: { type: number }
+                false_positive_rate: { type: number }
+                p95_latency_ms: { type: integer }
+            next_traffic_increase_time:
+              type: string
+              format: date-time
+            next_traffic_percentage:
+              type: integer
+
+    RollbackRequest:
+      type: object
+      required:
+        - rollback_type
+      properties:
+        rollback_type:
+          type: string
+          enum: [emergency, specific_version]
+          description: "emergency=직전 버전, specific_version=특정 버전으로"
+        target_version:
+          type: string
+          description: "rollback_type='specific_version'일 때만 필수"
+        reason:
+          type: string
+          example: "높은 오탐률로 인한 긴급 롤백"
+
+    RollbackResponse:
+      type: object
+      properties:
+        rollback_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [in_progress, completed, failed]
+        from_version:
+          type: string
+        to_version:
+          type: string
+        completed_at:
+          type: string
+          format: date-time
+        traffic_restored_to:
+          type: integer
+          description: 롤백된 버전으로 복구된 트래픽 비율 (%)
+
+security:
+  - BearerAuth: []
+
+paths:
+  /ml/ensemble/train:
+    post:
+      tags:
+        - Training
+      summary: 앙상블 모델 학습 시작
+      description: |
+        Random Forest, XGBoost, Autoencoder, LSTM 4개 모델을 병렬로 학습
+
+        학습 프로세스:
+        1. 데이터 로드 및 검증
+        2. SMOTE를 통한 클래스 불균형 처리 (선택)
+        3. Feature Engineering
+        4. 4개 모델 병렬 학습
+        5. 성능 평가 및 저장
+        6. MLflow에 모델 레지스트리
+      operationId: startEnsembleTraining
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnsembleTrainingRequest'
+      responses:
+        '202':
+          description: 학습 작업 시작
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingJobResponse'
+        '400':
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 진행 중인 학습 작업이 있음
+        '500':
+          description: 서버 오류
+
+  /ml/ensemble/status/{job_id}:
+    get:
+      tags:
+        - Training
+      summary: 학습 작업 상태 조회
+      description: 진행 중인 또는 완료된 학습 작업의 상태 및 메트릭 조회
+      operationId: getTrainingStatus
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 학습 상태
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingStatusResponse'
+        '404':
+          description: 학습 작업 미등록
+        '500':
+          description: 서버 오류
+
+  /ml/ensemble/predict:
+    post:
+      tags:
+        - Training
+      summary: 앙상블 모델로 예측
+      description: |
+        거래 특징을 입력받아 4개 모델의 개별 점수와 앙상블 최종 점수 반환
+
+        가중치: Random Forest 30%, XGBoost 35%, Autoencoder 25%, LSTM 10%
+      operationId: predictWithEnsemble
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnsemblePredictRequest'
+      responses:
+        '200':
+          description: 예측 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnsemblePredictResponse'
+        '400':
+          description: 잘못된 요청
+        '404':
+          description: 모델 버전 미등록
+        '408':
+          description: 예측 타임아웃 (> 1초)
+        '500':
+          description: 서버 오류
+
+  /ml/models/feature-importance/{version_id}:
+    get:
+      tags:
+        - Models
+      summary: Feature Importance 조회
+      description: Random Forest 모델의 특징 중요도 분석 결과 조회
+      operationId: getFeatureImportance
+      parameters:
+        - name: version_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: top_n
+          in: query
+          schema:
+            type: integer
+            default: 20
+            description: 상위 N개 특징만 반환
+      responses:
+        '200':
+          description: Feature Importance 분석 결과
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureImportanceResponse'
+        '404':
+          description: 모델 버전 미등록
+        '500':
+          description: 서버 오류
+
+  /ml/monitoring/drift-check:
+    post:
+      tags:
+        - Monitoring
+      summary: 데이터 드리프트 검사
+      description: |
+        최근 거래 데이터의 분포가 학습 데이터와 얼마나 변화했는지 검사
+
+        검사 항목:
+        - Mean shift (평균 변화)
+        - Distribution change (분포 변화) - Kolmogorov-Smirnov 테스트
+        - Variance change (분산 변화)
+        - Outlier ratio increase (이상치 비율 증가)
+      operationId: checkDataDrift
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataDriftCheckRequest'
+      responses:
+        '200':
+          description: 드리프트 검사 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataDriftCheckResponse'
+        '400':
+          description: 잘못된 요청
+        '500':
+          description: 서버 오류
+
+  /ml/retrain/trigger:
+    post:
+      tags:
+        - Monitoring
+      summary: 자동 재학습 트리거
+      description: |
+        데이터 드리프트 또는 성능 저하 감지 시 자동 재학습 작업 시작
+
+        자동 트리거 조건:
+        - 데이터 드리프트: 30% 이상 변화 감지
+        - 성능 저하: F1 Score 3% 이상 하락
+      operationId: triggerRetraining
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrainingTriggerRequest'
+      responses:
+        '202':
+          description: 재학습 작업 시작
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrainingTriggerResponse'
+        '400':
+          description: 잘못된 요청
+        '409':
+          description: 진행 중인 학습 작업이 있음
+        '500':
+          description: 서버 오류
+
+  /ml/deployment/canary/start:
+    post:
+      tags:
+        - Deployment
+      summary: 카나리 배포 시작
+      description: |
+        신규 모델을 일부 트래픽(예: 10%)으로 배포하여 성능 모니터링
+
+        카나리 배포 프로세스:
+        1. 초기 10% 트래픽으로 신모델 배포
+        2. 성능 모니터링 (F1 Score, False Positive Rate, 응답 시간)
+        3. 성공 시 25% → 50% → 100% 점진적 확대
+        4. 실패 시 즉시 이전 버전으로 롤백
+      operationId: startCanaryDeployment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CanaryDeploymentRequest'
+      responses:
+        '202':
+          description: 카나리 배포 시작
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CanaryDeploymentResponse'
+        '400':
+          description: 잘못된 요청
+        '409':
+          description: 진행 중인 배포가 있음
+        '500':
+          description: 서버 오류
+
+  /ml/deployment/canary/status/{deployment_id}:
+    get:
+      tags:
+        - Deployment
+      summary: 카나리 배포 상태 조회
+      operationId: getCanaryStatus
+      parameters:
+        - name: deployment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 배포 상태
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CanaryDeploymentResponse'
+        '404':
+          description: 배포 미등록
+        '500':
+          description: 서버 오류
+
+  /ml/deployment/canary/advance:
+    patch:
+      tags:
+        - Deployment
+      summary: 카나리 배포 트래픽 증가
+      description: 다음 단계(예: 10% → 25%)로 트래픽 비율 증가
+      operationId: advanceCanaryTraffic
+      parameters:
+        - name: deployment_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 트래픽 증가 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CanaryDeploymentResponse'
+        '400':
+          description: 잘못된 요청
+        '404':
+          description: 배포 미등록
+        '500':
+          description: 서버 오류
+
+  /ml/deployment/canary/complete:
+    patch:
+      tags:
+        - Deployment
+      summary: 카나리 배포 완료
+      description: 신모델로 100% 트래픽 전환
+      operationId: completeCanaryDeployment
+      parameters:
+        - name: deployment_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 배포 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CanaryDeploymentResponse'
+        '400':
+          description: 잘못된 요청
+        '404':
+          description: 배포 미등록
+        '500':
+          description: 서버 오류
+
+  /ml/deployment/rollback:
+    post:
+      tags:
+        - Deployment
+      summary: 긴급 롤백 또는 특정 버전 롤백
+      description: 배포된 모델을 이전 버전으로 복구
+      operationId: rollbackDeployment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackRequest'
+      responses:
+        '200':
+          description: 롤백 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackResponse'
+        '400':
+          description: 잘못된 요청
+        '404':
+          description: 모델 버전 미등록
+        '409':
+          description: 롤백할 이전 버전이 없음
+        '500':
+          description: 서버 오류

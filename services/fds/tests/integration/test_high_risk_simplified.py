@@ -21,6 +21,8 @@ from src.models.schemas import (
     DeviceTypeEnum,
     DecisionEnum,
     RiskLevelEnum,
+    ShippingInfo,
+    PaymentInfo,
 )
 from src.engines.evaluation_engine import EvaluationEngine
 from src.engines.cti_connector import CTICheckResult
@@ -57,11 +59,20 @@ class TestHighRiskAutoBlockSimplified:
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="test-device-001",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         # Mock Redis 및 Database
@@ -80,9 +91,7 @@ class TestHighRiskAutoBlockSimplified:
         )
 
         # === Act: FDS 평가 실행 ===
-        with patch(
-            "src.engines.evaluation_engine.CTIConnector"
-        ) as MockCTIConnector:
+        with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
             # CTI 커넥터 인스턴스 모킹
             mock_cti_instance = AsyncMock()
             mock_cti_instance.check_ip_threat.return_value = cti_result
@@ -125,9 +134,7 @@ class TestHighRiskAutoBlockSimplified:
         malicious_ip_factor = next(
             (rf for rf in risk_factors if rf.factor_type == "suspicious_ip"), None
         )
-        assert (
-            malicious_ip_factor is not None
-        ), "위험 요인에 악성 IP가 포함되어야 합니다"
+        assert malicious_ip_factor is not None, "위험 요인에 악성 IP가 포함되어야 합니다"
         assert (
             malicious_ip_factor.factor_score >= 80
         ), f"악성 IP 요인 점수는 80+ 이어야 하지만, 실제: {malicious_ip_factor.factor_score}"
@@ -135,7 +142,9 @@ class TestHighRiskAutoBlockSimplified:
         print("  [PASS] 악성 IP 탐지 시 고위험 판단 성공")
         print(f"    - 위험 점수: {evaluation_result.risk_score}")
         print(f"    - 의사결정: {evaluation_result.decision.value}")
-        print(f"    - 수동 검토 필요: {evaluation_result.recommended_action.manual_review_required}")
+        print(
+            f"    - 수동 검토 필요: {evaluation_result.recommended_action.manual_review_required}"
+        )
 
     async def test_high_amount_plus_velocity_triggers_block(self):
         """
@@ -159,11 +168,20 @@ class TestHighRiskAutoBlockSimplified:
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="test-device-002",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         # === Act ===
@@ -184,19 +202,32 @@ class TestHighRiskAutoBlockSimplified:
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
                 device_type=DeviceTypeEnum.DESKTOP,
-                device_id="test-device-002",
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         second_result = await evaluation_engine.evaluate(second_request)
 
         # === Assert ===
         print("\n[Test 2] 복합 위험 요인에 의한 고위험 판단 검증")
-        print(f"  - 첫 번째 거래 점수: {first_result.risk_score}, 의사결정: {first_result.decision.value}")
-        print(f"  - 두 번째 거래 점수: {second_result.risk_score}, 의사결정: {second_result.decision.value}")
+        print(
+            f"  - 첫 번째 거래 점수: {first_result.risk_score}, 의사결정: {first_result.decision.value}"
+        )
+        print(
+            f"  - 두 번째 거래 점수: {second_result.risk_score}, 의사결정: {second_result.decision.value}"
+        )
 
         # 첫 번째 거래는 중간 위험도 (고액 거래만)
         assert (
@@ -235,13 +266,25 @@ class TestHighRiskAutoBlockSimplified:
         # 테스트 케이스
         test_cases = [
             # (금액, IP, 예상 위험 수준, 예상 의사결정)
-            (100000, "211.234.123.45", RiskLevelEnum.LOW, DecisionEnum.APPROVE),  # 정상 거래
-            (3000000, "211.234.123.45", RiskLevelEnum.MEDIUM, DecisionEnum.ADDITIONAL_AUTH_REQUIRED),  # 고액 거래
+            (
+                100000,
+                "211.234.123.45",
+                RiskLevelEnum.LOW,
+                DecisionEnum.APPROVE,
+            ),  # 정상 거래
+            (
+                3000000,
+                "211.234.123.45",
+                RiskLevelEnum.MEDIUM,
+                DecisionEnum.ADDITIONAL_AUTH_REQUIRED,
+            ),  # 고액 거래
         ]
 
         print("\n[Test 3] 평가 엔진 의사결정 로직 검증")
 
-        for idx, (amount, ip, expected_level, expected_decision) in enumerate(test_cases, 1):
+        for idx, (amount, ip, expected_level, expected_decision) in enumerate(
+            test_cases, 1
+        ):
             request = FDSEvaluationRequest(
                 transaction_id=uuid4(),
                 user_id=uuid4(),
@@ -251,19 +294,32 @@ class TestHighRiskAutoBlockSimplified:
                 user_agent="Mozilla/5.0",
                 device_fingerprint=DeviceFingerprint(
                     device_type=DeviceTypeEnum.DESKTOP,
-                    device_id=f"test-device-{idx}",
                     browser="Chrome",
                     os="Windows",
-                    screen_resolution="1920x1080",
                 ),
+                shipping_info=ShippingInfo(
+                    name="홍길동",
+                    address="서울특별시 강남구",
+                    phone="010-1234-5678",
+                ),
+                payment_info=PaymentInfo(
+                    method="credit_card",
+                    card_last_four="1234",
+                    card_bin="123456",
+                ),
+                timestamp=datetime.utcnow(),
             )
 
             result = await evaluation_engine.evaluate(request)
 
             print(f"  Case {idx}: 금액={amount:,}원, IP={ip}")
             print(f"    - 위험 점수: {result.risk_score}")
-            print(f"    - 위험 수준: {result.risk_level.value} (예상: {expected_level.value})")
-            print(f"    - 의사결정: {result.decision.value} (예상: {expected_decision.value})")
+            print(
+                f"    - 위험 수준: {result.risk_level.value} (예상: {expected_level.value})"
+            )
+            print(
+                f"    - 의사결정: {result.decision.value} (예상: {expected_decision.value})"
+            )
 
             assert result.risk_level == expected_level, f"Case {idx}: 위험 수준 불일치"
             assert result.decision == expected_decision, f"Case {idx}: 의사결정 불일치"
@@ -314,7 +370,9 @@ async def test_review_queue_service_add_logic():
     service = ReviewQueueService(mock_db)
 
     # add_to_review_queue 메서드가 존재하는지 확인
-    assert hasattr(service, "add_to_review_queue"), "ReviewQueueService에 add_to_review_queue 메서드가 없습니다"
+    assert hasattr(
+        service, "add_to_review_queue"
+    ), "ReviewQueueService에 add_to_review_queue 메서드가 없습니다"
 
     print("\n[Test 4] ReviewQueue 서비스 로직 검증")
     print("  [PASS] ReviewQueueService.add_to_review_queue 메서드 존재 확인")
@@ -347,11 +405,20 @@ async def test_complete_high_risk_flow_without_db():
         user_agent="Mozilla/5.0",
         device_fingerprint=DeviceFingerprint(
             device_type=DeviceTypeEnum.DESKTOP,
-            device_id="test-device-001",
             browser="Chrome",
             os="Windows",
-            screen_resolution="1920x1080",
         ),
+        shipping_info=ShippingInfo(
+            name="홍길동",
+            address="서울특별시 강남구",
+            phone="010-1234-5678",
+        ),
+        payment_info=PaymentInfo(
+            method="credit_card",
+            card_last_four="1234",
+            card_bin="123456",
+        ),
+        timestamp=datetime.utcnow(),
     )
 
     mock_redis = AsyncMock()
@@ -385,7 +452,9 @@ async def test_complete_high_risk_flow_without_db():
 
     assert result.risk_score >= 80, "위험 점수가 80점 미만입니다"
     assert result.decision == DecisionEnum.BLOCKED, "의사결정이 BLOCKED가 아닙니다"
-    assert result.recommended_action.manual_review_required is True, "수동 검토 필요 플래그가 False입니다"
+    assert (
+        result.recommended_action.manual_review_required is True
+    ), "수동 검토 필요 플래그가 False입니다"
 
     print("\n  [PASS] 고위험 거래 전체 플로우 검증 성공!")
     print("    - 악성 IP 탐지: OK")

@@ -109,7 +109,15 @@ async def get_current_user(
     from sqlalchemy import select
     from src.models.user import User
 
-    result = await db.execute(select(User).where(User.id == user_id))
+    from uuid import UUID
+
+    # Convert user_id string to UUID
+    try:
+        user_uuid = UUID(user_id) if isinstance(user_id, str) else user_id
+    except ValueError:
+        raise AuthenticationError(detail="잘못된 사용자 ID 형식입니다.")
+
+    result = await db.execute(select(User).where(User.id == user_uuid))
     user = result.scalar_one_or_none()
 
     if user is None:
@@ -271,3 +279,47 @@ class RateLimiter:
             # Redis 연결 실패 시 요청 허용 (Fail Open)
             print(f"[WARNING] Rate Limit 체크 실패: {e}")
             return True
+
+
+async def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(
+        HTTPBearer(auto_error=False)
+    ),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    선택적 인증 - User 객체 반환
+
+    토큰이 있으면 사용자 객체 반환, 없으면 None 반환
+
+    Args:
+        credentials: HTTP Bearer 토큰 (선택)
+        db: 데이터베이스 세션
+
+    Returns:
+        Optional[User]: 사용자 객체 또는 None
+    """
+    if credentials is None:
+        return None
+
+    try:
+        from sqlalchemy import select
+        from src.models.user import User
+
+        payload = JWTManager.decode_token(credentials.credentials)
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+
+        # 데이터베이스에서 사용자 조회
+        result = await db.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+
+        if user and user.status == "active":
+            return user
+
+        return None
+
+    except Exception:
+        # 토큰이 유효하지 않으면 None 반환 (에러 발생 안 함)
+        return None

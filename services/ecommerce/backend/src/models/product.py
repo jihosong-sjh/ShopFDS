@@ -17,6 +17,7 @@ from sqlalchemy import (
     CheckConstraint,
     Uuid,
 )
+from sqlalchemy.orm import relationship
 import uuid
 
 from .base import Base
@@ -64,6 +65,9 @@ class Product(Base):
         Index("idx_products_category", "category"),
         Index("idx_products_status", "status"),
     )
+
+    # Relationships
+    reviews = relationship("Review", back_populates="product", lazy="dynamic")
 
     def __repr__(self):
         return f"<Product(id={self.id}, name={self.name}, price={self.price})>"

@@ -1,0 +1,326 @@
+# ========================================
+# Docker Compose - Production Configuration
+# ========================================
+# ShopFDS Platform - Production Deployment
+#
+# Usage:
+#   docker-compose -f docker-compose.prod.yml up -d
+#   docker-compose -f docker-compose.prod.yml down
+#
+# Prerequisites:
+#   - Build all Docker images first (use build-images.sh)
+#   - Configure .env file with production credentials
+#   - Ensure ports 80, 443, 8000-8003 are available
+# ========================================
+
+version: '3.8'
+
+networks:
+  shopfds-network:
+    driver: bridge
+  shopfds-internal:
+    driver: bridge
+    internal: true
+
+volumes:
+  postgres_data:
+  redis_data:
+  mlflow_data:
+
+services:
+  # ========================================
+  # Database Layer
+  # ========================================
+
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: shopfds-postgres-prod
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - shopfds-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+  # ========================================
+  # Cache Layer
+  # ========================================
+
+  redis:
+    image: redis:7-alpine
+    container_name: shopfds-redis-prod
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: always
+    networks:
+      - shopfds-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ========================================
+  # Backend Services
+  # ========================================
+
+  ecommerce-backend:
+    image: shopfds/ecommerce-backend:${VERSION:-latest}
+    container_name: shopfds-ecommerce-backend-prod
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      FDS_SERVICE_URL: http://fds-service:8001
+      JWT_SECRET: ${JWT_SECRET}
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+      SENTRY_DSN: ${SENTRY_DSN}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - shopfds-network
+      - shopfds-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  fds-service:
+    image: shopfds/fds-service:${VERSION:-latest}
+    container_name: shopfds-fds-service-prod
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      ML_SERVICE_URL: http://ml-service:8002
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+      SENTRY_DSN: ${SENTRY_DSN}
+      # External API Keys
+      EMAILREP_API_KEY: ${EMAILREP_API_KEY}
+      NUMVERIFY_API_KEY: ${NUMVERIFY_API_KEY}
+      HIBP_API_KEY: ${HIBP_API_KEY}
+      MAXMIND_LICENSE_KEY: ${MAXMIND_LICENSE_KEY}
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - shopfds-network
+      - shopfds-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '2'
+          memory: 2G
+
+  ml-service:
+    image: shopfds/ml-service:${VERSION:-latest}
+    container_name: shopfds-ml-service-prod
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      MLFLOW_TRACKING_URI: file:///app/mlruns
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+      SENTRY_DSN: ${SENTRY_DSN}
+    ports:
+      - "8002:8002"
+    volumes:
+      - mlflow_data:/app/mlruns
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    networks:
+      - shopfds-network
+      - shopfds-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  admin-dashboard-backend:
+    image: shopfds/admin-dashboard-backend:${VERSION:-latest}
+    container_name: shopfds-admin-backend-prod
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      FDS_SERVICE_URL: http://fds-service:8001
+      ML_SERVICE_URL: http://ml-service:8002
+      JWT_SECRET: ${JWT_SECRET}
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+      SENTRY_DSN: ${SENTRY_DSN}
+    ports:
+      - "8003:8003"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - shopfds-network
+      - shopfds-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # ========================================
+  # Frontend Services
+  # ========================================
+
+  ecommerce-frontend:
+    image: shopfds/ecommerce-frontend:${VERSION:-latest}
+    container_name: shopfds-ecommerce-frontend-prod
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+      VITE_FDS_API_URL: ${VITE_FDS_API_URL:-http://localhost:8001}
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ecommerce-backend
+    restart: always
+    networks:
+      - shopfds-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  admin-dashboard-frontend:
+    image: shopfds/admin-dashboard-frontend:${VERSION:-latest}
+    container_name: shopfds-admin-frontend-prod
+    environment:
+      VITE_API_BASE_URL: ${VITE_ADMIN_API_BASE_URL:-http://localhost:8003}
+      VITE_FDS_API_URL: ${VITE_FDS_API_URL:-http://localhost:8001}
+      VITE_ML_API_URL: ${VITE_ML_API_URL:-http://localhost:8002}
+      NODE_ENV: production
+    ports:
+      - "3001:3000"
+    depends_on:
+      - admin-dashboard-backend
+    restart: always
+    networks:
+      - shopfds-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M

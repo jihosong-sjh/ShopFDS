@@ -4,8 +4,8 @@ Celery Task Log Model
 Celery 작업 로그를 추적하기 위한 데이터베이스 모델
 """
 
-from sqlalchemy import Column, String, DateTime, Integer, Text, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, String, DateTime, Integer, Text, Enum as SQLEnum, Uuid
+from sqlalchemy import JSON as JSONB
 from datetime import datetime
 import uuid
 import enum
@@ -28,7 +28,7 @@ class CeleryTaskLog(Base):
 
     __tablename__ = "celery_task_logs"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     task_id = Column(String(255), unique=True, nullable=False, index=True)
     task_name = Column(String(255), nullable=False, index=True)
     status = Column(

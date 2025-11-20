@@ -17,6 +17,8 @@ from src.models.schemas import (
     FDSEvaluationRequest,
     DeviceFingerprint,
     DeviceTypeEnum,
+    ShippingInfo,
+    PaymentInfo,
 )
 from src.engines.evaluation_engine import EvaluationEngine
 from src.engines.cti_connector import CTICheckResult
@@ -58,12 +60,21 @@ class TestHighRiskAutoBlockScenario:
             ip_address=malicious_ip,
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             device_fingerprint=DeviceFingerprint(
-                device_type=DeviceTypeEnum.WEB,
-                device_id="test-device-001",
+                device_type=DeviceTypeEnum.DESKTOP,
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         # Redis Mock 설정
@@ -81,9 +92,7 @@ class TestHighRiskAutoBlockScenario:
         )
 
         # === Act: FDS 평가 실행 ===
-        with patch(
-            "src.engines.evaluation_engine.CTIConnector"
-        ) as MockCTIConnector:
+        with patch("src.engines.evaluation_engine.CTIConnector") as MockCTIConnector:
             # CTI 커넥터 인스턴스 모킹
             mock_cti_instance = AsyncMock()
             mock_cti_instance.check_ip_threat.return_value = cti_result
@@ -121,9 +130,7 @@ class TestHighRiskAutoBlockScenario:
         malicious_ip_factor = next(
             (rf for rf in risk_factors if rf.factor_type == "suspicious_ip"), None
         )
-        assert (
-            malicious_ip_factor is not None
-        ), "위험 요인에 악성 IP가 포함되어야 합니다"
+        assert malicious_ip_factor is not None, "위험 요인에 악성 IP가 포함되어야 합니다"
         assert (
             malicious_ip_factor.factor_score >= 80
         ), f"악성 IP 요인 점수는 80+ 이어야 하지만, 실제: {malicious_ip_factor.factor_score}"
@@ -233,12 +240,21 @@ class TestHighRiskAutoBlockScenario:
             ip_address="211.234.123.45",  # 정상 한국 IP
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
-                device_type=DeviceTypeEnum.WEB,
-                device_id="test-device-002",
+                device_type=DeviceTypeEnum.DESKTOP,
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         # === Act ===
@@ -257,12 +273,21 @@ class TestHighRiskAutoBlockScenario:
             ip_address="211.234.123.45",
             user_agent="Mozilla/5.0",
             device_fingerprint=DeviceFingerprint(
-                device_type=DeviceTypeEnum.WEB,
-                device_id="test-device-002",
+                device_type=DeviceTypeEnum.DESKTOP,
                 browser="Chrome",
                 os="Windows",
-                screen_resolution="1920x1080",
             ),
+            shipping_info=ShippingInfo(
+                name="홍길동",
+                address="서울특별시 강남구",
+                phone="010-1234-5678",
+            ),
+            payment_info=PaymentInfo(
+                method="credit_card",
+                card_last_four="1234",
+                card_bin="123456",
+            ),
+            timestamp=datetime.utcnow(),
         )
 
         second_result = await evaluation_engine.evaluate(second_request)
@@ -347,7 +372,7 @@ class TestHighRiskAutoBlockScenario:
             amount=1000000,
             ip_address="185.220.100.45",
             user_agent="Mozilla/5.0",
-            device_type="web",
+            device_type="desktop",
             geolocation={"ip": "185.220.100.45"},
             risk_score=90,
             risk_level=RiskLevel.HIGH,

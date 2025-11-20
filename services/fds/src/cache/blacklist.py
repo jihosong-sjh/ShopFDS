@@ -182,7 +182,7 @@ class BlacklistManager:
             BlacklistEntry if found, None otherwise
         """
         key = self._get_key(entry_type, value)
-        data = self.redis.get(key)
+        data = await self.redis.get(key)
 
         if not data:
             return None
@@ -345,7 +345,9 @@ class BlacklistManager:
             )
 
         if card_bin:
-            results["card_bin"] = await self.check_entry(BlacklistType.CARD_BIN, card_bin)
+            results["card_bin"] = await self.check_entry(
+                BlacklistType.CARD_BIN, card_bin
+            )
 
         if user_id:
             results["user_id"] = await self.check_entry(BlacklistType.USER_ID, user_id)

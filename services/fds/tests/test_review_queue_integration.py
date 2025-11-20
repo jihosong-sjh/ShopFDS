@@ -84,18 +84,14 @@ class TestReviewQueueIntegration:
         evaluation_result = await engine.evaluate(request)
 
         # Then 1: 고위험으로 분류되어 자동 차단
-        assert evaluation_result.risk_score >= 80, (
-            f"위험 점수가 80점 이상이어야 합니다 (실제: {evaluation_result.risk_score})"
-        )
-        assert evaluation_result.risk_level == RiskLevelEnum.HIGH, (
-            "위험 수준이 HIGH여야 합니다"
-        )
-        assert evaluation_result.decision == DecisionEnum.BLOCKED, (
-            "의사결정이 BLOCKED여야 합니다"
-        )
-        assert evaluation_result.recommended_action.manual_review_required is True, (
-            "수동 검토가 필요해야 합니다"
-        )
+        assert (
+            evaluation_result.risk_score >= 80
+        ), f"위험 점수가 80점 이상이어야 합니다 (실제: {evaluation_result.risk_score})"
+        assert evaluation_result.risk_level == RiskLevelEnum.HIGH, "위험 수준이 HIGH여야 합니다"
+        assert evaluation_result.decision == DecisionEnum.BLOCKED, "의사결정이 BLOCKED여야 합니다"
+        assert (
+            evaluation_result.recommended_action.manual_review_required is True
+        ), "수동 검토가 필요해야 합니다"
 
         # Then 2: 거래가 데이터베이스에 저장되고 BLOCKED 상태
         transaction = Transaction(
@@ -122,24 +118,18 @@ class TestReviewQueueIntegration:
         review_queue = await review_queue_service.add_to_review_queue(transaction_id)
 
         assert review_queue is not None, "검토 큐 엔트리가 생성되어야 합니다"
-        assert review_queue.transaction_id == transaction_id, (
-            "검토 큐의 transaction_id가 일치해야 합니다"
-        )
-        assert review_queue.status == ReviewStatus.PENDING, (
-            "검토 큐 상태가 PENDING이어야 합니다"
-        )
-        assert review_queue.assigned_to is None, (
-            "초기 상태에서는 담당자가 없어야 합니다"
-        )
-        assert review_queue.decision is None, (
-            "초기 상태에서는 검토 결과가 없어야 합니다"
-        )
+        assert (
+            review_queue.transaction_id == transaction_id
+        ), "검토 큐의 transaction_id가 일치해야 합니다"
+        assert review_queue.status == ReviewStatus.PENDING, "검토 큐 상태가 PENDING이어야 합니다"
+        assert review_queue.assigned_to is None, "초기 상태에서는 담당자가 없어야 합니다"
+        assert review_queue.decision is None, "초기 상태에서는 검토 결과가 없어야 합니다"
 
         # Then 4: 거래 상태가 MANUAL_REVIEW로 업데이트
         await db_session.refresh(transaction)
-        assert transaction.evaluation_status == EvaluationStatus.MANUAL_REVIEW, (
-            "거래 상태가 MANUAL_REVIEW로 업데이트되어야 합니다"
-        )
+        assert (
+            transaction.evaluation_status == EvaluationStatus.MANUAL_REVIEW
+        ), "거래 상태가 MANUAL_REVIEW로 업데이트되어야 합니다"
 
         print(f"[PASS] 고위험 거래 자동 차단 및 검토 큐 추가 완료")
         print(f"  - transaction_id: {transaction_id}")
@@ -294,9 +284,9 @@ class TestReviewQueueIntegration:
         pending_reviews = await review_queue_service.get_pending_reviews(limit=10)
 
         # Then: 5개의 PENDING 항목이 조회되어야 함
-        assert len(pending_reviews) >= 5, (
-            f"최소 5개의 PENDING 항목이 있어야 합니다 (실제: {len(pending_reviews)})"
-        )
+        assert (
+            len(pending_reviews) >= 5
+        ), f"최소 5개의 PENDING 항목이 있어야 합니다 (실제: {len(pending_reviews)})"
 
         for review in pending_reviews:
             assert review.status == ReviewStatus.PENDING

@@ -18,7 +18,8 @@ from sqlalchemy import (
     Numeric,
     Enum as SQLEnum,
 )
-from sqlalchemy.dialects.postgresql import INET, JSONB, UUID as PGUUID
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy import String, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -94,7 +95,7 @@ class Transaction(Base):
 
     # 접속 정보
     ip_address: Mapped[str] = mapped_column(
-        INET,
+        String(45),
         nullable=False,
         index=True,
         comment="접속 IP 주소",
@@ -114,7 +115,7 @@ class Transaction(Base):
 
     # 지리적 위치 정보 (IP 기반)
     geolocation: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True,
         comment="IP 기반 지리적 위치 (country, city, lat, lon)",
     )

@@ -119,7 +119,10 @@ class TestRuleDynamicLoading:
 
         assert triggered_rule_result.triggered is True
         assert triggered_rule_result.risk_score == 50
-        assert "200만원" in triggered_rule_result.description or "2000000" in triggered_rule_result.description
+        assert (
+            "200만원" in triggered_rule_result.description
+            or "2000000" in triggered_rule_result.description
+        )
         assert triggered_rule_result.metadata["actual_value"] == 2500000.0
         assert triggered_rule_result.metadata["threshold_value"] == 2000000
 
@@ -127,7 +130,9 @@ class TestRuleDynamicLoading:
 
         # 10. 룰 트리거 횟수 확인
         await db_session.refresh(new_rule)
-        assert new_rule.trigger_count == 1, f"룰 트리거 횟수가 예상과 다름: {new_rule.trigger_count}"
+        assert (
+            new_rule.trigger_count == 1
+        ), f"룰 트리거 횟수가 예상과 다름: {new_rule.trigger_count}"
         print(f"Step 8: 룰 트리거 횟수 업데이트 확인: {new_rule.trigger_count}회")
 
     async def test_disable_rule_and_verify_not_triggered(
@@ -224,9 +229,7 @@ class TestRuleDynamicLoading:
         assert active_rule.trigger_count == 1, "비활성화 후 트리거 횟수가 증가함"
         print(f"Step 8: 트리거 횟수 확인 - 비활성화 후에도 1회 유지")
 
-    async def test_rule_priority_ordering(
-        self, db_session: AsyncSession, mock_redis
-    ):
+    async def test_rule_priority_ordering(self, db_session: AsyncSession, mock_redis):
         """
         Step 3: 룰 우선순위 정렬 검증
 
@@ -284,9 +287,7 @@ class TestRuleDynamicLoading:
 
         print("Step 4: 룰 우선순위 정렬 검증 완료")
 
-    async def test_rule_cache_ttl(
-        self, db_session: AsyncSession, mock_redis
-    ):
+    async def test_rule_cache_ttl(self, db_session: AsyncSession, mock_redis):
         """
         Step 4: 룰 캐시 TTL (5분) 검증
 

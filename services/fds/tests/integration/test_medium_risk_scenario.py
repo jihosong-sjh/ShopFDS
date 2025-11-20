@@ -74,31 +74,26 @@ class TestMediumRiskScenario:
 
         # Then: 중간 위험도로 판정
         assert 40 <= result.risk_score <= 70, (
-            f"위험 점수가 중간 위험도 범위(40-70)에 있어야 합니다. "
-            f"실제: {result.risk_score}"
+            f"위험 점수가 중간 위험도 범위(40-70)에 있어야 합니다. " f"실제: {result.risk_score}"
         )
         assert result.decision.value == "additional_auth_required", (
-            f"의사결정이 'additional_auth_required'여야 합니다. "
-            f"실제: {result.decision.value}"
+            f"의사결정이 'additional_auth_required'여야 합니다. " f"실제: {result.decision.value}"
         )
-        assert result.requires_verification is True, (
-            "추가 인증이 필요해야 합니다."
-        )
-        assert result.risk_level.value == "medium", (
-            f"위험 수준이 'medium'이어야 합니다. 실제: {result.risk_level.value}"
-        )
+        assert result.requires_verification is True, "추가 인증이 필요해야 합니다."
+        assert (
+            result.risk_level.value == "medium"
+        ), f"위험 수준이 'medium'이어야 합니다. 실제: {result.risk_level.value}"
 
         # 위험 요인 검증
         assert len(result.risk_factors) > 0, "위험 요인이 있어야 합니다."
 
         # 고액 거래 요인이 포함되어 있는지 확인
         amount_factors = [
-            f for f in result.risk_factors
+            f
+            for f in result.risk_factors
             if "amount" in f.factor_type.lower() or "금액" in f.description
         ]
-        assert len(amount_factors) > 0, (
-            "고액 거래 위험 요인이 탐지되어야 합니다."
-        )
+        assert len(amount_factors) > 0, "고액 거래 위험 요인이 탐지되어야 합니다."
 
         print(f"✓ 고액 거래 시나리오 통과: 위험 점수 {result.risk_score}")
 
@@ -147,25 +142,20 @@ class TestMediumRiskScenario:
 
         # Then: 중간 위험도로 판정
         assert 40 <= result.risk_score <= 70, (
-            f"위험 점수가 중간 위험도 범위(40-70)에 있어야 합니다. "
-            f"실제: {result.risk_score}"
+            f"위험 점수가 중간 위험도 범위(40-70)에 있어야 합니다. " f"실제: {result.risk_score}"
         )
         assert result.decision.value == "additional_auth_required", (
-            f"의사결정이 'additional_auth_required'여야 합니다. "
-            f"실제: {result.decision.value}"
+            f"의사결정이 'additional_auth_required'여야 합니다. " f"실제: {result.decision.value}"
         )
-        assert result.requires_verification is True, (
-            "추가 인증이 필요해야 합니다."
-        )
+        assert result.requires_verification is True, "추가 인증이 필요해야 합니다."
 
         # 지역 불일치 요인 검증
         location_factors = [
-            f for f in result.risk_factors
+            f
+            for f in result.risk_factors
             if "location" in f.factor_type.lower() or "지역" in f.description
         ]
-        assert len(location_factors) > 0, (
-            "지역 불일치 위험 요인이 탐지되어야 합니다."
-        )
+        assert len(location_factors) > 0, "지역 불일치 위험 요인이 탐지되어야 합니다."
 
         print(f"✓ 비정상 IP 시나리오 통과: 위험 점수 {result.risk_score}")
 
@@ -251,25 +241,21 @@ class TestMediumRiskScenario:
 
         # Then: 중간 위험도로 판정 (Velocity 위반)
         assert 40 <= second_result.risk_score <= 70, (
-            f"위험 점수가 중간 위험도 범위(40-70)에 있어야 합니다. "
-            f"실제: {second_result.risk_score}"
+            f"위험 점수가 중간 위험도 범위(40-70)에 있어야 합니다. " f"실제: {second_result.risk_score}"
         )
         assert second_result.decision.value == "additional_auth_required", (
             f"의사결정이 'additional_auth_required'여야 합니다. "
             f"실제: {second_result.decision.value}"
         )
-        assert second_result.requires_verification is True, (
-            "추가 인증이 필요해야 합니다."
-        )
+        assert second_result.requires_verification is True, "추가 인증이 필요해야 합니다."
 
         # Velocity check 요인 검증
         velocity_factors = [
-            f for f in second_result.risk_factors
+            f
+            for f in second_result.risk_factors
             if "velocity" in f.factor_type.lower() or "반복" in f.description
         ]
-        assert len(velocity_factors) > 0, (
-            "Velocity check 위험 요인이 탐지되어야 합니다."
-        )
+        assert len(velocity_factors) > 0, "Velocity check 위험 요인이 탐지되어야 합니다."
 
         print(f"✓ 반복 거래 시나리오 통과: 위험 점수 {second_result.risk_score}")
 
@@ -368,9 +354,7 @@ class TestMediumRiskScenario:
         result = await evaluation_engine.evaluate(request)
 
         # Then: 위험 요인 상세 검증
-        assert len(result.risk_factors) >= 2, (
-            "최소 2개 이상의 위험 요인이 탐지되어야 합니다."
-        )
+        assert len(result.risk_factors) >= 2, "최소 2개 이상의 위험 요인이 탐지되어야 합니다."
 
         for factor in result.risk_factors:
             assert factor.factor_type, "factor_type이 있어야 합니다."

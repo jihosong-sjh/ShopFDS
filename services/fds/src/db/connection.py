@@ -16,7 +16,6 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
     AsyncEngine,
 )
-from sqlalchemy.pool import NullPool
 
 # Simple logger (FDS service may have different logging setup)
 import logging
@@ -33,7 +32,9 @@ MASTER_DATABASE_URL = os.getenv(
 REPLICA_DATABASE_URL = os.getenv(
     "READ_REPLICA_URL",
     # Fallback to master if replica URL not configured
-    MASTER_DATABASE_URL.replace(":5432", ":5433") if "5432" in MASTER_DATABASE_URL else MASTER_DATABASE_URL,
+    MASTER_DATABASE_URL.replace(":5432", ":5433")
+    if "5432" in MASTER_DATABASE_URL
+    else MASTER_DATABASE_URL,
 )
 
 # SQL Echo setting
@@ -54,7 +55,9 @@ def get_write_engine() -> AsyncEngine:
     """
     global _write_engine
     if _write_engine is None:
-        logger.info(f"[WRITE] Creating master database engine: {MASTER_DATABASE_URL.split('@')[1] if '@' in MASTER_DATABASE_URL else 'localhost'}")
+        logger.info(
+            f"[WRITE] Creating master database engine: {MASTER_DATABASE_URL.split('@')[1] if '@' in MASTER_DATABASE_URL else 'localhost'}"
+        )
         _write_engine = create_async_engine(
             MASTER_DATABASE_URL,
             echo=SQL_ECHO,
@@ -135,7 +138,9 @@ def get_read_engine() -> AsyncEngine:
 
     if _read_engine is None:
         if _use_replica:
-            logger.info(f"[READ] Creating read replica engine: {REPLICA_DATABASE_URL.split('@')[1] if '@' in REPLICA_DATABASE_URL else 'localhost'}")
+            logger.info(
+                f"[READ] Creating read replica engine: {REPLICA_DATABASE_URL.split('@')[1] if '@' in REPLICA_DATABASE_URL else 'localhost'}"
+            )
             try:
                 _read_engine = create_async_engine(
                     REPLICA_DATABASE_URL,
@@ -146,11 +151,15 @@ def get_read_engine() -> AsyncEngine:
                     pool_recycle=3600,
                 )
             except Exception as e:
-                logger.warning(f"[READ] Failed to create replica engine, falling back to master: {str(e)}")
+                logger.warning(
+                    f"[READ] Failed to create replica engine, falling back to master: {str(e)}"
+                )
                 _read_engine = get_write_engine()
                 _use_replica = False
         else:
-            logger.info("[READ] No separate read replica configured, using master for reads")
+            logger.info(
+                "[READ] No separate read replica configured, using master for reads"
+            )
             _read_engine = get_write_engine()
 
     return _read_engine
@@ -208,7 +217,9 @@ async def get_read_db() -> AsyncGenerator[AsyncSession, None]:
                     async with get_write_session_maker()() as fallback_session:
                         yield fallback_session
                 except Exception as fallback_error:
-                    logger.error(f"[READ] Fallback to master also failed: {str(fallback_error)}")
+                    logger.error(
+                        f"[READ] Fallback to master also failed: {str(fallback_error)}"
+                    )
                     raise
             else:
                 raise
@@ -304,6 +315,7 @@ from redis.cluster import ClusterNode
 
 _redis_cluster: RedisCluster | None = None
 
+
 def get_redis_cluster() -> RedisCluster:
     """
     Get or create Redis Cluster client
@@ -317,7 +329,7 @@ def get_redis_cluster() -> RedisCluster:
         # Get Redis Cluster nodes from environment
         redis_nodes_str = os.getenv(
             "REDIS_CLUSTER_NODES",
-            "redis-node-1:6379,redis-node-2:6379,redis-node-3:6379"
+            "redis-node-1:6379,redis-node-2:6379,redis-node-3:6379",
         )
 
         # Parse nodes
@@ -326,7 +338,9 @@ def get_redis_cluster() -> RedisCluster:
             host, port = node_str.strip().split(":")
             startup_nodes.append(ClusterNode(host=host, port=int(port)))
 
-        logger.info(f"[REDIS] Creating Redis Cluster client with nodes: {redis_nodes_str}")
+        logger.info(
+            f"[REDIS] Creating Redis Cluster client with nodes: {redis_nodes_str}"
+        )
 
         _redis_cluster = RedisCluster(
             startup_nodes=startup_nodes,
@@ -363,15 +377,11 @@ async def check_redis_cluster_health() -> dict:
             "latency_ms": round(latency, 2),
             "cluster_state": cluster_info.get("cluster_state", "unknown"),
             "cluster_size": cluster_info.get("cluster_size", 0),
-            "total_nodes": len(cluster_nodes.split("
-")) - 1,
+            "total_nodes": len(cluster_nodes.split("\n")) - 1,
         }
     except Exception as e:
         logger.error(f"[REDIS] Health check failed: {str(e)}")
-        return {
-            "status": "unhealthy",
-            "error": str(e)
-        }
+        return {"status": "unhealthy", "error": str(e)}
 
 
 async def close_redis_cluster() -> None:

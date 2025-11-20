@@ -412,3 +412,93 @@ async def get_training_history(
         )
 
     return history
+
+
+@router.get("/training/jobs/{job_id}")
+async def get_retraining_job_status(
+    job_id: str,
+    db_session: AsyncSession = Depends(get_db_session),
+):
+    """
+    재학습 작업 상태 조회
+
+    Args:
+        job_id: 재학습 작업 ID
+
+    Returns:
+        재학습 작업 상태
+    """
+    from src.models.retraining_job import RetrainingJob
+    from uuid import UUID
+
+    try:
+        job_uuid = UUID(job_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid job_id format")
+
+    result = await db_session.execute(
+        select(RetrainingJob).where(RetrainingJob.job_id == job_uuid)
+    )
+    job = result.scalar_one_or_none()
+
+    if not job:
+        raise HTTPException(status_code=404, detail="Retraining job not found")
+
+    return {
+        "job_id": str(job.job_id),
+        "status": job.status.value,
+        "triggered_by": job.triggered_by.value,
+        "trigger_reason": job.trigger_reason,
+        "started_at": job.started_at.isoformat() if job.started_at else None,
+        "completed_at": job.completed_at.isoformat() if job.completed_at else None,
+        "new_model_version_id": str(job.new_model_version_id)
+        if job.new_model_version_id
+        else None,
+        "metrics": job.metrics,
+        "logs": job.logs,
+        "created_at": job.created_at.isoformat(),
+    }
+
+
+@router.get("/training/jobs")
+async def list_retraining_jobs(
+    status: Optional[str] = None,
+    limit: int = 20,
+    db_session: AsyncSession = Depends(get_db_session),
+):
+    """
+    재학습 작업 목록 조회
+
+    Args:
+        status: 상태 필터 (pending, running, completed, failed)
+        limit: 조회 개수 제한
+
+    Returns:
+        재학습 작업 목록
+    """
+    from src.models.retraining_job import RetrainingJob, RetrainStatus
+
+    query = select(RetrainingJob).order_by(RetrainingJob.created_at.desc()).limit(limit)
+
+    if status:
+        try:
+            status_enum = RetrainStatus(status)
+            query = query.where(RetrainingJob.status == status_enum)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Invalid status: {status}")
+
+    result = await db_session.execute(query)
+    jobs = result.scalars().all()
+
+    return [
+        {
+            "job_id": str(job.job_id),
+            "status": job.status.value,
+            "triggered_by": job.triggered_by.value,
+            "trigger_reason": job.trigger_reason,
+            "started_at": job.started_at.isoformat() if job.started_at else None,
+            "completed_at": job.completed_at.isoformat() if job.completed_at else None,
+            "created_at": job.created_at.isoformat(),
+        }
+        for job in jobs
+    ]

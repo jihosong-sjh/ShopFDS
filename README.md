@@ -13,10 +13,14 @@ ShopFDS는 실시간 사기 거래 탐지 시스템(Fraud Detection System)을 �
 ## [FEATURES] 주요 기능
 
 ### 1. 이커머스 플랫폼
-- **사용자 관리**: JWT 기반 인증/인가, 소셜 로그인 지원
-- **상품 관리**: 카테고리별 상품 관리, 실시간 재고 추적
-- **장바구니**: 세션 기반 장바구니, 게스트 체크아웃 지원
-- **주문 처리**: 실시간 주문 상태 추적, 다단계 결제 검증
+- **사용자 관리**: JWT 기반 인증/인가, OAuth 2.0 소셜 로그인 (Google, Kakao, Naver)
+- **상품 관리**: 카테고리별 상품 관리, 실시간 재고 추적, 검색 자동완성 (Trigram 유사도)
+- **리뷰 시스템**: 별점, 텍스트 리뷰, 사진 업로드, 도움돼요 투표, 구매자 인증
+- **장바구니**: 세션 기반 장바구니, 게스트 체크아웃 지원, 쿠폰 적용
+- **주문 처리**: 실시간 주문 상태 추적, 다단계 결제 검증, OTP 추가 인증
+- **위시리스트**: 관심 상품 저장 및 관리, 일괄 장바구니 담기
+- **배송지 관리**: 다중 배송지 등록, 기본 배송지 설정
+- **PWA**: 오프라인 지원, 푸시 알림 (FCM), 홈 화면 추가
 
 ### 2. FDS (Fraud Detection System)
 - **실시간 위험 평가**: 트랜잭션 당 100ms 이내 평가
@@ -47,10 +51,13 @@ ShopFDS는 실시간 사기 거래 탐지 시스템(Fraud Detection System)을 �
 
 ### Frontend
 - **Framework**: React 18+ with TypeScript 5.3+
-- **Build Tool**: Vite 5.0+
+- **Build Tool**: Vite 5.0+ (PWA Plugin)
 - **State Management**: Zustand + React Query
-- **UI Components**: Tailwind CSS
+- **UI Components**: Tailwind CSS (다크 모드 지원)
 - **Charts**: Recharts
+- **Performance**: React.lazy (코드 스플리팅), react-window (가상 스크롤)
+- **Accessibility**: WCAG AA 준수, ARIA 속성, 키보드 네비게이션
+- **Monitoring**: Sentry, Web Vitals
 
 ### Infrastructure
 - **Container**: Docker, Docker Compose

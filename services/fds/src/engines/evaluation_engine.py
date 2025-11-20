@@ -511,9 +511,7 @@ class EvaluationEngine:
                 review_queue_id=None,  # Phase 5에서 검토 큐 ID 추가 예정
             )
 
-    async def _check_blacklist(
-        self, request: FDSEvaluationRequest
-    ) -> List[RiskFactor]:
+    async def _check_blacklist(self, request: FDSEvaluationRequest) -> List[RiskFactor]:
         """
         블랙리스트 체크
 
@@ -532,19 +530,17 @@ class EvaluationEngine:
 
         # 이메일에서 도메인 추출
         email_domain = None
-        if request.user_email and "@" in request.user_email:
+        if (
+            hasattr(request, "user_email")
+            and request.user_email
+            and "@" in request.user_email
+        ):
             email_domain = request.user_email.split("@")[1]
 
-        # 카드 정보에서 BIN 추출 (첫 6자리)
+        # 카드 정보에서 BIN 추출 (payment_info에서)
         card_bin = None
-        if (
-            hasattr(request, "payment_method")
-            and request.payment_method
-            and request.payment_method.get("card_number")
-        ):
-            card_number = request.payment_method["card_number"].replace(" ", "")
-            if len(card_number) >= 6:
-                card_bin = card_number[:6]
+        if request.payment_info and request.payment_info.card_bin:
+            card_bin = request.payment_info.card_bin
 
         # 블랙리스트 체크
         blacklist_results = await self.blacklist_manager.is_blacklisted(
@@ -567,7 +563,6 @@ class EvaluationEngine:
                 )
 
         return risk_factors
-
 
 
 # 싱글톤 인스턴스

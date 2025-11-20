@@ -8,6 +8,7 @@ pydantic-settings
 sqlalchemy
 asyncpg
 psycopg[binary]
+aiosqlite
 
 # Redis
 redis
@@ -16,6 +17,9 @@ redis
 celery[redis]
 
 # HTTP Client (CTI 연동용)
+# GeoIP (네트워크 분석용)
+geoip2
+
 httpx
 
 # ML Libraries (기본 모델)
@@ -26,6 +30,8 @@ joblib
 
 # Utilities
 python-dotenv
+python-dateutil
+pycountry
 
 # Testing
 pytest
@@ -42,3 +48,7 @@ mypy
 # Monitoring
 prometheus-client
 sentry-sdk[fastapi]
+
+# XAI Libraries (설명 가능한 AI)
+shap>=0.45.0
+lime>=0.2.0

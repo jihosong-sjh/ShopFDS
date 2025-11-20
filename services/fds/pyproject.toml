@@ -1,0 +1,4 @@
+[tool.ruff.lint.per-file-ignores]
+# Ignore E402 (module level import not at top of file) for files that need load_dotenv() first
+"src/main.py" = ["E402"]
+"src/db/connection.py" = ["E402"]

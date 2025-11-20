@@ -1,0 +1,6 @@
+[tool.ruff.lint.per-file-ignores]
+# Ignore E402 (module level import not at top of file) for files that need sys.path setup first
+"src/api/ab_tests.py" = ["E402"]
+"src/api/dashboard.py" = ["E402"]
+"src/api/rules.py" = ["E402"]
+"src/main.py" = ["E402"]

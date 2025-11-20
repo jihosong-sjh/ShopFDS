@@ -50,6 +50,8 @@ class Order(Base):
         index=True,
     )
     total_amount = Column(DECIMAL(10, 2), nullable=False)
+    discount_amount = Column(DECIMAL(10, 2), nullable=False, default=0)
+    coupon_code = Column(String(50), nullable=True)
     status = Column(
         String(50),
         nullable=False,
@@ -75,6 +77,8 @@ class Order(Base):
         "OrderItem", back_populates="order", cascade="all, delete-orphan"
     )
     payment = relationship("Payment", back_populates="order", uselist=False)
+    reviews = relationship("Review", back_populates="order", lazy="dynamic")
+    user_coupon = relationship("UserCoupon", back_populates="order", uselist=False)
 
     # 제약 조건
     __table_args__ = (

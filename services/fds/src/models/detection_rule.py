@@ -17,7 +17,10 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
+from sqlalchemy.dialects.postgresql import (
+    JSON,
+    UUID as PGUUID,
+)  # JSON -> JSON for SQLite compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, TimestampMixin
@@ -86,7 +89,7 @@ class DetectionRule(Base, TimestampMixin):
 
     # 룰 조건 (JSON 형식)
     condition: Mapped[dict] = mapped_column(
-        JSONB,
+        JSON,
         nullable=False,
         comment="룰 조건 (JSON 형식)",
     )

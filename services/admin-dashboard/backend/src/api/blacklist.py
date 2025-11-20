@@ -14,6 +14,7 @@ from datetime import datetime
 from ..dependencies import get_redis_cluster, get_current_user
 import sys
 import os
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../fds/src"))
 
 from cache.blacklist import (
@@ -33,12 +34,16 @@ class BlacklistAddRequest(BaseModel):
     """Request model for adding blacklist entry"""
 
     entry_type: BlacklistType = Field(..., description="Type of blacklist entry")
-    value: str = Field(..., description="Value to blacklist (IP, email domain, card BIN, etc.)")
+    value: str = Field(
+        ..., description="Value to blacklist (IP, email domain, card BIN, etc.)"
+    )
     reason: BlacklistReason = Field(..., description="Reason for blacklisting")
     ttl_days: Optional[int] = Field(
         None, description="TTL in days (None = no expiry)", ge=1, le=365
     )
-    metadata: Optional[dict] = Field(default_factory=dict, description="Additional metadata")
+    metadata: Optional[dict] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
 
 class BlacklistUpdateTTLRequest(BaseModel):
@@ -135,8 +140,12 @@ async def add_blacklist_entry(
     description="Get list of blacklist entries with pagination and optional type filter",
 )
 async def list_blacklist_entries(
-    entry_type: Optional[BlacklistType] = Query(None, description="Filter by entry type"),
-    limit: int = Query(100, ge=1, le=1000, description="Maximum number of entries to return"),
+    entry_type: Optional[BlacklistType] = Query(
+        None, description="Filter by entry type"
+    ),
+    limit: int = Query(
+        100, ge=1, le=1000, description="Maximum number of entries to return"
+    ),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     redis_cluster=Depends(get_redis_cluster),
     current_user=Depends(get_current_user),
@@ -234,7 +243,9 @@ async def remove_blacklist_entry(
     try:
         blacklist_manager = BlacklistManager(redis_cluster)
 
-        removed = await blacklist_manager.remove_entry(entry_type=entry_type, value=value)
+        removed = await blacklist_manager.remove_entry(
+            entry_type=entry_type, value=value
+        )
 
         if not removed:
             raise HTTPException(

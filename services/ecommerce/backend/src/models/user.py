@@ -65,6 +65,15 @@ class User(Base):
     # 관계
     orders = relationship("Order", back_populates="user", lazy="dynamic")
     cart = relationship("Cart", back_populates="user", uselist=False)
+    reviews = relationship("Review", back_populates="user", lazy="dynamic")
+    review_votes = relationship("ReviewVote", back_populates="user", lazy="dynamic")
+    user_coupons = relationship("UserCoupon", back_populates="user", lazy="dynamic")
+    oauth_accounts = relationship("OAuthAccount", back_populates="user", lazy="dynamic")
+    wishlist_items = relationship("WishlistItem", back_populates="user", lazy="dynamic")
+    addresses = relationship("Address", back_populates="user", lazy="dynamic")
+    push_subscriptions = relationship(
+        "PushSubscription", back_populates="user", lazy="dynamic"
+    )
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, role={self.role})>"

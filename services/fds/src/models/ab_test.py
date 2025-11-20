@@ -18,7 +18,10 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
+from sqlalchemy.dialects.postgresql import (
+    JSON,
+    UUID as PGUUID,
+)  # JSON -> JSON for SQLite compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, TimestampMixin
@@ -94,13 +97,13 @@ class ABTest(Base, TimestampMixin):
 
     # 그룹 A/B 설정
     group_a_config: Mapped[dict] = mapped_column(
-        JSONB,
+        JSON,
         nullable=False,
         comment="그룹 A 설정 (기존 룰/모델 ID 또는 파라미터)",
     )
 
     group_b_config: Mapped[dict] = mapped_column(
-        JSONB,
+        JSON,
         nullable=False,
         comment="그룹 B 설정 (새 룰/모델 ID 또는 파라미터)",
     )

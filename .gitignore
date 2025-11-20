@@ -68,11 +68,13 @@ coverage/
 
 # Environment variables
 .env
+# 수정
 .env.example
 .env.local
 .env.*.local
 .env.production
 .env.development
+.env.production.example
 *.env
 
 # Database

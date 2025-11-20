@@ -29,7 +29,7 @@ def get_redis_cluster() -> RedisCluster:
         # Get Redis Cluster nodes from environment
         redis_nodes_str = os.getenv(
             "REDIS_CLUSTER_NODES",
-            "redis-node-1:6379,redis-node-2:6379,redis-node-3:6379"
+            "redis-node-1:6379,redis-node-2:6379,redis-node-3:6379",
         )
 
         # Parse nodes
@@ -51,6 +51,7 @@ def get_redis_cluster() -> RedisCluster:
 
 # --- Authentication Dependency ---
 
+
 class CurrentUser:
     """Mock current user for authentication"""
 
@@ -71,8 +72,4 @@ def get_current_user() -> CurrentUser:
     """
     # Mock user for development
     # In production, this should validate JWT token and return actual user
-    return CurrentUser(
-        id="admin_user",
-        email="admin@shopfds.com",
-        role="admin"
-    )
+    return CurrentUser(id="admin_user", email="admin@shopfds.com", role="admin")

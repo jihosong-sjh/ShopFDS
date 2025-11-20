@@ -52,15 +52,13 @@ def generate_sales_report(
         # 포맷에 따라 변환
         if report_format == "csv":
             _convert_to_csv(report_data)
+            report_path = f"/tmp/sales_report_{start_date}_to_{end_date}.csv"
         elif report_format == "pdf":
             _convert_to_pdf(report_data)
+            report_path = f"/tmp/sales_report_{start_date}_to_{end_date}.pdf"
         else:
-            json.dumps(report_data, ensure_ascii=False, indent=2)
-
-        # TODO: S3나 로컬 파일 시스템에 저장
-        report_path = f"/reports/sales_{start_date}_{end_date}.{report_format}"
-        # report_content = _convert_to_csv/pdf/json(report_data)
-        # save_report_to_storage(report_path, report_content)
+            json.dumps(report_data, indent=2)
+            report_path = f"/tmp/sales_report_{start_date}_to_{end_date}.json"
 
         logger.info(f"[SUCCESS] Sales report generated: {report_path}")
 

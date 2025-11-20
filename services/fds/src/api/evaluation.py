@@ -108,7 +108,7 @@ async def evaluate_transaction(
 
         # 1. 평가 엔진 초기화 (db와 redis 주입 - A/B 테스트용)
         from ..engines.evaluation_engine import EvaluationEngine
-        from ..models import get_redis
+        from ..utils.redis_client import get_redis
 
         redis = await get_redis()
         engine = EvaluationEngine(db=db, redis=redis)

@@ -2,23 +2,36 @@
  * 메인 App 컴포넌트
  *
  * React Router 및 React Query 설정
+ * 코드 스플리팅 적용 (React.lazy, Suspense)
  */
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { Layout } from './components/Layout';
-import { Register } from './pages/Register';
-import { Login } from './pages/Login';
-import { ProductList } from './pages/ProductList';
-import { ProductDetail } from './pages/ProductDetail';
-import { Cart } from './pages/Cart';
-import { Checkout } from './pages/Checkout';
-import { Orders } from './pages/Orders';
-import { OrderTracking } from './pages/OrderTracking';
-
 import { useAuthStore } from './stores/authStore';
+
+// 코드 스플리팅: Lazy Loading으로 초기 번들 크기 최소화
+const Register = lazy(() => import('./pages/Register').then(module => ({ default: module.Register })));
+const Login = lazy(() => import('./pages/Login').then(module => ({ default: module.Login })));
+const ProductList = lazy(() => import('./pages/ProductList').then(module => ({ default: module.ProductList })));
+const ProductDetail = lazy(() => import('./pages/ProductDetail').then(module => ({ default: module.ProductDetail })));
+const Cart = lazy(() => import('./pages/Cart').then(module => ({ default: module.Cart })));
+const Checkout = lazy(() => import('./pages/Checkout').then(module => ({ default: module.Checkout })));
+const Orders = lazy(() => import('./pages/Orders').then(module => ({ default: module.Orders })));
+const OrderTracking = lazy(() => import('./pages/OrderTracking').then(module => ({ default: module.OrderTracking })));
+
+// Phase 10에서 추가된 페이지들 (Lazy Loading)
+const SearchPage = lazy(() => import('./pages/SearchPage'));
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const ComparisonPage = lazy(() => import('./pages/ComparisonPage'));
+const MyPage = lazy(() => import('./pages/MyPage'));
+const AddressManagementPage = lazy(() => import('./pages/AddressManagementPage'));
+const PointsCouponsPage = lazy(() => import('./pages/PointsCouponsPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderCompletePage = lazy(() => import('./pages/OrderCompletePage'));
+const OfflinePage = lazy(() => import('./pages/OfflinePage'));
 
 // React Query 클라이언트 설정
 const queryClient = new QueryClient({
@@ -97,56 +110,124 @@ const Home: React.FC = () => {
   );
 };
 
+// Suspense 로딩 폴백 컴포넌트
+const LoadingFallback: React.FC = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+    <span className="ml-3 text-gray-600">로딩 중...</span>
+  </div>
+);
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="register" element={<Register />} />
-            <Route path="login" element={<Login />} />
-            <Route path="products" element={<ProductList />} />
-            <Route path="products/:productId" element={<ProductDetail />} />
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="register" element={<Register />} />
+              <Route path="login" element={<Login />} />
+              <Route path="products" element={<ProductList />} />
+              <Route path="products/:productId" element={<ProductDetail />} />
+              <Route path="search" element={<SearchPage />} />
 
-            {/* 인증 필요한 라우트 */}
-            <Route
-              path="cart"
-              element={
-                <ProtectedRoute>
-                  <Cart />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="checkout"
-              element={
-                <ProtectedRoute>
-                  <Checkout />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="orders"
-              element={
-                <ProtectedRoute>
-                  <Orders />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="orders/:orderId"
-              element={
-                <ProtectedRoute>
-                  <OrderTracking />
-                </ProtectedRoute>
-              }
-            />
+              {/* 인증 필요한 라우트 */}
+              <Route
+                path="cart"
+                element={
+                  <ProtectedRoute>
+                    <Cart />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="checkout"
+                element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="orders"
+                element={
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="orders/:orderId"
+                element={
+                  <ProtectedRoute>
+                    <OrderTracking />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="wishlist"
+                element={
+                  <ProtectedRoute>
+                    <WishlistPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="comparison"
+                element={
+                  <ProtectedRoute>
+                    <ComparisonPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="my"
+                element={
+                  <ProtectedRoute>
+                    <MyPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="my/addresses"
+                element={
+                  <ProtectedRoute>
+                    <AddressManagementPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="my/points-coupons"
+                element={
+                  <ProtectedRoute>
+                    <PointsCouponsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="checkout-new"
+                element={
+                  <ProtectedRoute>
+                    <CheckoutPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="order-complete"
+                element={
+                  <ProtectedRoute>
+                    <OrderCompletePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="offline" element={<OfflinePage />} />
 
-            {/* 404 */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
+              {/* 404 */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </QueryClientProvider>
   );

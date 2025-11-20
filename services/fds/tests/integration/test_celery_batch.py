@@ -44,6 +44,7 @@ class TestFDSCeleryBeatSchedule:
     def test_batch_evaluation_scheduled_daily(self):
         """배치 평가 작업이 매일 자정에 스케줄되는지 테스트"""
         import sys
+
         sys.path.insert(0, "..")
         import celeryconfig
 
@@ -65,6 +66,7 @@ class TestFDSCeleryQueueRouting:
         """배치 평가 작업이 fds_batch 큐로 라우팅되는지 테스트"""
         from src.tasks.batch_evaluation import batch_evaluate_transactions
         import sys
+
         sys.path.insert(0, "..")
         import celeryconfig
 
