@@ -53,18 +53,17 @@ class SearchService:
     async def _get_product_suggestions(
         self, query: str, limit: int
     ) -> List[Dict[str, Any]]:
-        """Get product name suggestions using trigram similarity"""
-        # PostgreSQL similarity function: similarity(name, query) > 0.3
-        # Order by similarity DESC
+        """Get product name suggestions using simple text matching"""
+        # Simple text matching (SQLite compatible)
         stmt = (
             select(Product)
             .where(
                 or_(
                     func.lower(Product.name).contains(query.lower()),
-                    func.similarity(Product.name, query) > 0.3,
+                    func.lower(Product.description).contains(query.lower()),
                 )
             )
-            .order_by(desc(func.similarity(Product.name, query)))
+            .order_by(desc(Product.created_at))
             .limit(limit)
         )
 
@@ -76,7 +75,7 @@ class SearchService:
                 "type": "product",
                 "text": product.name,
                 "product_id": str(product.id),
-                "image_url": product.images[0] if product.images else None,
+                "image_url": product.image_url,
             }
             for product in products
         ]
@@ -84,18 +83,10 @@ class SearchService:
     async def _get_brand_suggestions(
         self, query: str, limit: int
     ) -> List[Dict[str, Any]]:
-        """Get unique brand suggestions"""
-        stmt = (
-            select(Product.brand)
-            .distinct()
-            .where(func.lower(Product.brand).contains(query.lower()))
-            .limit(limit)
-        )
-
-        result = await self.db.execute(stmt)
-        brands = result.scalars().all()
-
-        return [{"type": "brand", "text": brand} for brand in brands if brand]
+        """Get unique brand suggestions (brand field not implemented yet)"""
+        # Brand field does not exist in current Product model
+        # Return empty list for now
+        return []
 
     async def _get_category_suggestions(
         self, query: str, limit: int
@@ -149,15 +140,13 @@ class SearchService:
         # Build WHERE conditions
         conditions = []
 
-        # Text search: name, description, brand, category
+        # Text search: name, description, category (SQLite compatible)
         if query:
             conditions.append(
                 or_(
                     func.lower(Product.name).contains(query.lower()),
                     func.lower(Product.description).contains(query.lower()),
-                    func.lower(Product.brand).contains(query.lower()),
                     func.lower(Product.category).contains(query.lower()),
-                    func.similarity(Product.name, query) > 0.2,
                 )
             )
 
@@ -165,8 +154,9 @@ class SearchService:
         if category:
             conditions.append(Product.category == category)
 
-        if brand:
-            conditions.append(Product.brand == brand)
+        # Brand filter not implemented (Product model doesn't have brand field)
+        # if brand:
+        #     conditions.append(Product.brand == brand)
 
         if min_price is not None:
             conditions.append(Product.price >= min_price)
@@ -175,7 +165,7 @@ class SearchService:
             conditions.append(Product.price <= max_price)
 
         if in_stock:
-            conditions.append(Product.stock > 0)
+            conditions.append(Product.stock_quantity > 0)
 
         # Count total matching products
         count_stmt = select(func.count(Product.id)).where(and_(*conditions))
@@ -232,14 +222,11 @@ class SearchService:
             "name": product.name,
             "description": product.description,
             "price": float(product.price),
-            "discounted_price": (
-                float(product.discounted_price) if product.discounted_price else None
-            ),
-            "images": product.images if product.images else [],
-            "brand": product.brand,
+            "image_url": product.image_url,
             "category": product.category,
-            "stock": product.stock,
-            "in_stock": product.stock > 0,
+            "stock_quantity": product.stock_quantity,
+            "in_stock": product.stock_quantity > 0,
+            "status": product.status,
             # TODO: Add rating and review_count from reviews (Phase 4)
             "rating": 0.0,
             "review_count": 0,
